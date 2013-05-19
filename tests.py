@@ -16,8 +16,26 @@ class WebPageTestCase(TestCase):
 
 
 class WappalyzerTestCase(TestCase):
-    def test_analyze(self):
-        analyzer = Wappalyzer()
+    @httprettified
+    def test_latest(self):
+        HTTPretty.register_uri(HTTPretty.GET, 'https://raw.github.com/ElbertF/Wappalyzer/master/share/apps.json', body="""
+        {
+            "categories": {
+                "foo": "bar"
+            },
+            "apps": {
+                "blee": {}
+            }
+        }
+        """)
+
+        analyzer = Wappalyzer.latest()
+
+        self.assertEquals(analyzer.categories['foo'], 'bar')
+        self.assertIn('blee', analyzer.apps)
+
+    def test_analyze_no_apps(self):
+        analyzer = Wappalyzer(categories={}, apps={})
         webpage = WebPage('http://example.com', '<html></html>', {})
 
         detected_apps = analyzer.analyze(webpage)
@@ -25,8 +43,7 @@ class WappalyzerTestCase(TestCase):
         self.assertEquals(detected_apps, set())
 
     def test_get_implied_apps(self):
-        analyzer = Wappalyzer()
-        analyzer.apps = {
+        analyzer = Wappalyzer(categories={}, apps={
             'a': { 
                 'implies': 'b',
             },
@@ -36,7 +53,7 @@ class WappalyzerTestCase(TestCase):
             'c': { 
                 'implies': 'a',
             },
-        }
+        })
 
         implied_apps = analyzer._get_implied_apps('a')
 

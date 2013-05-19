@@ -1,12 +1,15 @@
 import json
-import os
+import pkgutil
 import re
+import urllib2
 import warnings
+
+import requests
 
 from BeautifulSoup import BeautifulSoup
 
 
-DEFAULT_APPS_PATH = os.path.join(os.path.dirname(__file__), 'apps.json')
+APPS_JSON_URL = 'https://raw.github.com/ElbertF/Wappalyzer/master/share/apps.json'
 
 
 class WappalyzerError(Exception):
@@ -61,9 +64,6 @@ class WebPage(object):
 
         url : str
         """
-        # Placing the import here allows the Wappalyzer module
-        # to be used without requiring any third-party dependencies.
-        import requests
         response = requests.get(url)
         return cls.new_from_response(response)
 
@@ -85,44 +85,33 @@ class Wappalyzer(object):
     """
     Python Wappalyzer driver.
     """
-    def __init__(self, apps_path=DEFAULT_APPS_PATH):
+    def __init__(self, categories, apps):
         """
         Initialize a new Wappalyzer instance.
 
         Parameters
         ----------
 
-        apps_path : str, optional
-            Path to a Wappalyzer apps.json file.
-
-            By default, uses the version of the file
-            bundled with the library.
+        categories : dict
+            Map of category ids to names, as in apps.json.
+        apps : dict
+            Map of app names to app dicts, as in apps.json.
         """
-        self._load_apps(apps_path)
-
-    def _load_apps(self, apps_path):
-        """
-        Load the Wappalyzer apps.json file.
-        """
-        try:
-            with open(apps_path) as f:
-                obj = json.load(f)
-        except IOError as e:
-            raise WappalyzerError("Failed to load Wappalyzer signatures file ({path}): {error}".format(
-                    path=apps_path,
-                    error=e.message,
-                ))
-
-        try:
-            self.categories = obj['categories']
-            self.apps = obj['apps']
-        except KeyError as e:
-            raise WappalyzerError("Invalid Wappalyzer signatures file: {error}".format(
-                    error=e.message,
-                ))
+        self.categories = categories
+        self.apps = apps
 
         for name, app in self.apps.items():
             self._prepare_app(app)
+
+    @classmethod
+    def latest(cls):
+        """
+        Construct a Wappalyzer instance using the latest
+        version of apps.json, as fetched from GitHub.
+        """
+        fd = urllib2.urlopen(APPS_JSON_URL)
+        obj = json.load(fd)
+        return cls(categories=obj['categories'], apps=obj['apps'])
 
     def _prepare_app(self, app):
         """
