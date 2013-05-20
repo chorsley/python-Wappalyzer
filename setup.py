@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name = "python-Wappalyzer",
-    version = "0.2.0",
+    version = "0.2.1",
     description = "Python implementation of the Wappalyzer web application detection utility",
     author = "Clay McClure",
     author_email = "clay@daemons.net",

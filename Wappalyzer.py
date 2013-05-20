@@ -51,7 +51,7 @@ class WebPage(object):
         """
         self.parsed_html = soup = BeautifulSoup(self.html)
         self.scripts = [ script['src'] for script in soup.findAll('script', src=True) ]
-        self.meta = { meta['name'].lower(): meta['content'] for meta in soup.findAll('meta', attrs=dict(name=True)) }
+        self.meta = { meta['name'].lower(): meta['content'] for meta in soup.findAll('meta', attrs=dict(name=True, content=True)) }
 
     @classmethod
     def new_from_url(cls, url):
