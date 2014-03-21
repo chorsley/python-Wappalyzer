@@ -54,7 +54,7 @@ class WebPage(object):
         self.meta = { meta['name'].lower(): meta['content'] for meta in soup.findAll('meta', attrs=dict(name=True, content=True)) }
 
     @classmethod
-    def new_from_url(cls, url):
+    def new_from_url(cls, url, verify=True):
         """
         Constructs a new WebPage object for the URL,
         using the `requests` module to fetch the HTML.
@@ -63,8 +63,9 @@ class WebPage(object):
         ----------
 
         url : str
+        verify: bool
         """
-        response = requests.get(url)
+        response = requests.get(url, verify=verify)
         return cls.new_from_response(response)
 
     @classmethod
