@@ -1,0 +1,3 @@
+[submodule "Wappalyzer"]
+	path = Wappalyzer
+	url = https://github.com/danieljurek/Wappalyzer.git
