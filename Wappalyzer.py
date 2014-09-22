@@ -9,9 +9,6 @@ import requests
 from BeautifulSoup import BeautifulSoup
 
 
-APPS_JSON_URL = 'https://raw.github.com/ElbertF/Wappalyzer/master/share/apps.json'
-
-
 class WappalyzerError(Exception):
     """
     Raised for fatal Wappalyzer errors.
@@ -110,8 +107,9 @@ class Wappalyzer(object):
         Construct a Wappalyzer instance using the latest
         version of apps.json, as fetched from GitHub.
         """
-        fd = urllib2.urlopen(APPS_JSON_URL)
+        fd = open('Wappalyzer/share/apps.json', 'r') 
         obj = json.load(fd)
+
         return cls(categories=obj['categories'], apps=obj['apps'])
 
     def _prepare_app(self, app):
