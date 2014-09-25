@@ -203,7 +203,10 @@ class Wappalyzer(object):
         def __get_implied_apps(apps):
             _implied_apps = set()
             for app in apps:
-                _implied_apps.update(self.apps[app]['implies'])
+                try: 
+                    _implied_apps.update(set(self.apps[app]['implies'])) 
+                except KeyError, ex: 
+                    pass 
             return _implied_apps
 
         implied_apps = __get_implied_apps(detected_apps)
