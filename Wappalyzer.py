@@ -3,6 +3,7 @@ import pkgutil
 import re
 import urllib2
 import warnings
+import os 
 
 import requests
 
@@ -107,7 +108,7 @@ class Wappalyzer(object):
         Construct a Wappalyzer instance using the latest
         version of apps.json, as fetched from GitHub.
         """
-        fd = open('Wappalyzer/share/apps.json', 'r') 
+        fd = open(os.path.dirname(__file__) + '/Wappalyzer/share/apps.json', 'r')
         obj = json.load(fd)
 
         return cls(categories=obj['categories'], apps=obj['apps'])
