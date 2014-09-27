@@ -63,7 +63,7 @@ class WebPage(object):
         url : str
         verify: bool
         """
-        response = requests.get(url, verify=verify)
+        response = requests.get(url, verify=verify, timeout=2.5) 
         return cls.new_from_response(response)
 
     @classmethod
