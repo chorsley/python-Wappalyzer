@@ -1,13 +1,14 @@
 import json
-import pkgutil
 import re
-import urllib2
 import warnings
-import os 
+import os
+import logging
 
 import requests
 
 from BeautifulSoup import BeautifulSoup
+
+logger = logging.getLogger(name=__name__)
 
 
 class WappalyzerError(Exception):
@@ -48,8 +49,13 @@ class WebPage(object):
         Parse the HTML with BeautifulSoup to find <script> and <meta> tags.
         """
         self.parsed_html = soup = BeautifulSoup(self.html)
-        self.scripts = [ script['src'] for script in soup.findAll('script', src=True) ]
-        self.meta = { meta['name'].lower(): meta['content'] for meta in soup.findAll('meta', attrs=dict(name=True, content=True)) }
+        self.scripts = [script['src'] for script in
+                        soup.findAll('script', src=True)]
+        self.meta = {
+            meta['name'].lower():
+                meta['content'] for meta in soup.findAll(
+                    'meta', attrs=dict(name=True, content=True))
+        }
 
     @classmethod
     def new_from_url(cls, url, verify=True):
@@ -63,7 +69,7 @@ class WebPage(object):
         url : str
         verify: bool
         """
-        response = requests.get(url, verify=verify, timeout=2.5) 
+        response = requests.get(url, verify=verify, timeout=2.5)
         return cls.new_from_response(response)
 
     @classmethod
@@ -133,17 +139,17 @@ class Wappalyzer(object):
             try:
                 value = app[key]
             except KeyError:
-                app[key] = {}            
+                app[key] = {}
 
         # Ensure the 'meta' key is a dict
         obj = app['meta']
         if not isinstance(obj, dict):
-            app['meta'] = { 'generator': obj }
+            app['meta'] = {'generator': obj}
 
         # Ensure keys are lowercase
         for key in ['headers', 'meta']:
             obj = app[key]
-            app[key] = { k.lower(): v for k,v in obj.items() }
+            app[key] = {k.lower(): v for k, v in obj.items()}
 
         # Prepare regular expression patterns
         for key in ['url', 'html', 'script']:
@@ -156,20 +162,27 @@ class Wappalyzer(object):
 
     def _prepare_pattern(self, pattern):
         """
-        Strip out key:value pairs from the pattern and compile the regular expression.
+        Strip out key:value pairs from the pattern and compile the regular
+        expression.
         """
         regex, _, rest = pattern.partition('\\;')
         try:
             return re.compile(regex, re.I)
         except re.error as e:
-            warnings.warn("Caught '{error}' compiling regex: {regex}".format(error=e, regex=regex))
-            return re.compile(r'(?!x)x') # regex that never matches: http://stackoverflow.com/a/1845097/413622
+            warnings.warn(
+                "Caught '{error}' compiling regex: {regex}"
+                .format(error=e, regex=regex)
+            )
+            # regex that never matches:
+            # http://stackoverflow.com/a/1845097/413622
+            return re.compile(r'(?!x)x')
 
     def _has_app(self, app, webpage):
         """
         Determine whether the web page matches the app signature.
         """
-        # Search the easiest things first and save the full-text search of the HTML for last
+        # Search the easiest things first and save the full-text search of the
+        # HTML for last
 
         for regex in app['url']:
             if regex.search(webpage.url):
@@ -203,10 +216,10 @@ class Wappalyzer(object):
         def __get_implied_apps(apps):
             _implied_apps = set()
             for app in apps:
-                try: 
-                    _implied_apps.update(set(self.apps[app]['implies'])) 
-                except KeyError, ex: 
-                    pass 
+                try:
+                    _implied_apps.update(set(self.apps[app]['implies']))
+                except KeyError:
+                    pass
             return _implied_apps
 
         implied_apps = __get_implied_apps(detected_apps)
