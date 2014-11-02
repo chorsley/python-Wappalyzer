@@ -235,6 +235,15 @@ class Wappalyzer(object):
 
         return all_implied_apps
 
+    def get_categories(self, app_name):
+        """
+        Returns a list of the categories for an app name.
+        """
+        cat_nums = self.apps.get(app_name, {}).get("cats", [])
+        cat_names = [self.categories.get("%s" % cat_num, "")
+                     for cat_num in cat_nums]
+
+        return cat_names
 
     def analyze(self, webpage):
         """
@@ -249,3 +258,13 @@ class Wappalyzer(object):
         detected_apps |= self._get_implied_apps(detected_apps)
 
         return detected_apps
+
+    def analyze_with_categories(self, webpage):
+        detected_apps = self.analyze(webpage)
+        categorised_apps = {}
+
+        for app_name in detected_apps:
+            cat_names = self.get_categories(app_name)
+            categorised_apps[app_name] = {"categories": cat_names}
+
+        return categorised_apps
