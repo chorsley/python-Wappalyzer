@@ -8,7 +8,8 @@ from Wappalyzer import WebPage, Wappalyzer
 class WebPageTestCase(TestCase):
     @httprettified
     def test_new_from_url(self):
-        HTTPretty.register_uri(HTTPretty.GET, 'http://example.com/', body='snerble')
+        HTTPretty.register_uri(HTTPretty.GET, 'http://example.com/',
+                               body='snerble')
 
         webpage = WebPage.new_from_url('http://example.com/')
 
@@ -16,23 +17,12 @@ class WebPageTestCase(TestCase):
 
 
 class WappalyzerTestCase(TestCase):
-    @httprettified
     def test_latest(self):
-        HTTPretty.register_uri(HTTPretty.GET, 'https://raw.github.com/ElbertF/Wappalyzer/master/share/apps.json', body="""
-        {
-            "categories": {
-                "foo": "bar"
-            },
-            "apps": {
-                "blee": {}
-            }
-        }
-        """)
-
         analyzer = Wappalyzer.latest()
 
-        self.assertEquals(analyzer.categories['foo'], 'bar')
-        self.assertIn('blee', analyzer.apps)
+        print analyzer.categories
+        self.assertEquals(analyzer.categories['1'], 'cms')
+        self.assertIn('Apache', analyzer.apps)
 
     def test_analyze_no_apps(self):
         analyzer = Wappalyzer(categories={}, apps={})
@@ -44,13 +34,13 @@ class WappalyzerTestCase(TestCase):
 
     def test_get_implied_apps(self):
         analyzer = Wappalyzer(categories={}, apps={
-            'a': { 
+            'a': {
                 'implies': 'b',
             },
-            'b': { 
+            'b': {
                 'implies': 'c',
             },
-            'c': { 
+            'c': {
                 'implies': 'a',
             },
         })
@@ -58,3 +48,20 @@ class WappalyzerTestCase(TestCase):
         implied_apps = analyzer._get_implied_apps('a')
 
         self.assertEquals(implied_apps, set(['a', 'b', 'c']))
+
+    def test_get_analyze_with_categories(self):
+        webpage = WebPage('http://example.com', '<html>aaa</html>', {})
+        analyzer = Wappalyzer(categories={"1": "cat1", "2": "cat2"}, apps={
+            'a': {
+                'html': 'aaa',
+                'cats': [1],
+            },
+            'b': {
+                'html': 'bbb',
+                'cats': [1, 2],
+            },
+        })
+
+        result = analyzer.analyze_with_categories(webpage)
+
+        self.assertEquals(result, {"a": {"categories": ["cat1"]}})
