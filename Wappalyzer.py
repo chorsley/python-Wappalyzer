@@ -3,6 +3,7 @@ import re
 import warnings
 import os
 import logging
+import pkg_resources
 
 import requests
 
@@ -115,8 +116,7 @@ class Wappalyzer(object):
         version of apps.json, as fetched from GitHub.
         """
         if not apps_file:
-            apps_file = (os.path.join(os.path.dirname(__file__),
-                                      '/Wappalyzer/share/apps.json'))
+            apps_file = pkg_resources.resource_filename(__name__, "data/apps.json")
         with open(apps_file, 'r') as fd:
             obj = json.load(fd)
 
