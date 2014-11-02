@@ -109,13 +109,16 @@ class Wappalyzer(object):
             self._prepare_app(app)
 
     @classmethod
-    def latest(cls):
+    def latest(cls, apps_file=None):
         """
         Construct a Wappalyzer instance using the latest
         version of apps.json, as fetched from GitHub.
         """
-        fd = open(os.path.dirname(__file__) + '/Wappalyzer/share/apps.json', 'r')
-        obj = json.load(fd)
+        if not apps_file:
+            apps_file = (os.path.join(os.path.dirname(__file__),
+                                      '/Wappalyzer/share/apps.json'))
+        with open(apps_file, 'r') as fd:
+            obj = json.load(fd)
 
         return cls(categories=obj['categories'], apps=obj['apps'])
 
