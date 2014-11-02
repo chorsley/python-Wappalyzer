@@ -1,8 +1,8 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name = "python-Wappalyzer",
-    version = "0.2.1",
+    version = "0.2.2",
     description = "Python implementation of the Wappalyzer web application detection utility",
     author = "Clay McClure",
     author_email = "clay@daemons.net",
@@ -15,13 +15,16 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
     ],
     py_modules = ['Wappalyzer'],
+    packages=find_packages(),
+    package_data = {'': ['data/apps.json']},
     install_requires = [
         'BeautifulSoup==3.2.1',
         'requests',
     ],
     test_suite = 'nose.collector',
     tests_require = [
-        'httpretty==0.6.0',
-        'nose==1.3.0',
+        'httpretty>=0.6.0',
+        'nose>=1.3.0',
+        'requests'
     ]
 )
