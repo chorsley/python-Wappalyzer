@@ -44,6 +44,11 @@ class WebPage(object):
         self.html = html
         self.headers = headers
 
+        try:
+            self.headers.iter_keys()
+        except AttributeError:
+            raise ValueError("Headers must be a dictionary-like object")
+
         self._parse_html()
 
     def _parse_html(self):
@@ -113,8 +118,8 @@ class Wappalyzer(object):
     @classmethod
     def latest(cls, apps_file=None):
         """
-        Construct a Wappalyzer instance using the latest
-        version of apps.json, as fetched from GitHub.
+        Construct a Wappalyzer instance using a apps db path passed in via
+        apps_file, or alternatively the default in data/apps.json
         """
         if apps_file:
             with open(apps_file, 'r') as fd:
@@ -192,7 +197,6 @@ class Wappalyzer(object):
         for regex in app['url']:
             if regex.search(webpage.url):
                 return True
-
         for name, regex in app['headers'].items():
             if name in webpage.headers:
                 content = webpage.headers[name]
