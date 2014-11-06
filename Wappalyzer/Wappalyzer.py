@@ -45,7 +45,7 @@ class WebPage(object):
         self.headers = headers
 
         try:
-            self.headers.iter_keys()
+            self.headers.keys()
         except AttributeError:
             raise ValueError("Headers must be a dictionary-like object")
 
