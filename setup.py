@@ -7,7 +7,7 @@ setup(
                 "detection utility",
     author="Clay McClure",
     author_email="clay@daemons.net",
-    url="https://github.com/claymation/python-Wappalyzer",
+    url="https://github.com/chorsley/python-Wappalyzer",
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
