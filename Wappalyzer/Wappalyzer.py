@@ -5,8 +5,6 @@ import os
 import logging
 import pkgutil
 import pkg_resources
-# Commenting out 'env' functionality until decision on whether to make PhantomJS a requirement
-#from   selenium import webdriver
 
 import requests
 
@@ -52,9 +50,6 @@ class WebPage(object):
             raise ValueError("Headers must be a dictionary-like object")
 
         self._parse_html()
-        
-        # Commenting out 'env' functionality until decision on whether to make PhantomJS a requirement
-        #self._get_window_attributes()
 
     def _parse_html(self):
         """
@@ -68,35 +63,6 @@ class WebPage(object):
                 meta['content'] for meta in soup.findAll(
                     'meta', attrs=dict(name=True, content=True))
         }
-
-# Commenting out 'env' functionality until decision on whether to make PhantomJS a requirement
-#        def _get_window_attributes(self):
-#        """
-#        Get window attributes via PhantomJS for the 'env' check
-#        """
-#        # Set Accept-Encoding header to not allow gzip encoding to avoid known issue 
-#        # where gzip encoding *sometimes* causes parse errors
-#        # (https://code.google.com/p/phantomjs/issues/detail?id=930&start=300)
-#        webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.customHeaders.Accept-Encoding'] = 'gzip;q=0,deflate,sdch'
-#        d = webdriver.PhantomJS(service_args=[
-#            '--load-images=false',
-#            '--ignore-ssl-errors=true'
-#            ])
-#        try:
-#            d.get(self.url)
-#        except:
-#            d.quit()
-#            raise
-
-#        script = 'var a = []; for (var key in window) {a.push(key)};return a;'
-#        try:
-#            self.env = d.execute_script(script)
-#        except:
-#            #Some pages fail when executing javascript
-#            print url + ' fails to execute script.'
-#            self.env = []
-#
-#        d.quit()
 
 
     @classmethod
@@ -171,8 +137,6 @@ class Wappalyzer(object):
         Normalize app data, preparing it for the detection phase.
         """
         # Ensure these keys' values are lists
-        # Commenting out 'env' functionality until decision on whether to make PhantomJS a requirement
-        #for key in ['url', 'html', 'script', 'env', 'implies']:
         for key in ['url', 'html', 'script', 'implies']:
             try:
                 value = app[key]
@@ -200,8 +164,6 @@ class Wappalyzer(object):
             app[key] = { k.lower(): v for k,v in obj.items() }
 
         # Prepare regular expression patterns
-        # Commenting out 'env' functionality until decision on whether to make PhantomJS a requirement
-        #for key in ['url', 'html', 'script', 'env']:
         for key in ['url', 'html', 'script']:
             app[key] = [self._prepare_pattern(pattern) for pattern in app[key]]
 
@@ -257,13 +219,6 @@ class Wappalyzer(object):
                     #return True
                     hasApp = True
                     
-# Commenting out 'env' functionality until decision on whether to make PhantomJS a requirement
-#        for pattern in app['env']:
-#            for property in webpage.env:
-#                if pattern['regex'].search(property):
-#                    self._set_detected_app(app_name, app, 'env', pattern, webpage.env)
-#                    hasApp = True
-
         for pattern in app['script']:
             for script in webpage.scripts:
                 if pattern['regex'].search(script):
