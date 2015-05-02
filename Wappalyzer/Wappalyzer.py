@@ -75,6 +75,7 @@ class WebPage(object):
 
         url : str
         verify: bool
+        allow_redirects: bool
         """
         response = requests.get(url, verify=verify, timeout=2.5,
                                 allow_redirects=allow_redirects)
