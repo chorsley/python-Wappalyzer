@@ -65,7 +65,7 @@ class WebPage(object):
         }
 
     @classmethod
-    def new_from_url(cls, url, verify=True):
+    def new_from_url(cls, url, verify=True, allow_redirects=True):
         """
         Constructs a new WebPage object for the URL,
         using the `requests` module to fetch the HTML.
@@ -76,7 +76,8 @@ class WebPage(object):
         url : str
         verify: bool
         """
-        response = requests.get(url, verify=verify, timeout=2.5)
+        response = requests.get(url, verify=verify, timeout=2.5,
+                                allow_redirects=allow_redirects)
         return cls.new_from_response(response)
 
     @classmethod
