@@ -1,6 +1,5 @@
 python-Wappalyzer
 =================
-Fork for support Python 3
 
 Python driver for [Wappalyzer][], a web application
 detection utility. 
