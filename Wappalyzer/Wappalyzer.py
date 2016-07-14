@@ -8,7 +8,10 @@ import pkg_resources
 
 import requests
 
-from BeautifulSoup import BeautifulSoup
+try:
+    from BeautifulSoup import BeautifulSoup
+except:
+    from bs4 import BeautifulSoup
 
 logger = logging.getLogger(name=__name__)
 
@@ -125,7 +128,8 @@ class Wappalyzer(object):
             with open(apps_file, 'r') as fd:
                 obj = json.load(fd)
         else:
-            obj = json.loads(pkg_resources.resource_string(__name__, "data/apps.json"))
+            data = pkg_resources.resource_string(__name__, "data/apps.json").decode()
+            obj = json.loads(data)
 
         return cls(categories=obj['categories'], apps=obj['apps'])
 
