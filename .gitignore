@@ -1,5 +1,11 @@
 *.py[cod]
 
+venv
+venv/*
+.idea
+.idea/*
+*.iml
+
 # C extensions
 *.so
 
