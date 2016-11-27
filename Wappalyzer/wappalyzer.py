@@ -8,7 +8,7 @@ import pkg_resources
 
 import requests
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(name=__name__)
 
