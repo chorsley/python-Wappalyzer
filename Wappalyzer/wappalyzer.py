@@ -5,6 +5,7 @@ import os
 import logging
 import pkgutil
 import pkg_resources
+from builtins import str as text
 
 import requests
 
@@ -125,7 +126,7 @@ class Wappalyzer(object):
             with open(apps_file, 'r') as fd:
                 obj = json.load(fd)
         else:
-            obj = json.loads(pkg_resources.resource_string(__name__, "data/apps.json"))
+            obj = json.loads(pkg_resources.resource_string(__name__, 'data/apps.json').decode())
 
         return cls(categories=obj['categories'], apps=obj['apps'])
 
