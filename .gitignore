@@ -1,22 +1,30 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
 *.py[cod]
+*$py.class
 
 # C extensions
 *.so
 
-# Packages
-*.egg
-*.egg-info
-dist
-build
-eggs
-parts
-bin
-var
-sdist
-develop-eggs
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
 .installed.cfg
-lib
-lib64
+*.egg
 
 # Installer logs
 pip-log.txt
@@ -25,6 +33,7 @@ pip-log.txt
 .coverage
 .tox
 nosetests.xml
+.noseids
 
 # Translations
 *.mo
