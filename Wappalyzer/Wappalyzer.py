@@ -1,14 +1,12 @@
 import json
 import re
 import warnings
-import os
 import logging
-import pkgutil
 import pkg_resources
 
 import requests
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(name=__name__)
 
@@ -55,7 +53,7 @@ class WebPage(object):
         """
         Parse the HTML with BeautifulSoup to find <script> and <meta> tags.
         """
-        self.parsed_html = soup = BeautifulSoup(self.html)
+        self.parsed_html = soup = BeautifulSoup(self.html, 'html.parser')
         self.scripts = [script['src'] for script in
                         soup.findAll('script', src=True)]
         self.meta = {
@@ -97,6 +95,7 @@ class Wappalyzer(object):
     """
     Python Wappalyzer driver.
     """
+
     def __init__(self, categories, apps):
         """
         Initialize a new Wappalyzer instance.
@@ -197,6 +196,7 @@ class Wappalyzer(object):
         for regex in app['url']:
             if regex.search(webpage.url):
                 return True
+
         for name, regex in app['headers'].items():
             if name in webpage.headers:
                 content = webpage.headers[name]
@@ -266,6 +266,9 @@ class Wappalyzer(object):
         return detected_apps
 
     def analyze_with_categories(self, webpage):
+        """
+        Return a list of applications and categories that can be detected on the web page.
+        """
         detected_apps = self.analyze(webpage)
         categorised_apps = {}
 
