@@ -18,7 +18,7 @@ setup(
     packages=find_packages(),
     package_data={'Wappalyzer': ['data/apps.json']},
     install_requires=[
-        'BeautifulSoup==3.2.1',
+        'BeautifulSoup4',
         'requests',
     ]
 )
