@@ -20,11 +20,5 @@ setup(
     install_requires=[
         'BeautifulSoup==3.2.1',
         'requests',
-    ],
-    test_suite='nose.collector',
-    tests_require=[
-        'httpretty>=0.6.0',
-        'nose>=1.3.0',
-        'requests'
     ]
 )
