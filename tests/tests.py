@@ -21,7 +21,7 @@ class WappalyzerTestCase(TestCase):
         analyzer = Wappalyzer.latest()
 
         print(analyzer.categories)
-        self.assertEquals(analyzer.categories['1'], 'cms')
+        self.assertEquals(analyzer.categories['1'], 'CMS')
         self.assertIn('Apache', analyzer.apps)
 
     def test_analyze_no_apps(self):
