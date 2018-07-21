@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="python-Wappalyzer",
-    version="0.2.2",
+    version="0.3.0",
     description="Python implementation of the Wappalyzer web application "
                 "detection utility",
     author="Clay McClure",
