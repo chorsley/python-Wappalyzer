@@ -81,7 +81,8 @@ class WebPage:
         return cls.new_from_response(response)
 
     @classmethod
-    async def new_from_url_async(cls, url: str, verify: bool =True, timeout: Union[int, float] = 2.5, aiohttp_client_session: aiohttp.ClientSession = None):
+    async def new_from_url_async(cls, url: str, verify: bool = True, timeout: Union[int, float] = 2.5,
+                                 aiohttp_client_session: aiohttp.ClientSession = None):
         """
         Same as new_from_url only Async.
 
@@ -126,7 +127,7 @@ class WebPage:
 
         response : requests.Response object
         """
-        html = await response.text() 
+        html = await response.text()
         return cls(response.url, html=html, headers=response.headers)
 
 class Wappalyzer:
@@ -159,8 +160,8 @@ class Wappalyzer:
         apps_file, or alternatively the default in data/apps.json
         """
         if apps_file:
-            with open(apps_file, 'r') as fd:
-                obj = json.load(fd)
+            with open(apps_file, 'r') as file:
+                obj = json.load(file)
         else:
             obj = json.loads(pkg_resources.resource_string(__name__, "data/apps.json"))
 
@@ -212,49 +213,127 @@ class Wappalyzer:
         Strip out key:value pairs from the pattern and compile the regular
         expression.
         """
-        regex, _, rest = pattern.partition('\\;')
-        try:
-            return re.compile(regex, re.I)
-        except re.error as e:
-            warnings.warn(
-                "Caught '{error}' compiling regex: {regex}"
-                .format(error=e, regex=regex)
-            )
-            # regex that never matches:
-            # http://stackoverflow.com/a/1845097/413622
-            return re.compile(r'(?!x)x')
+        attrs = {}
+        pattern = pattern.split('\\;')
+        for index, expression in enumerate(pattern):
+            if index == 0:
+                attrs['string'] = expression
+                try:
+                    attrs['regex'] = re.compile(expression, re.I)
+                except re.error as err:
+                    warnings.warn(
+                        "Caught '{error}' compiling regex: {regex}".format(error=err, regex=pattern)
+                    )
+                    # regex that never matches:
+                    # http://stackoverflow.com/a/1845097/413622
+                    attrs['regex'] = re.compile(r'(?!x)x')
+            else:
+                attr = expression.split(':')
+                if len(attr) > 1:
+                    key = attr.pop(0)
+                    attrs[str(key)] = ':'.join(attr)
+        return attrs
 
-    def _has_app(self, app, webpage):
+    def _has_app(self, app_name, app, webpage):
         """
         Determine whether the web page matches the app signature.
         """
+        has_app = False
         # Search the easiest things first and save the full-text search of the
         # HTML for last
 
-        for regex in app['url']:
-            if regex.search(webpage.url):
-                return True
+        for pattern in app['url']:
+            if pattern['regex'].search(webpage.url):
+                self._set_detected_app(app_name, app, 'url', pattern, webpage.url)
 
-        for name, regex in list(app['headers'].items()):
+        for name, pattern in list(app['headers'].items()):
             if name in webpage.headers:
                 content = webpage.headers[name]
-                if regex.search(content):
-                    return True
+                if pattern['regex'].search(content):
+                    self._set_detected_app(app_name, app, 'headers', pattern, content, name)
+                    has_app = True
 
-        for regex in app['script']:
+        for pattern in app['script']:
             for script in webpage.scripts:
-                if regex.search(script):
-                    return True
+                if pattern['regex'].search(script):
+                    self._set_detected_app(app_name, app, 'script', pattern, script)
+                    has_app = True
 
-        for name, regex in list(app['meta'].items()):
+        for name, pattern in list(app['meta'].items()):
             if name in webpage.meta:
                 content = webpage.meta[name]
-                if regex.search(content):
-                    return True
+                if pattern['regex'].search(content):
+                    self._set_detected_app(app_name, app, 'meta', pattern, content, name)
+                    has_app = True
 
-        for regex in app['html']:
-            if regex.search(webpage.html):
-                return True
+        for pattern in app['html']:
+            if pattern['regex'].search(webpage.html):
+                self._set_detected_app(app_name, app, 'html', pattern, webpage.html)
+                has_app = True
+
+        # Set total confidence
+        if has_app:
+            total = 0
+            for index in app['confidence']:
+                total += app['confidence'][index]
+            app['confidenceTotal'] = total
+
+        return has_app
+
+    def _set_detected_app(self, app_name, app, app_type, pattern, value, key=''):
+        """
+        Store detected app.
+        """
+        app['detected'] = True
+
+        # Set confidence level
+        if key != '':
+            key += ' '
+        if 'confidence' not in app:
+            app['confidence'] = {}
+        if 'confidence' not in pattern:
+            pattern['confidence'] = 100
+        else:
+            # Convert to int for easy adding later
+            pattern['confidence'] = int(pattern['confidence'])
+        app['confidence'][app_type + ' ' + key + pattern['string']] = pattern['confidence']
+
+        # Dectect version number
+        print("Match : " + value)
+        if 'version' in pattern:
+            allmatches = re.findall(pattern['regex'], value)
+            for i, matches in enumerate(allmatches):
+                version = pattern['version']
+                
+                # Check for a string to avoid enumerating the string
+                if isinstance(matches, str):
+                    matches = [(matches)]
+                for index, match in enumerate(matches):
+                    # Parse ternary operator
+                    ternary = re.search(re.compile('\\\\' + str(index + 1) + '\\?([^:]+):(.*)$', re.I), version)
+                    if ternary and len(ternary.groups()) == 2 and ternary.group(1) is not None and ternary.group(2) is not None:
+                        version = version.replace(ternary.group(0), ternary.group(1) if match != ''
+                                                  else ternary.group(2))
+
+                    # Replace back references
+                    version = version.replace('\\' + str(index + 1), match)
+                if version != '':
+                    if 'versions' not in app:
+                        app['versions'] = [version]
+                    elif version not in app['versions']:
+                        app['versions'].append(version)
+            self._set_app_version(app)
+
+        return app_name
+
+    def _set_app_version(self, app):
+        """
+        Resolve version number (find the longest version number that contains all shorter detected version numbers).
+        """
+        if 'versions' not in app:
+            return
+
+        app['versions'] = sorted(app['versions'], key=self._cmp_to_key(self._sort_app_versions))
 
     def _get_implied_apps(self, detected_apps):
         """
@@ -289,19 +368,46 @@ class Wappalyzer:
 
         return cat_names
 
+    def get_versions(self, app_name):
+        """
+        Retuns a list of the discovered versions for an app name.
+        """
+        return [] if 'versions' not in self.apps[app_name] else self.apps[app_name]['versions']
+
+    def get_confidence(self, app_name):
+        """
+        Returns the total confidence for an app name.
+        """
+        return [] if 'confidenceTotal' not in self.apps[app_name] else self.apps[app_name]['confidenceTotal']
+
     def analyze(self, webpage):
         """
         Return a list of applications that can be detected on the web page.
         """
         detected_apps = set()
 
+        # Check for app
         for app_name, app in list(self.apps.items()):
-            if self._has_app(app, webpage):
+            if self._has_app(app_name, app, webpage):
                 detected_apps.add(app_name)
 
+        # Add implied apps
         detected_apps |= self._get_implied_apps(detected_apps)
 
         return detected_apps
+
+    def analyze_with_versions(self, webpage):
+        """
+        Return a list of applications and versions that can be detected on the web page.
+        """
+        detected_apps = self.analyze(webpage)
+        versioned_apps = {}
+
+        for app_name in detected_apps:
+            versions = self.get_versions(app_name)
+            versioned_apps[app_name] = {"versions": versions}
+
+        return versioned_apps
 
     def analyze_with_categories(self, webpage):
         """
@@ -315,3 +421,30 @@ class Wappalyzer:
             categorised_apps[app_name] = {"categories": cat_names}
 
         return categorised_apps
+
+    def _sort_app_versions(self, version_a, version_b):
+        return len(version_a) - len(version_b)
+
+    def _cmp_to_key(self, mycmp):
+        """
+        Convert a cmp= function into a key= function
+        """
+
+        # https://docs.python.org/3/howto/sorting.html
+        class CmpToKey:
+            def __init__(self, obj, *args):
+                self.obj = obj
+            def __lt__(self, other):
+                return mycmp(self.obj, other.obj) < 0
+            def __gt__(self, other):
+                return mycmp(self.obj, other.obj) > 0
+            def __eq__(self, other):
+                return mycmp(self.obj, other.obj) == 0
+            def __le__(self, other):
+                return mycmp(self.obj, other.obj) <= 0
+            def __ge__(self, other):
+                return mycmp(self.obj, other.obj) >= 0
+            def __ne__(self, other):
+                return mycmp(self.obj, other.obj) != 0
+
+        return CmpToKey
