@@ -299,7 +299,6 @@ class Wappalyzer:
         app['confidence'][app_type + ' ' + key + pattern['string']] = pattern['confidence']
 
         # Dectect version number
-        print("Match : " + value)
         if 'version' in pattern:
             allmatches = re.findall(pattern['regex'], value)
             for i, matches in enumerate(allmatches):
@@ -421,6 +420,16 @@ class Wappalyzer:
             categorised_apps[app_name] = {"categories": cat_names}
 
         return categorised_apps
+
+    def analyze_with_versions_and_categories(self, webpage):
+        versioned_apps = self.analyze_with_versions(webpage)
+        versioned_and_categorised_apps = versioned_apps
+
+        for app_name in versioned_apps:
+            cat_names = self.get_categories(app_name)
+            versioned_and_categorised_apps[app_name]["categories"] = cat_names
+
+        return versioned_and_categorised_apps
 
     def _sort_app_versions(self, version_a, version_b):
         return len(version_a) - len(version_b)
