@@ -3,7 +3,7 @@
 default: build
 
 install:
-	wget -O Wappalyzer/data/apps.json https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/apps.json
+	wget -O Wappalyzer/data/technologies.json https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/technologies.json
 	pip install .
 
 rebuild: clean install tests

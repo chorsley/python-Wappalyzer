@@ -1,12 +1,11 @@
-import json
-import re
+import aiohttp
 import asyncio
-import warnings
+import json
 import logging
 import pkg_resources
-
-import aiohttp
+import re
 import requests
+import warnings
 
 from bs4 import BeautifulSoup
 from typing import Union
@@ -124,17 +123,18 @@ class WebPage:
         Parameters
         ----------
 
-        response : requests.Response object
+        response : aiohttp.ClientResponse¶ object
         """
         html = await response.text() 
         return cls(response.url, html=html, headers=response.headers)
+
 
 class Wappalyzer:
     """
     Python Wappalyzer driver.
     """
 
-    def __init__(self, categories, apps):
+    def __init__(self, categories, technologies):
         """
         Initialize a new Wappalyzer instance.
 
@@ -142,68 +142,69 @@ class Wappalyzer:
         ----------
 
         categories : dict
-            Map of category ids to names, as in apps.json.
-        apps : dict
-            Map of app names to app dicts, as in apps.json.
+            Map of category ids to names, as in technologies.json.
+        technologies : dict
+            Map of technology names to technology dicts, as in technologies.json.
         """
         self.categories = categories
-        self.apps = apps
+        self.technologies = technologies
 
-        for name, app in list(self.apps.items()):
-            self._prepare_app(app)
+        #TODO
+        for name, technology in list(self.technologies.items()):
+            self._prepare_technology(technology)
 
     @classmethod
-    def latest(cls, apps_file=None):
+    def latest(cls, technologies_file=None):
         """
-        Construct a Wappalyzer instance using a apps db path passed in via
-        apps_file, or alternatively the default in data/apps.json
+        Construct a Wappalyzer instance using a technologies db path passed in via
+        technologies_file, or alternatively the default in data/technologies.json
         """
-        if apps_file:
-            with open(apps_file, 'r') as fd:
+        if technologies_file:
+            with open(technologies_file, 'r') as fd:
                 obj = json.load(fd)
         else:
-            obj = json.loads(pkg_resources.resource_string(__name__, "data/apps.json"))
+            obj = json.loads(pkg_resources.resource_string(__name__, "data/technologies.json"))
 
-        return cls(categories=obj['categories'], apps=obj['apps'])
+        return cls(categories=obj['categories'], technologies=obj['technologies'])
 
-    def _prepare_app(self, app):
+    def _prepare_technology(self, technology):
         """
-        Normalize app data, preparing it for the detection phase.
+        Normalize technology data, preparing it for the detection phase.
         """
 
         # Ensure these keys' values are lists
         for key in ['url', 'html', 'script', 'implies']:
             try:
-                value = app[key]
+                value = technology[key]
             except KeyError:
-                app[key] = []
+                technology[key] = []
             else:
                 if not isinstance(value, list):
-                    app[key] = [value]
+                    technology[key] = [value]
 
         # Ensure these keys exist
         for key in ['headers', 'meta']:
             try:
-                value = app[key]
+                value = technology[key]
             except KeyError:
-                app[key] = {}
+                technology[key] = {}
 
         # Ensure the 'meta' key is a dict
-        obj = app['meta']
+        obj = technology['meta']
         if not isinstance(obj, dict):
-            app['meta'] = {'generator': obj}
+            technology['meta'] = {'generator': obj}
 
         # Ensure keys are lowercase
         for key in ['headers', 'meta']:
-            obj = app[key]
-            app[key] = {k.lower(): v for k, v in list(obj.items())}
+            obj = technology[key]
+            technology[key] = {k.lower(): v for k, v in list(obj.items())}
 
         # Prepare regular expression patterns
         for key in ['url', 'html', 'script']:
-            app[key] = [self._prepare_pattern(pattern) for pattern in app[key]]
+            technology[key] = [self._prepare_pattern(pattern) for pattern in technology[key]]
 
         for key in ['headers', 'meta']:
-            obj = app[key]
+            obj = technology[key]
             for name, pattern in list(obj.items()):
                 obj[name] = self._prepare_pattern(obj[name])
 
@@ -224,66 +225,66 @@ class Wappalyzer:
             # http://stackoverflow.com/a/1845097/413622
             return re.compile(r'(?!x)x')
 
-    def _has_app(self, app, webpage):
+    def _has_technology(self, technology, webpage):
         """
-        Determine whether the web page matches the app signature.
+        Determine whether the web page matches the technology signature.
         """
         # Search the easiest things first and save the full-text search of the
         # HTML for last
 
-        for regex in app['url']:
+        for regex in technology['url']:
             if regex.search(webpage.url):
                 return True
 
-        for name, regex in list(app['headers'].items()):
+        for name, regex in list(technology['headers'].items()):
             if name in webpage.headers:
                 content = webpage.headers[name]
                 if regex.search(content):
                     return True
 
-        for regex in app['script']:
+        for regex in technology['script']:
             for script in webpage.scripts:
                 if regex.search(script):
                     return True
 
-        for name, regex in list(app['meta'].items()):
+        for name, regex in list(technology['meta'].items()):
             if name in webpage.meta:
                 content = webpage.meta[name]
                 if regex.search(content):
                     return True
 
-        for regex in app['html']:
+        for regex in technology['html']:
             if regex.search(webpage.html):
                 return True
 
-    def _get_implied_apps(self, detected_apps):
+    def _get_implied_technologies(self, detected_technologies):
         """
-        Get the set of apps implied by `detected_apps`.
+        Get the set of technologies implied by `detected_technologies`.
         """
-        def __get_implied_apps(apps):
-            _implied_apps = set()
-            for app in apps:
+        def __get_implied_technologies(technologies):
+            _implied_technologies = set()
+            for tech in technologies:
                 try:
-                    _implied_apps.update(set(self.apps[app]['implies']))
+                    _implied_technologies.update(set(self.technologies[tech]['implies']))
                 except KeyError:
                     pass
-            return _implied_apps
+            return _implied_technologies
 
-        implied_apps = __get_implied_apps(detected_apps)
-        all_implied_apps = set()
+        implied_technologies = __get_implied_technologies(detected_technologies)
+        all_implied_technologies = set()
 
-        # Descend recursively until we've found all implied apps
-        while not all_implied_apps.issuperset(implied_apps):
-            all_implied_apps.update(implied_apps)
-            implied_apps = __get_implied_apps(all_implied_apps)
+        # Descend recursively until we've found all implied technologies
+        while not all_implied_technologies.issuperset(implied_technologies):
+            all_implied_technologies.update(implied_technologies)
+            implied_technologies = __get_implied_technologies(all_implied_technologies)
 
-        return all_implied_apps
+        return all_implied_technologies
 
-    def get_categories(self, app_name):
+    def get_categories(self, tech_name):
         """
-        Returns a list of the categories for an app name.
+        Returns a list of the categories for an technology name.
         """
-        cat_nums = self.apps.get(app_name, {}).get("cats", [])
+        cat_nums = self.technologies.get(tech_name, {}).get("cats", [])
         cat_names = [self.categories.get(str(cat_num), "").get("name", "")
                      for cat_num in cat_nums]
 
@@ -291,27 +292,27 @@ class Wappalyzer:
 
     def analyze(self, webpage):
         """
-        Return a list of applications that can be detected on the web page.
+        Return a list of technologylications that can be detected on the web page.
         """
-        detected_apps = set()
+        detected_technologies = set()
 
-        for app_name, app in list(self.apps.items()):
-            if self._has_app(app, webpage):
-                detected_apps.add(app_name)
+        for tech_name, technology in list(self.technologies.items()):
+            if self._has_technology(technology, webpage):
+                detected_technologies.add(tech_name)
 
-        detected_apps |= self._get_implied_apps(detected_apps)
+        detected_technologies |= self._get_implied_technologies(detected_technologies)
 
-        return detected_apps
+        return detected_technologies
 
     def analyze_with_categories(self, webpage):
         """
-        Return a list of applications and categories that can be detected on the web page.
+        Return a list of technologies and categories that can be detected on the web page.
         """
-        detected_apps = self.analyze(webpage)
-        categorised_apps = {}
+        detected_technologies = self.analyze(webpage)
+        categorised_technologies = {}
 
-        for app_name in detected_apps:
-            cat_names = self.get_categories(app_name)
-            categorised_apps[app_name] = {"categories": cat_names}
+        for tech_name in detected_technologies:
+            cat_names = self.get_categories(tech_name)
+            categorised_technologies[tech_name] = {"categories": cat_names}
 
-        return categorised_apps
+        return categorised_technologies

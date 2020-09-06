@@ -34,18 +34,18 @@ def test_latest():
 
     print((analyzer.categories))
     assert analyzer.categories['1']['name'] == 'CMS'
-    assert 'Apache' in analyzer.apps
+    assert 'Apache' in analyzer.technologies
 
-def test_analyze_no_apps():
-    analyzer = Wappalyzer(categories={}, apps={})
+def test_analyze_no_technologies():
+    analyzer = Wappalyzer(categories={}, technologies={})
     webpage = WebPage('http://example.com', '<html></html>', {})
 
-    detected_apps = analyzer.analyze(webpage)
+    detected_technologies = analyzer.analyze(webpage)
 
-    assert detected_apps == set()
+    assert detected_technologies == set()
 
-def test_get_implied_apps():
-    analyzer = Wappalyzer(categories={}, apps={
+def test_get_implied_technologies():
+    analyzer = Wappalyzer(categories={}, technologies={
         'a': {
             'implies': 'b',
         },
@@ -57,9 +57,9 @@ def test_get_implied_apps():
         },
     })
 
-    implied_apps = analyzer._get_implied_apps('a')
+    implied_technologies = analyzer._get_implied_technologies('a')
 
-    assert implied_apps == set(['a', 'b', 'c'])
+    assert implied_technologies == set(['a', 'b', 'c'])
 
 def test_get_analyze_with_categories():
     webpage = WebPage('http://example.com', '<html>aaa</html>', {})
@@ -74,7 +74,7 @@ def test_get_analyze_with_categories():
         }
     }
 
-    apps = {
+    technologies = {
         'a': {
             'html': 'aaa',
             'cats': [1],
@@ -85,7 +85,7 @@ def test_get_analyze_with_categories():
         }
     }
 
-    analyzer = Wappalyzer(categories=categories, apps=apps)
+    analyzer = Wappalyzer(categories=categories, technologies=technologies)
     result = analyzer.analyze_with_categories(webpage)
 
     assert result == {"a": {"categories": ["cat1"]}}
