@@ -10,7 +10,7 @@ install:
   - pipenv install --dev
 
 script:
-  - pipenv run python -m pytest
+  - pipenv run python -m pytest --cov coveralls
 
 after_success:
   - pipenv run python -m coveralls

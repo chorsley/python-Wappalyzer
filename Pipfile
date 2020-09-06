@@ -11,6 +11,7 @@ ipython = "*"
 pytest = "*"
 pytest-asyncio = "*"
 coveralls = "*"
+pytest-cov = "*"
 
 [packages]
 beautifulsoup4 = "*"
