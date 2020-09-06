@@ -4,12 +4,13 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pytest = "*"
-pytest-asyncio = "*"
+aioresponses = "*"
+flake8 = "*"
 httpretty = "*"
 ipython = "*"
-flake8 = "*"
-aioresponses = "*"
+pytest = "*"
+pytest-asyncio = "*"
+coveralls = "*"
 
 [packages]
 beautifulsoup4 = "*"
