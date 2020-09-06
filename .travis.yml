@@ -11,7 +11,7 @@ install:
   - pipenv install --dev
 
 script:
-  - pipenv run pytest
+  - pipenv run python -m pytest
 
 after_success:
-  - pipenv run coveralls
+  - pipenv run python -m coveralls

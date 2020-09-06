@@ -1,8 +1,11 @@
 import pytest
 import asyncio
+
 from httpretty import HTTPretty, httprettified
-from Wappalyzer import WebPage, Wappalyzer
 from aioresponses import aioresponses
+
+from Wappalyzer import WebPage, Wappalyzer
+
 
 @pytest.fixture
 def async_mock():
