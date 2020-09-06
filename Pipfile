@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+pytest-asyncio = "*"
+httpretty = "*"
+ipython = "*"
+flake8 = "*"
+aioresponses = "*"
+
+[packages]
+beautifulsoup4 = "*"
+lxml = "*"
+aiohttp = {extras = ["speedups"],version = "*"}
+requests = "*"
+
+[requires]
+python_version = "3.8"

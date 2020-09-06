@@ -1,4 +1,4 @@
-from Wappalyzer import WebPage, Wappalyzer
+from .Wappalyzer import WebPage, Wappalyzer
 
 Wappalyzer = Wappalyzer
 WebPage = WebPage

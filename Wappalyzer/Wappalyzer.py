@@ -1,12 +1,15 @@
 import json
 import re
+import asyncio
 import warnings
 import logging
 import pkg_resources
 
+import aiohttp
 import requests
 
 from bs4 import BeautifulSoup
+from typing import Union
 
 logger = logging.getLogger(name=__name__)
 
@@ -18,7 +21,7 @@ class WappalyzerError(Exception):
     pass
 
 
-class WebPage(object):
+class WebPage:
     """
     Simple representation of a web page, decoupled
     from any particular HTTP library's API.
@@ -43,7 +46,7 @@ class WebPage(object):
         self.headers = headers
 
         try:
-            self.headers.keys()
+            list(self.headers.keys())
         except AttributeError:
             raise ValueError("Headers must be a dictionary-like object")
 
@@ -53,7 +56,7 @@ class WebPage(object):
         """
         Parse the HTML with BeautifulSoup to find <script> and <meta> tags.
         """
-        self.parsed_html = soup = BeautifulSoup(self.html, 'html.parser')
+        self.parsed_html = soup = BeautifulSoup(self.html, 'lxml')
         self.scripts = [script['src'] for script in
                         soup.findAll('script', src=True)]
         self.meta = {
@@ -63,7 +66,7 @@ class WebPage(object):
         }
 
     @classmethod
-    def new_from_url(cls, url, verify=True):
+    def new_from_url(cls, url: str, verify: bool = True, timeout: Union[int, float] = 2.5):
         """
         Constructs a new WebPage object for the URL,
         using the `requests` module to fetch the HTML.
@@ -74,8 +77,30 @@ class WebPage(object):
         url : str
         verify: bool
         """
-        response = requests.get(url, verify=verify, timeout=2.5)
+        response = requests.get(url, verify=verify, timeout=timeout)
         return cls.new_from_response(response)
+
+    @classmethod
+    async def new_from_url_async(cls, url: str, verify: bool =True, timeout: Union[int, float] = 2.5, aiohttp_client_session: aiohttp.ClientSession = None):
+        """
+        Same as new_from_url only Async.
+
+        Constructs a new WebPage object for the URL,
+        using the `aiohttp` module to fetch the HTML.
+
+        Parameters
+        ----------
+
+        url : str
+        verify: bool
+        """
+
+        if not aiohttp_client_session:
+            connector = aiohttp.TCPConnector(ssl=verify)
+            aiohttp_client_session = aiohttp.ClientSession(connector=connector)
+
+        async with aiohttp_client_session.get(url, timeout=timeout) as response:
+            return await cls.new_from_response_async(response)
 
     @classmethod
     def new_from_response(cls, response):
@@ -90,8 +115,21 @@ class WebPage(object):
         """
         return cls(response.url, html=response.text, headers=response.headers)
 
+    @classmethod
+    async def new_from_response_async(cls, response):
+        """
+        Constructs a new WebPage object for the response,
+        using the `BeautifulSoup` module to parse the HTML.
 
-class Wappalyzer(object):
+        Parameters
+        ----------
+
+        response : requests.Response object
+        """
+        html = await response.text() 
+        return cls(response.url, html=html, headers=response.headers)
+
+class Wappalyzer:
     """
     Python Wappalyzer driver.
     """
@@ -111,7 +149,7 @@ class Wappalyzer(object):
         self.categories = categories
         self.apps = apps
 
-        for name, app in self.apps.items():
+        for name, app in list(self.apps.items()):
             self._prepare_app(app)
 
     @classmethod
@@ -158,7 +196,7 @@ class Wappalyzer(object):
         # Ensure keys are lowercase
         for key in ['headers', 'meta']:
             obj = app[key]
-            app[key] = {k.lower(): v for k, v in obj.items()}
+            app[key] = {k.lower(): v for k, v in list(obj.items())}
 
         # Prepare regular expression patterns
         for key in ['url', 'html', 'script']:
@@ -166,7 +204,7 @@ class Wappalyzer(object):
 
         for key in ['headers', 'meta']:
             obj = app[key]
-            for name, pattern in obj.items():
+            for name, pattern in list(obj.items()):
                 obj[name] = self._prepare_pattern(obj[name])
 
     def _prepare_pattern(self, pattern):
@@ -197,7 +235,7 @@ class Wappalyzer(object):
             if regex.search(webpage.url):
                 return True
 
-        for name, regex in app['headers'].items():
+        for name, regex in list(app['headers'].items()):
             if name in webpage.headers:
                 content = webpage.headers[name]
                 if regex.search(content):
@@ -208,7 +246,7 @@ class Wappalyzer(object):
                 if regex.search(script):
                     return True
 
-        for name, regex in app['meta'].items():
+        for name, regex in list(app['meta'].items()):
             if name in webpage.meta:
                 content = webpage.meta[name]
                 if regex.search(content):
@@ -246,7 +284,7 @@ class Wappalyzer(object):
         Returns a list of the categories for an app name.
         """
         cat_nums = self.apps.get(app_name, {}).get("cats", [])
-        cat_names = [self.categories.get("%s" % cat_num, "")
+        cat_names = [self.categories.get(str(cat_num), "").get("name", "")
                      for cat_num in cat_nums]
 
         return cat_names
@@ -257,7 +295,7 @@ class Wappalyzer(object):
         """
         detected_apps = set()
 
-        for app_name, app in self.apps.items():
+        for app_name, app in list(self.apps.items()):
             if self._has_app(app, webpage):
                 detected_apps.add(app_name)
 
