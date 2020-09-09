@@ -22,5 +22,7 @@ setup(
         'lxml',
         'requests',
         'aiohttp',
+        'httpretty',
+        'aioresponses'
     ]
 )
