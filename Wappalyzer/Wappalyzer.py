@@ -77,7 +77,6 @@ class WebPage:
         url : str
         verify: bool
         """
-        # Why "url = url.split('#', 1)[0]" ?
         response = requests.get(url, verify=verify, timeout=timeout)
         return cls.new_from_response(response)
 
@@ -370,18 +369,6 @@ class Wappalyzer:
 
         return cat_names
         
-    def get_versions(self, app_name):
-        """
-        Returns a list of the disovered versions for an app name.
-        """
-        return [] if 'versions' not in self.apps[app_name] else self.apps[app_name]['versions']
-
-    def get_confidence(self, app_name):
-        """
-        Returns the total confidence for an app name.
-        """
-        return [] if 'confidenceTotal' not in self.apps[app_name] else self.apps[app_name]['confidenceTotal']
-
     def get_versions(self, app_name):
         """
         Retuns a list of the discovered versions for an app name.
