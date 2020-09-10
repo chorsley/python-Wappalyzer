@@ -214,21 +214,6 @@ class Wappalyzer:
         Strip out key:value pairs from the pattern and compile the regular
         expression.
         """
-        # regex, _, rest = pattern.partition('\\;')
-        # try:
-        #     return re.compile(regex, re.I)
-        # except re.error as e:
-        #     warnings.warn(
-        #         "Caught '{error}' compiling regex: {regex}"
-        #         .format(error=e, regex=regex)
-        #     )
-        #     # regex that never matches:
-        #     # http://stackoverflow.com/a/1845097/413622
-        #     return re.compile(r'(?!x)x')
-
-
-        ###
-
         attrs = {}
         pattern = pattern.split('\\;')
         for index, expression in enumerate(pattern):
@@ -250,7 +235,6 @@ class Wappalyzer:
                     attrs[str(key)] = ':'.join(attr)
         return attrs
 
-    # def _has_app(self, app_name, app, webpage):
     def _has_technology(self, technology, webpage):
         """
         Determine whether the web page matches the technology signature.
@@ -388,13 +372,13 @@ class Wappalyzer:
         """
         Retuns a list of the discovered versions for an app name.
         """
-        return [] if 'versions' not in self.apps[app_name] else self.apps[app_name]['versions']
+        return [] if 'versions' not in self.technologies[app_name] else self.technologies[app_name]['versions']
 
     def get_confidence(self, app_name):
         """
         Returns the total confidence for an app name.
         """
-        return [] if 'confidenceTotal' not in self.apps[app_name] else self.apps[app_name]['confidenceTotal']
+        return [] if 'confidenceTotal' not in self.technologies[app_name] else self.technologies[app_name]['confidenceTotal']
 
     def analyze(self, webpage):
         """
