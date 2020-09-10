@@ -66,7 +66,7 @@ class WebPage:
 
 
     @classmethod
-    def new_from_url(cls, url: str, verify: bool = True, timeout: Union[int, float] = 2.5):
+    def new_from_url(cls, url: str, verify: bool = True, timeout: Union[int, float] = 10):
         """
         Constructs a new WebPage object for the URL,
         using the `requests` module to fetch the HTML.
@@ -74,8 +74,9 @@ class WebPage:
         Parameters
         ----------
 
-        url : str
-        verify: bool
+        url : str  
+        verify: bool  
+        timeout: int, float  
         """
         response = requests.get(url, verify=verify, timeout=timeout)
         return cls.new_from_response(response)
