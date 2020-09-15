@@ -128,8 +128,8 @@ class WebPage:
 
         response : aiohttp.ClientResponse¶ object
         """
-        html = await response.text()
-        return cls(response.url, html=html, headers=response.headers)
+        html = await response.text() 
+        return cls(str(response.url), html=html, headers=response.headers)
 
 
 class Wappalyzer:
