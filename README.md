@@ -7,11 +7,14 @@ python-Wappalyzer
 
 Python implementation of the [Wappalyzer](https://github.com/AliasIO/wappalyzer) web application detection utility.  
 
+
+### Install
+
 ```
 $ python3 -m pip install python-Wappalyzer
 ```
 
-***
+### Usage
 
 ```python
 from Wappalyzer import Wappalyzer, WebPage
@@ -50,3 +53,7 @@ wappalyzer.analyze_with_versions_and_categories(webpage)
  'WordPress': {'categories': ['CMS', 'Blogs'], 'versions': ['5.4.2']},
  'Yoast SEO': {'categories': ['SEO'], 'versions': ['14.6.1']}}
 `
+
+***
+
+Last version to support Python2 was `0.2.2`.  
