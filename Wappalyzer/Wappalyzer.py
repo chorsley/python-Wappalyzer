@@ -175,7 +175,7 @@ class Wappalyzer:
         Normalize technology data, preparing it for the detection phase.
         """
         # Ensure these keys' values are lists
-        for key in ['url', 'html', 'script', 'implies']:
+        for key in ['url', 'html', 'scripts', 'implies']:
             try:
                 value = technology[key]
             except KeyError:
@@ -202,7 +202,7 @@ class Wappalyzer:
             technology[key] = {k.lower(): v for k, v in list(obj.items())}
 
         # Prepare regular expression patterns
-        for key in ['url', 'html', 'script']:
+        for key in ['url', 'html', 'scripts']:
             technology[key] = [self._prepare_pattern(pattern) for pattern in technology[key]]
 
         for key in ['headers', 'meta']:
@@ -258,10 +258,10 @@ class Wappalyzer:
                     self._set_detected_app(app, 'headers', pattern, content, name)
                     has_app = True
 
-        for pattern in technology['script']:
+        for pattern in technology['scripts']:
             for script in webpage.scripts:
                 if pattern['regex'].search(script):
-                    self._set_detected_app(app, 'script', pattern, script)
+                    self._set_detected_app(app, 'scripts', pattern, script)
                     has_app = True
 
         for name, pattern in list(technology['meta'].items()):
