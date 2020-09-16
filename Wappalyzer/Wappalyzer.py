@@ -345,7 +345,9 @@ class Wappalyzer:
             _implied_technologies = set()
             for tech in technologies:
                 try:
-                    _implied_technologies.update(set(self.technologies[tech]['implies']))
+                    for implie in self.technologies[tech]['implies']:
+                        if 'confidence' not in implie:
+                            _implied_technologies.add(implie)
                 except KeyError:
                     pass
             return _implied_technologies
