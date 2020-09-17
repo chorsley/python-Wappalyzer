@@ -358,7 +358,7 @@ class Wappalyzer:
                                 app_name, confidence = self.confidence_regexp.search(implie).groups()
                                 if int(confidence) >= 50:
                                     _implied_technologies.add(app_name)
-                            except ValueError:
+                            except (ValueError, AttributeError):
                                 pass
                 except KeyError:
                     pass
