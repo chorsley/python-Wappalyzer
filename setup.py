@@ -5,7 +5,7 @@ if sys.version_info[0] < 3:
 import pathlib
 setup(
     name="python-Wappalyzer",
-    version="0.3.0",
+    version="0.3.1",
     description="Python implementation of the Wappalyzer web application "
                 "detection utility",
     long_description=( pathlib.Path(__file__).parent / "README.md" ).read_text(),
