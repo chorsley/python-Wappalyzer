@@ -43,7 +43,7 @@ class WebPage:
         self.url = url
         self.html = html
         self.headers = headers
-        
+
         try:
             list(self.headers.keys())
         except AttributeError:
@@ -63,7 +63,6 @@ class WebPage:
                 meta['content'] for meta in soup.findAll(
                     'meta', attrs=dict(name=True, content=True))
         }
-
 
     @classmethod
     def new_from_url(cls, url: str, verify: bool = True, timeout: Union[int, float] = 10):
@@ -128,7 +127,7 @@ class WebPage:
 
         response : aiohttp.ClientResponse¶ object
         """
-        html = await response.text() 
+        html = await response.text()
         return cls(str(response.url), html=html, headers=response.headers)
 
 
@@ -151,8 +150,9 @@ class Wappalyzer:
         """
         self.categories = categories
         self.technologies = technologies
+        self.confidence_regexp = re.compile(r"(.+)\\;confidence:(\d+)")
 
-        #TODO
+        # TODO
         for name, technology in list(self.technologies.items()):
             self._prepare_technology(technology)
 
@@ -175,7 +175,7 @@ class Wappalyzer:
         Normalize technology data, preparing it for the detection phase.
         """
         # Ensure these keys' values are lists
-        for key in ['url', 'html', 'script', 'implies']:
+        for key in ['url', 'html', 'scripts', 'implies']:
             try:
                 value = technology[key]
             except KeyError:
@@ -202,7 +202,7 @@ class Wappalyzer:
             technology[key] = {k.lower(): v for k, v in list(obj.items())}
 
         # Prepare regular expression patterns
-        for key in ['url', 'html', 'script']:
+        for key in ['url', 'html', 'scripts']:
             technology[key] = [self._prepare_pattern(pattern) for pattern in technology[key]]
 
         for key in ['headers', 'meta']:
@@ -258,10 +258,10 @@ class Wappalyzer:
                     self._set_detected_app(app, 'headers', pattern, content, name)
                     has_app = True
 
-        for pattern in technology['script']:
+        for pattern in technology['scripts']:
             for script in webpage.scripts:
                 if pattern['regex'].search(script):
-                    self._set_detected_app(app, 'script', pattern, script)
+                    self._set_detected_app(app, 'scripts', pattern, script)
                     has_app = True
 
         for name, pattern in list(technology['meta'].items()):
@@ -285,7 +285,7 @@ class Wappalyzer:
 
         return has_app
 
-    def _set_detected_app(self,app, app_type, pattern, value, key=''):
+    def _set_detected_app(self, app, app_type, pattern, value, key=''):
         """
         Store detected app.
         """
@@ -308,7 +308,7 @@ class Wappalyzer:
             allmatches = re.findall(pattern['regex'], value)
             for i, matches in enumerate(allmatches):
                 version = pattern['version']
-                
+
                 # Check for a string to avoid enumerating the string
                 if isinstance(matches, str):
                     matches = [(matches)]
@@ -334,7 +334,7 @@ class Wappalyzer:
         """
         if 'versions' not in app:
             return
-                
+
         app['versions'] = sorted(app['versions'], key=self._cmp_to_key(self._sort_app_versions))
 
     def _get_implied_technologies(self, detected_technologies):
@@ -345,7 +345,21 @@ class Wappalyzer:
             _implied_technologies = set()
             for tech in technologies:
                 try:
-                    _implied_technologies.update(set(self.technologies[tech]['implies']))
+                    for implie in self.technologies[tech]['implies']:
+                        # If we have no doubts just add technology
+                        if 'confidence' not in implie:
+                            _implied_technologies.add(implie)
+
+                        # Case when we have "confidence" (some doubts)
+                        else:
+                            try:
+                                # Use more strict regexp (cause we have already checked the entry of "confidence")
+                                # Also, better way to compile regexp one time, instead of every time
+                                app_name, confidence = self.confidence_regexp.search(implie).groups()
+                                if int(confidence) >= 50:
+                                    _implied_technologies.add(app_name)
+                            except (ValueError, AttributeError):
+                                pass
                 except KeyError:
                     pass
             return _implied_technologies
@@ -369,7 +383,7 @@ class Wappalyzer:
                      for cat_num in cat_nums]
 
         return cat_names
-        
+
     def get_versions(self, app_name):
         """
         Retuns a list of the discovered versions for an app name.
@@ -444,16 +458,22 @@ class Wappalyzer:
         class CmpToKey:
             def __init__(self, obj, *args):
                 self.obj = obj
+
             def __lt__(self, other):
                 return mycmp(self.obj, other.obj) < 0
+
             def __gt__(self, other):
                 return mycmp(self.obj, other.obj) > 0
+
             def __eq__(self, other):
                 return mycmp(self.obj, other.obj) == 0
+
             def __le__(self, other):
                 return mycmp(self.obj, other.obj) <= 0
+
             def __ge__(self, other):
                 return mycmp(self.obj, other.obj) >= 0
+
             def __ne__(self, other):
                 return mycmp(self.obj, other.obj) != 0
 
