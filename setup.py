@@ -8,7 +8,7 @@ setup(
     version="0.3.1",
     description="Python implementation of the Wappalyzer web application "
                 "detection utility",
-    long_description=( pathlib.Path(__file__).parent / "README.md" ).read_text(),
+    long_description=( pathlib.Path(__file__).parent / "README.rst" ).read_text(),
     long_description_content_type   =   "text/markdown",
     author="Clay McClure, Marcello Salvati (@byt3bl33d3r)",
     author_email="clay@daemons.net",
@@ -31,3 +31,4 @@ setup(
         'aioresponses'
     ]
 )
+# Publish to PyPi with this line: 

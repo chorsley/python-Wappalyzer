@@ -30,15 +30,13 @@ class WebPage:
         """
         Initialize a new WebPage object.
 
-        Parameters
-        ----------
-
-        url : str
-            The web page URL.
-        html : str
-            The web page content (HTML)
-        headers : dict
-            The HTTP response headers
+        Parameters:
+            - url : str
+              The web page URL.
+            - html : str
+              The web page content (HTML)
+            - headers : dict
+              The HTTP response headers
         """
         self.url = url
         self.html = html
@@ -70,12 +68,10 @@ class WebPage:
         Constructs a new WebPage object for the URL,
         using the `requests` module to fetch the HTML.
 
-        Parameters
-        ----------
-
-        url : str  
-        verify: bool  
-        timeout: int, float  
+        Parameters:
+            - url : str  
+            - verify: bool  
+            - timeout: int, float  
         """
         response = requests.get(url, verify=verify, timeout=timeout)
         return cls.new_from_response(response)
@@ -89,11 +85,9 @@ class WebPage:
         Constructs a new WebPage object for the URL,
         using the `aiohttp` module to fetch the HTML.
 
-        Parameters
-        ----------
-
-        url : str
-        verify: bool
+        Parameters:
+            - url : str
+            - verify: bool
         """
 
         if not aiohttp_client_session:
@@ -109,10 +103,8 @@ class WebPage:
         Constructs a new WebPage object for the response,
         using the `BeautifulSoup` module to parse the HTML.
 
-        Parameters
-        ----------
-
-        response : requests.Response object
+        Parameters:
+            - response : requests.Response object
         """
         return cls(response.url, html=response.text, headers=response.headers)
 
@@ -122,10 +114,8 @@ class WebPage:
         Constructs a new WebPage object for the response,
         using the `BeautifulSoup` module to parse the HTML.
 
-        Parameters
-        ----------
-
-        response : aiohttp.ClientResponse¶ object
+        Parameters:
+            - response : aiohttp.ClientResponse¶ object
         """
         html = await response.text()
         return cls(str(response.url), html=html, headers=response.headers)
@@ -134,19 +124,38 @@ class WebPage:
 class Wappalyzer:
     """
     Python Wappalyzer driver.
+
+    Consider the following exemple, it uses the latest technologies file
+    
+    .. python::
+    
+        import requests
+        from Wappalyzer import Wappalyzer, WebPage
+        # Get the lastest file
+        lastest_technologies_file=requests.get('https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/technologies.json')
+
+        # Write the content to a tmp file
+        with open('/tmp/lastest_technologies_file.json', 'w') as t_file:
+            t_file.write(lastest_technologies_file.text)
+
+        # Create Wappalyzer with this file in argument 
+        wappalyzer=Wappalyzer.latest(technologies_file='/tmp/lastest_technologies_file.json')
+        # Create webpage
+        webpage=WebPage.new_from_url('http://example.com')
+        # Analalyze
+        results = wappalyzer.analyze_with_categories(webpage)
+
     """
 
     def __init__(self, categories, technologies):
         """
         Initialize a new Wappalyzer instance.
 
-        Parameters
-        ----------
-
-        categories : dict
-            Map of category ids to names, as in technologies.json.
-        technologies : dict
-            Map of technology names to technology dicts, as in technologies.json.
+        Parameters:
+            - categories : dict
+              Map of category ids to names, as in technologies.json.
+            - technologies : dict
+              Map of technology names to technology dicts, as in technologies.json.
         """
         self.categories = categories
         self.technologies = technologies
@@ -437,6 +446,9 @@ class Wappalyzer:
         return categorised_technologies
 
     def analyze_with_versions_and_categories(self, webpage):
+        """
+        Return a list of applications and versions and categories that can be detected on the web page.
+        """
         versioned_apps = self.analyze_with_versions(webpage)
         versioned_and_categorised_apps = versioned_apps
 
