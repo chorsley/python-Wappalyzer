@@ -142,6 +142,15 @@ tr.private {
     margin-top: 10px;
 }
 
+.fieldArg {
+    font-weight: bold;
+    color: #c7254e;
+}
+
+.fieldName {
+    font-weight: bold;
+}
+
 
 #childList > div {
     margin: 20px;
@@ -185,15 +194,17 @@ code > .code {
     padding: 0px;
 }
 
-
 #childList > div {
     border-left-color: #03a9f4;
     border-left-width: 1px;
     border-left-style: solid;
+    background: #fafafa;
 }
 
 #childList > div .functionHeader {
     font-family: monospace;
+    font-weight: bold;
+    color: #c7254e;
 }
 
 .moduleDocstring {
