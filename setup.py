@@ -31,3 +31,4 @@ setup(
         'aioresponses'
     ]
 )
+# Publish to PyPi with this line: 
