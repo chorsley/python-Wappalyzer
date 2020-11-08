@@ -11,6 +11,7 @@ python-Wappalyzer
   :target: https://coveralls.io/github/chorsley/python-Wappalyzer?branch=master
 
 
+
 Python implementation of the `Wappalyzer <https://github.com/AliasIO/wappalyzer>`_ web application detection utility.  
 
 
@@ -49,6 +50,5 @@ Usage
  'WordPress': {'categories': ['CMS', 'Blogs'], 'versions': ['5.4.2']},
  'Yoast SEO': {'categories': ['SEO'], 'versions': ['14.6.1']}}
 
-***
-
-Last version to support Python2 was `0.2.2`.  
+Note:
+    Last version to support Python2 was `0.2.2`.  

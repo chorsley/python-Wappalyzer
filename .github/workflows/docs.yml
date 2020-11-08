@@ -19,9 +19,11 @@ jobs:
         python -m pip install .
         python -m pip install docutils git+https://github.com/twisted/pydoctor.git
 
+        pydoctor --version
+
     - name: Generate pydoctor documentation
       run: |
-
+        set +e
         # Run pydoctor build
         pydoctor \
           --add-package=Wappalyzer \

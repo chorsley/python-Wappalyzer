@@ -145,6 +145,18 @@ class Wappalyzer:
         # Analalyze
         results = wappalyzer.analyze_with_categories(webpage)
 
+
+    Here is how you can custom request and headers arguments :
+    
+    .. python::
+
+        import requests
+        from Wappalyzer import Wappalyzer, WebPage
+        response = requests.get('http://exemple.com', headers={'User-Agent': 'Custom user agent'})
+        wappalyzer = Wappalyzer.latest()
+        webpage = WebPage.new_from_response(response)
+        wappalyzer.analyze_with_categories(webpage)
+
     """
 
     def __init__(self, categories, technologies):
