@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>Wappalyzer.WebPage : API documentation</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="apidocs.css" />
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="index.html">
+            <a href="https://github.com/chorsley/python-Wappalyzer">python-Wappalyzer</a> API Documentation
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="showPrivate">
+      <button class="btn btn-link" onclick="togglePrivate()">Toggle Private API</button>
+    </div>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1 class="class"><code>Wappalyzer.WebPage</code> <small>class documentation</small></h1>
+
+        <span id="partOf">
+          Part of <code><a href="Wappalyzer.html" class="code" data-type="Package">Wappalyzer</a></code>
+          <a href="https://github.com/chorsley/python-Wappalyzer/tree/7b52ea15b75c2882069eea5a22afa202d2af4729/Wappalyzer/Wappalyzer.py#L23">View Source</a>
+          <a href="classIndex.html#Wappalyzer.WebPage">(View In Hierarchy)</a>
+        </span>
+      </div>
+
+      <div class="extrasDocstring">
+        
+      </div>
+
+      <div class="moduleDocstring">
+        <div><p class="pre">Simple representation of a web page, decoupled
+from any particular HTTP library's API.</p></div>
+      </div>
+
+      <div id="splitTables">
+        <table class="children sortable" id="id5">
+  
+  <tr class="method">
+    
+    <td>Method</td>
+    <td><a href="Wappalyzer.WebPage.html#__init__" class="code" data-type="Method">__init__</a></td>
+    <td><span>Initialize a new WebPage object.</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><a href="Wappalyzer.WebPage.html#url" class="code" data-type="Instance Variable">url</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><a href="Wappalyzer.WebPage.html#html" class="code" data-type="Instance Variable">html</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><a href="Wappalyzer.WebPage.html#headers" class="code" data-type="Instance Variable">headers</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><a href="Wappalyzer.WebPage.html#parsed_html" class="code" data-type="Instance Variable">parsed_html</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><a href="Wappalyzer.WebPage.html#scripts" class="code" data-type="Instance Variable">scripts</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><a href="Wappalyzer.WebPage.html#meta" class="code" data-type="Instance Variable">meta</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="classmethod">
+    
+    <td>Class Method</td>
+    <td><a href="Wappalyzer.WebPage.html#new_from_url" class="code" data-type="Class Method">new_from_url</a></td>
+    <td><span>Constructs a new WebPage object for the URL, using the `requests` module to fetch the HTML.</span></td>
+  </tr><tr class="classvariable">
+    
+    <td>Class Variable</td>
+    <td><a href="Wappalyzer.WebPage.html#connector" class="code" data-type="Class Variable">connector</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="classvariable">
+    
+    <td>Class Variable</td>
+    <td><a href="Wappalyzer.WebPage.html#aiohttp_client_session" class="code" data-type="Class Variable">aiohttp_client_session</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="classmethod">
+    
+    <td>Class Method</td>
+    <td><a href="Wappalyzer.WebPage.html#new_from_response" class="code" data-type="Class Method">new_from_response</a></td>
+    <td><span>Constructs a new WebPage object for the response, using the `BeautifulSoup` module to parse the HTML.</span></td>
+  </tr><tr class="method private">
+    
+    <td>Method</td>
+    <td><a href="Wappalyzer.WebPage.html#_parse_html" class="code" data-type="Method">_parse_html</a></td>
+    <td><span>Parse the HTML with BeautifulSoup to find &lt;script&gt; and &lt;meta&gt; tags.</span></td>
+  </tr>
+</table>
+        
+
+          
+      </div>
+
+      <div id="childList">
+
+        <div class="basemethod">
+  
+  <a name="Wappalyzer.WebPage.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, url, html, headers):
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7b52ea15b75c2882069eea5a22afa202d2af4729/Wappalyzer/Wappalyzer.py#L29">
+      
+      (source)
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p class="pre">Initialize a new WebPage object.
+
+Parameters:
+    - url : str
+      The web page URL.
+    - html : str
+      The web page content (HTML)
+    - headers : dict
+      The HTTP response headers</p></div>
+  </div>
+</div><div class="baseinstancevariable">
+  
+  <a name="Wappalyzer.WebPage.url">
+    
+  </a>
+  <a name="url">
+    
+  </a>
+  <div class="functionHeader">
+    url =
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7b52ea15b75c2882069eea5a22afa202d2af4729/Wappalyzer/Wappalyzer.py#L41">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="baseinstancevariable">
+  
+  <a name="Wappalyzer.WebPage.html">
+    
+  </a>
+  <a name="html">
+    
+  </a>
+  <div class="functionHeader">
+    html =
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7b52ea15b75c2882069eea5a22afa202d2af4729/Wappalyzer/Wappalyzer.py#L42">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="baseinstancevariable">
+  
+  <a name="Wappalyzer.WebPage.headers">
+    
+  </a>
+  <a name="headers">
+    
+  </a>
+  <div class="functionHeader">
+    headers =
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7b52ea15b75c2882069eea5a22afa202d2af4729/Wappalyzer/Wappalyzer.py#L43">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod private">
+  
+  <a name="Wappalyzer.WebPage._parse_html">
+    
+  </a>
+  <a name="_parse_html">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    _parse_html(self):
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7b52ea15b75c2882069eea5a22afa202d2af4729/Wappalyzer/Wappalyzer.py#L52">
+      
+      (source)
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p class="pre">Parse the HTML with BeautifulSoup to find &lt;script&gt; and &lt;meta&gt; tags.</p></div>
+  </div>
+</div><div class="baseinstancevariable">
+  
+  <a name="Wappalyzer.WebPage.parsed_html">
+    
+  </a>
+  <a name="parsed_html">
+    
+  </a>
+  <div class="functionHeader">
+    parsed_html =
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7b52ea15b75c2882069eea5a22afa202d2af4729/Wappalyzer/Wappalyzer.py#L56">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="baseinstancevariable">
+  
+  <a name="Wappalyzer.WebPage.scripts">
+    
+  </a>
+  <a name="scripts">
+    
+  </a>
+  <div class="functionHeader">
+    scripts =
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7b52ea15b75c2882069eea5a22afa202d2af4729/Wappalyzer/Wappalyzer.py#L57">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="baseinstancevariable">
+  
+  <a name="Wappalyzer.WebPage.meta">
+    
+  </a>
+  <a name="meta">
+    
+  </a>
+  <div class="functionHeader">
+    meta =
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7b52ea15b75c2882069eea5a22afa202d2af4729/Wappalyzer/Wappalyzer.py#L59">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="baseclassmethod">
+  
+  <a name="Wappalyzer.WebPage.new_from_url">
+    
+  </a>
+  <a name="new_from_url">
+    
+  </a>
+  <div class="functionHeader">
+    @classmethod<br />
+    def
+    new_from_url(cls, url, verify=(True), timeout=10):
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7b52ea15b75c2882069eea5a22afa202d2af4729/Wappalyzer/Wappalyzer.py#L65">
+      
+      (source)
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p class="pre">Constructs a new WebPage object for the URL,
+using the `requests` module to fetch the HTML.
+
+Parameters:
+    - url : str  
+    - verify: bool  
+    - timeout: int, float  </p></div>
+  </div>
+</div><div class="baseclassvariable">
+  
+  <a name="Wappalyzer.WebPage.connector">
+    
+  </a>
+  <a name="connector">
+    
+  </a>
+  <div class="functionHeader">
+    connector =
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7b52ea15b75c2882069eea5a22afa202d2af4729/Wappalyzer/Wappalyzer.py#L94">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="baseclassvariable">
+  
+  <a name="Wappalyzer.WebPage.aiohttp_client_session">
+    
+  </a>
+  <a name="aiohttp_client_session">
+    
+  </a>
+  <div class="functionHeader">
+    aiohttp_client_session =
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7b52ea15b75c2882069eea5a22afa202d2af4729/Wappalyzer/Wappalyzer.py#L95">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="baseclassmethod">
+  
+  <a name="Wappalyzer.WebPage.new_from_response">
+    
+  </a>
+  <a name="new_from_response">
+    
+  </a>
+  <div class="functionHeader">
+    @classmethod<br />
+    def
+    new_from_response(cls, response):
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7b52ea15b75c2882069eea5a22afa202d2af4729/Wappalyzer/Wappalyzer.py#L100">
+      
+      (source)
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p class="pre">Constructs a new WebPage object for the response,
+using the `BeautifulSoup` module to parse the HTML.
+
+Parameters:
+    - response : requests.Response object</p></div>
+  </div>
+</div>
+
+      </div>
+      <address>
+        <a href="index.html">API Documentation</a> for <a href="https://github.com/chorsley/python-Wappalyzer">python-Wappalyzer</a>, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> at 2020-11-08 03:57:44.
+      </address>
+
+    </div>
+
+    <script src="pydoctor.js" type="text/javascript"></script>
+
+  </body>
+</html>
