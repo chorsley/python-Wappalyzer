@@ -17,7 +17,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip setuptools wheel
         python -m pip install .
-        python -m pip install git+https://github.com/twisted/pydoctor.git
+        python -m pip install docutils git+https://github.com/twisted/pydoctor.git
 
     - name: Generate pydoctor documentation
       run: |
