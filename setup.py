@@ -1,10 +1,15 @@
 from setuptools import setup, find_packages
-
+import sys
+if sys.version_info[0] < 3: 
+    raise RuntimeError("You must use Python 3, sorry")
+import pathlib
 setup(
     name="python-Wappalyzer",
-    version="0.2.3",
+    version="0.3.1",
     description="Python implementation of the Wappalyzer web application "
                 "detection utility",
+    long_description=( pathlib.Path(__file__).parent / "README.md" ).read_text(),
+    long_description_content_type   =   "text/markdown",
     author="Clay McClure, Marcello Salvati (@byt3bl33d3r)",
     author_email="clay@daemons.net",
     url="https://github.com/chorsley/python-Wappalyzer",
@@ -22,5 +27,7 @@ setup(
         'lxml',
         'requests',
         'aiohttp',
+        'httpretty',
+        'aioresponses'
     ]
 )

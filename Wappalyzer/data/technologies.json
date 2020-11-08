@@ -1479,6 +1479,34 @@
     },
     "BEM": {
       "cats": [
+        62
+      ],
+      "cookies": {
+        "ARRAffinity": "",
+        "TiPMix": ""
+      },
+      "headers": {
+        "azure-regionname": "",
+        "azure-sitename": "",
+        "azure-slotname": "",
+        "azure-version": ""
+      },
+      "icon": "azure.svg",
+      "website": "https://azure.microsoft.com"
+    },
+    "Azure CDN": {
+      "cats": [
+        31
+      ],
+      "headers": {
+        "X-EC-Debug": "",
+        "server": "^(?:ECAcc|ECS|ECD)"
+      },
+      "icon": "azure.svg",
+      "website": "https://azure.microsoft.com/en-us/services/cdn/"
+    },
+    "BEM": {
+      "cats": [
         12
       ],
       "html": "<[^>]+data-bem",
@@ -3203,6 +3231,22 @@
       },
       "icon": "datadome.png",
       "scripts": "^https://ct\\.datadome\\.co/[a-z]\\.js$",
+      "website": "https://datadome.co/"
+    },
+    "DatoCMS": {
+      "cats": [
+        19
+      ],
+      "cookies": {
+        "datadome": ""
+      },
+      "headers": {
+        "Server": "^DataDome$",
+        "X-DataDome": "",
+        "X-DataDome-CID": ""
+      },
+      "icon": "datadome.png",
+      "script": "^https://ct\\.datadome\\.co/[a-z]\\.js$",
       "website": "https://datadome.co/"
     },
     "DatoCMS": {
@@ -5399,6 +5443,19 @@
         "Amazon Web Services"
       ],
       "url": "\\.herokuapp\\.com",
+      "website": "https://www.heroku.com/"
+    },
+    "Hexo": {
+      "cats": [
+        62
+      ],
+      "headers": {
+        "Via": "/[\\d.-]+ vegur$"
+      },
+      "icon": "heroku.svg",
+      "implies": [
+        "Amazon Web Services"
+      ],
       "website": "https://www.heroku.com/"
     },
     "Hexo": {
@@ -9215,6 +9272,41 @@
       "url": "photoshelter\\.com",
       "website": "https://www.photoshelter.com"
     },
+    "Phoenix": {
+      "cats": [
+        18
+      ],
+      "icon": "sazito-phoenix.png",
+      "implies": [
+        "React",
+        "webpack",
+        "Node.js"
+      ],
+      "js": {
+        "Phoenix": ""
+      },
+      "meta": {
+        "generator": "^phoenix"
+      },
+      "website": "https://github.com/Sazito/phoenix/"
+    },
+    "PhotoShelter": {
+      "cats": [
+        1
+      ],
+      "html": [
+        "<!--\\s+#+ Powered by the PhotoShelter Beam platform",
+        "<link[^>]+c\\.photoshelter\\.com"
+      ],
+      "icon": "PhotoShelter.png",
+      "implies": [
+        "PHP",
+        "MySQL",
+        "jQuery"
+      ],
+      "url": "photoshelter\\.com",
+      "website": "https://www.photoshelter.com"
+    },
     "Phusion Passenger": {
       "cats": [
         22
@@ -9991,6 +10083,26 @@
       "website": "http://code.reddit.com"
     },
     "Redis": {
+      "cats": [
+        34
+      ],
+      "cpe": "cpe:/a:redislabs:redis",
+      "icon": "Redis.svg",
+      "website": "https://redis.io"
+    },
+    "Redis Object Cache": {
+      "cats": [
+        23
+      ],
+      "html": "<!--\\s+Performance optimized by Redis Object Cache",
+      "icon": "RedisObjectCache.svg",
+      "implies": [
+        "Redis",
+        "WordPress"
+      ],
+      "website": "https://wprediscache.com"
+    },
+    "Redmine": {
       "cats": [
         34
       ],
@@ -11031,6 +11143,16 @@
         "generator": "SiteEdit"
       },
       "website": "http://www.siteedit.ru"
+    },
+    "SiteGround": {
+      "cats": [
+        62
+      ],
+      "headers": {
+        "host-header": "192fc2e7e50945beb8231a492d6a8024|b7440e60b07ee7b8044761568fab26e8|624d5be7be38418a3e2a818cc8b7029b|6b7412fb82ca5edfd0917e3957f05d89"
+      },
+      "icon": "siteground.svg",
+      "website": "https://www.siteground.com"
     },
     "SiteGround": {
       "cats": [
@@ -14374,6 +14496,28 @@
       "website": "https://www.eucookie.eu/"
     },
     "experiencedCMS": {
+      "cats": [
+        1
+      ],
+      "cpe": "cpe:/a:experiencedcms:experiencedcms",
+      "icon": "experiencedCMS_Logo.png",
+      "implies": "PHP",
+      "meta": {
+        "generator": "^experiencedCMS$"
+      },
+      "website": "https://experiencedcms.berkearas.de"
+    },
+    "gRPC": {
+      "cats": [
+        18
+      ],
+      "headers": {
+        "Content-Type": "^application\\/grpc"
+      },
+      "icon": "gRPC.png",
+      "website": "https://grpc.io"
+    },
+    "git": {
       "cats": [
         1
       ],
