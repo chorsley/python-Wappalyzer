@@ -142,7 +142,7 @@ class Wappalyzer:
         wappalyzer=Wappalyzer.latest(technologies_file='/tmp/lastest_technologies_file.json')
         # Create webpage
         webpage=WebPage.new_from_url('http://example.com')
-        # Analalyze
+        # analyze
         results = wappalyzer.analyze_with_categories(webpage)
 
 
