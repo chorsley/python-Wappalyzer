@@ -181,7 +181,10 @@ class Wappalyzer:
     def latest(cls, technologies_file=None):
         """
         Construct a Wappalyzer instance using a technologies db path passed in via
-        technologies_file, or alternatively the default in data/technologies.json
+        `technologies_file`, or alternatively the default in `data/technologies.json`.
+
+        :param technologies_file: File path
+        :type technologies_file: str
         """
         if technologies_file:
             with open(technologies_file, 'r') as fd:
@@ -398,6 +401,9 @@ class Wappalyzer:
     def get_categories(self, tech_name):
         """
         Returns a list of the categories for an technology name.
+
+        :param tech_name: Tech name
+        :type tech_name: str
         """
         cat_nums = self.technologies.get(tech_name, {}).get("cats", [])
         cat_names = [self.categories.get(str(cat_num), "").get("name", "")
@@ -408,18 +414,27 @@ class Wappalyzer:
     def get_versions(self, app_name):
         """
         Retuns a list of the discovered versions for an app name.
+
+        :param app_name: App name
+        :type app_name: str
         """
         return [] if 'versions' not in self.technologies[app_name] else self.technologies[app_name]['versions']
 
     def get_confidence(self, app_name):
         """
         Returns the total confidence for an app name.
+
+        :param app_name: App name
+        :type app_name: str
         """
         return [] if 'confidenceTotal' not in self.technologies[app_name] else self.technologies[app_name]['confidenceTotal']
 
     def analyze(self, webpage):
         """
         Return a list of technologylications that can be detected on the web page.
+
+        :param webpage: The webpage the analyze
+        :type webpage: WebPage
         """
         detected_technologies = set()
 
@@ -434,6 +449,9 @@ class Wappalyzer:
     def analyze_with_versions(self, webpage):
         """
         Return a list of applications and versions that can be detected on the web page.
+
+        :param webpage: The webpage the analyze
+        :type webpage: WebPage
         """
         detected_apps = self.analyze(webpage)
         versioned_apps = {}
@@ -447,6 +465,16 @@ class Wappalyzer:
     def analyze_with_categories(self, webpage):
         """
         Return a list of technologies and categories that can be detected on the web page.
+
+        :param webpage: The webpage the analyze
+        :type webpage: WebPage
+
+        >>> wappalyzer.analyze_with_categories(webpage)
+        {'Amazon ECS': {'categories': ['IaaS']},
+        'Amazon Web Services': {'categories': ['PaaS']},
+        'Azure CDN': {'categories': ['CDN']},
+        'Docker': {'categories': ['Containers']}}
+
         """
         detected_technologies = self.analyze(webpage)
         categorised_technologies = {}
@@ -460,6 +488,19 @@ class Wappalyzer:
     def analyze_with_versions_and_categories(self, webpage):
         """
         Return a list of applications and versions and categories that can be detected on the web page.
+
+        :param webpage: The webpage the analyze
+        :type webpage: WebPage
+
+        >>> wappalyzer.analyze_with_versions_and_categories(webpage)
+        {'Font Awesome': {'categories': ['Font scripts'], 'versions': ['5.4.2']},
+        'Google Font API': {'categories': ['Font scripts'], 'versions': []},
+        'MySQL': {'categories': ['Databases'], 'versions': []},
+        'Nginx': {'categories': ['Web servers', 'Reverse proxies'], 'versions': []},
+        'PHP': {'categories': ['Programming languages'], 'versions': ['5.6.40']},
+        'WordPress': {'categories': ['CMS', 'Blogs'], 'versions': ['5.4.2']},
+        'Yoast SEO': {'categories': ['SEO'], 'versions': ['14.6.1']}}
+
         """
         versioned_apps = self.analyze_with_versions(webpage)
         versioned_and_categorised_apps = versioned_apps
