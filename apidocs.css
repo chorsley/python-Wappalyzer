@@ -4,8 +4,22 @@
 
 .page-header {
     margin-top: 22px;
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    margin-bottom: 3px;
+    border-bottom: 0;
+    box-shadow: 0px 0px 8px 8px #fff;
+}
+.page-header h1 {
+    margin-bottom: 0;
 }
 
+.categoryHeader {
+    font-size: 24px;
+    color: #777;
+    margin-bottom: 1.8em;
+}
 
 ul {
     margin-top: 10px;
