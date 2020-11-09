@@ -104,7 +104,7 @@ class WebPage:
         using the `BeautifulSoup` module to parse the HTML.
 
         Parameters:
-            - response : requests.Response object
+            - response : `requests.Response` object
         """
         return cls(response.url, html=response.text, headers=response.headers)
 
@@ -115,7 +115,7 @@ class WebPage:
         using the `BeautifulSoup` module to parse the HTML.
 
         Parameters:
-            - response : aiohttp.ClientResponse¶ object
+            - response : `aiohttp.ClientResponse` object
         """
         html = await response.text()
         return cls(str(response.url), html=html, headers=response.headers)
@@ -166,8 +166,8 @@ class Wappalyzer:
         """
         Initialize a new Wappalyzer instance.
 
-        :param categories : Map of category ids to names, as in `technologies.json`.
-        :param technologies : Map of technology names to technology dicts, as in `technologies.json`.
+        :param categories: Map of category ids to names, as in ``technologies.json``.
+        :param technologies: Map of technology names to technology dicts, as in ``technologies.json``.
         """
         self.categories = categories
         self.technologies = technologies
