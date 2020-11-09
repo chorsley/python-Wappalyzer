@@ -104,7 +104,7 @@ class WebPage:
         using the `BeautifulSoup` module to parse the HTML.
 
         Parameters:
-            - response : requests.Response object
+            - response : `requests.Response` object
         """
         return cls(response.url, html=response.text, headers=response.headers)
 
@@ -115,7 +115,7 @@ class WebPage:
         using the `BeautifulSoup` module to parse the HTML.
 
         Parameters:
-            - response : aiohttp.ClientResponse¶ object
+            - response : `aiohttp.ClientResponse` object
         """
         html = await response.text()
         return cls(str(response.url), html=html, headers=response.headers)
@@ -125,7 +125,10 @@ class Wappalyzer:
     """
     Python Wappalyzer driver.
 
-    Consider the following exemple, it uses the latest technologies file
+    Consider the following exemples.
+    
+    
+    Here is how you can use the latest technologies file from wappalyzer's git repo:
     
     .. python::
     
@@ -142,20 +145,29 @@ class Wappalyzer:
         wappalyzer=Wappalyzer.latest(technologies_file='/tmp/lastest_technologies_file.json')
         # Create webpage
         webpage=WebPage.new_from_url('http://example.com')
-        # Analalyze
+        # analyze
         results = wappalyzer.analyze_with_categories(webpage)
+
+
+    Here is how you can custom request and headers arguments:
+    
+    .. python::
+
+        import requests
+        from Wappalyzer import Wappalyzer, WebPage
+        response = requests.get('http://exemple.com', headers={'User-Agent': 'Custom user agent'})
+        wappalyzer = Wappalyzer.latest()
+        webpage = WebPage.new_from_response(response)
+        wappalyzer.analyze_with_categories(webpage)
 
     """
 
-    def __init__(self, categories, technologies):
+    def __init__(self, categories:dict, technologies:dict):
         """
         Initialize a new Wappalyzer instance.
 
-        Parameters:
-            - categories : dict
-              Map of category ids to names, as in technologies.json.
-            - technologies : dict
-              Map of technology names to technology dicts, as in technologies.json.
+        :param categories: Map of category ids to names, as in ``technologies.json``.
+        :param technologies: Map of technology names to technology dicts, as in ``technologies.json``.
         """
         self.categories = categories
         self.technologies = technologies
@@ -166,10 +178,12 @@ class Wappalyzer:
             self._prepare_technology(technology)
 
     @classmethod
-    def latest(cls, technologies_file=None):
+    def latest(cls, technologies_file:str=None):
         """
         Construct a Wappalyzer instance using a technologies db path passed in via
-        technologies_file, or alternatively the default in data/technologies.json
+        `technologies_file`, or alternatively the default in `data/technologies.json`.
+
+        :param technologies_file: File path
         """
         if technologies_file:
             with open(technologies_file, 'r') as fd:
@@ -383,9 +397,11 @@ class Wappalyzer:
 
         return all_implied_technologies
 
-    def get_categories(self, tech_name):
+    def get_categories(self, tech_name:str):
         """
         Returns a list of the categories for an technology name.
+
+        :param tech_name: Tech name
         """
         cat_nums = self.technologies.get(tech_name, {}).get("cats", [])
         cat_names = [self.categories.get(str(cat_num), "").get("name", "")
@@ -393,21 +409,27 @@ class Wappalyzer:
 
         return cat_names
 
-    def get_versions(self, app_name):
+    def get_versions(self, app_name:str):
         """
         Retuns a list of the discovered versions for an app name.
+
+        :param app_name: App name
         """
         return [] if 'versions' not in self.technologies[app_name] else self.technologies[app_name]['versions']
 
-    def get_confidence(self, app_name):
+    def get_confidence(self, app_name:str):
         """
         Returns the total confidence for an app name.
+
+        :param app_name: App name
         """
         return [] if 'confidenceTotal' not in self.technologies[app_name] else self.technologies[app_name]['confidenceTotal']
 
-    def analyze(self, webpage):
+    def analyze(self, webpage:WebPage):
         """
         Return a list of technologylications that can be detected on the web page.
+
+        :param webpage: The Webpage to analyze
         """
         detected_technologies = set()
 
@@ -419,9 +441,11 @@ class Wappalyzer:
 
         return detected_technologies
 
-    def analyze_with_versions(self, webpage):
+    def analyze_with_versions(self, webpage:WebPage):
         """
         Return a list of applications and versions that can be detected on the web page.
+
+        :param webpage: The Webpage to analyze
         """
         detected_apps = self.analyze(webpage)
         versioned_apps = {}
@@ -432,9 +456,18 @@ class Wappalyzer:
 
         return versioned_apps
 
-    def analyze_with_categories(self, webpage):
+    def analyze_with_categories(self, webpage:WebPage):
         """
         Return a list of technologies and categories that can be detected on the web page.
+
+        :param webpage: The Webpage to analyze
+
+        >>> wappalyzer.analyze_with_categories(webpage)
+        {'Amazon ECS': {'categories': ['IaaS']},
+        'Amazon Web Services': {'categories': ['PaaS']},
+        'Azure CDN': {'categories': ['CDN']},
+        'Docker': {'categories': ['Containers']}}
+
         """
         detected_technologies = self.analyze(webpage)
         categorised_technologies = {}
@@ -445,9 +478,21 @@ class Wappalyzer:
 
         return categorised_technologies
 
-    def analyze_with_versions_and_categories(self, webpage):
+    def analyze_with_versions_and_categories(self, webpage:WebPage):
         """
         Return a list of applications and versions and categories that can be detected on the web page.
+
+        :param webpage: The Webpage to analyze
+
+        >>> wappalyzer.analyze_with_versions_and_categories(webpage)
+        {'Font Awesome': {'categories': ['Font scripts'], 'versions': ['5.4.2']},
+        'Google Font API': {'categories': ['Font scripts'], 'versions': []},
+        'MySQL': {'categories': ['Databases'], 'versions': []},
+        'Nginx': {'categories': ['Web servers', 'Reverse proxies'], 'versions': []},
+        'PHP': {'categories': ['Programming languages'], 'versions': ['5.6.40']},
+        'WordPress': {'categories': ['CMS', 'Blogs'], 'versions': ['5.4.2']},
+        'Yoast SEO': {'categories': ['SEO'], 'versions': ['14.6.1']}}
+
         """
         versioned_apps = self.analyze_with_versions(webpage)
         versioned_and_categorised_apps = versioned_apps
