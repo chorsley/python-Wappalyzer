@@ -51,7 +51,7 @@ The API exposes two objects: `Wappalyzer.Wappalyzer` and `Wappalyzer.WebPage`.
  'WordPress': {'categories': ['CMS', 'Blogs'], 'versions': ['5.4.2']},
  'Yoast SEO': {'categories': ['SEO'], 'versions': ['14.6.1']}}
 
-Read the `API Reference <https://chorsley/github.io/python-Wappalyzer/Wappalyzer.html>`_ for more documentation.
+Read the `API Reference <https://chorsley.github.io/python-Wappalyzer/Wappalyzer.html>`_ for more documentation.
 
 Note:
     Last version to support Python2 was `0.2.2`.  
