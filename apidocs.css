@@ -21,6 +21,11 @@
     margin-bottom: 1.8em;
 }
 
+a[name] {
+    position: relative;
+    bottom: 62px;
+}
+
 ul {
     margin-top: 10px;
     padding-left: 10px;
@@ -156,19 +161,14 @@ tr.private {
     margin-top: 10px;
 }
 
-.fieldArg {
-    font-weight: bold;
-    color: #c7254e;
-}
-
 .fieldName {
     font-weight: bold;
 }
 
 
 #childList > div {
-    margin: 20px;
-    padding: 15px;
+    margin: 10px;
+    padding: 10px;
     padding-bottom: 5px;
 }
 
@@ -195,18 +195,44 @@ tr.private {
     margin-bottom: 6px;
 }
 
-.code {
+/*
+- <h1><code></code></h1> : This is for the main top navagation bar
+
+- <a><code></code><a> for links in docstrings texts
+This is inline docstring content marked up as code, for example L{foo} in epytext
+or `bar` in restructuredtext
+
+- <a class="code"> links that are present in summary tables
+*/
+a > code, a.code, .page-header > h1 > code {
+    color:#c7254e;
+    background-color:#f9f2f4;
+}
+
+/*
+This defines  the "code" class, it's black on light gray,
+
+It also overwrite the default values inherited from bootstrap min
+*/
+code, .code {
     font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
     padding:2px 4px;
     font-size:90%;
-    color:#c7254e;
-    background-color:#f9f2f4;
+    color: #222222;
+    background-color: #f4f4f4;
     border-radius:4px
 }
 
 code > .code {
     padding: 0px;
 }
+
+
+
+a.functionSourceLink {
+    font-weight: normal;
+}
+
 
 #childList > div {
     border-left-color: #03a9f4;
@@ -215,10 +241,13 @@ code > .code {
     background: #fafafa;
 }
 
+/* Function definitions `def func():` and `var =` */
+
 #childList > div .functionHeader {
     font-family: monospace;
     font-weight: bold;
-    color: #c7254e;
+    color: #222222;
+
 }
 
 .moduleDocstring {
