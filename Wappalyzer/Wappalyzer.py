@@ -64,22 +64,22 @@ class WebPage:
         }
 
     @classmethod
-    def new_from_url(cls, url: str, verify: bool = True, timeout: Union[int, float] = 10):
+    def new_from_url(cls, url: str, **kwargs):
         """
         Constructs a new WebPage object for the URL,
         using the `requests` module to fetch the HTML.
 
         Parameters:
             - url : str  
-            - verify: bool  
-            - timeout: int, float  
+            - ``**kwargs``: Any other arguments are passed to `requests.get`. 
+              See `requests.get`
         """
-        response = requests.get(url, verify=verify, timeout=timeout)
+        response = requests.get(url, **kwargs)
         return cls.new_from_response(response)
 
     @classmethod
-    async def new_from_url_async(cls, url: str, verify: bool = True, timeout: Union[int, float] = 2.5,
-                                 aiohttp_client_session: aiohttp.ClientSession = None):
+    async def new_from_url_async(cls, url: str, verify: bool = True,
+                                 aiohttp_client_session: aiohttp.ClientSession = None, **kwargs):
         """
         Same as new_from_url only Async.
 
@@ -89,13 +89,15 @@ class WebPage:
         Parameters:
             - url : str
             - verify: bool
+            - ``**kwargs``: Any other arguments are passed to `aiohttp.ClientSession.get`. 
+              See `aiohttp.ClientSession`
         """
 
         if not aiohttp_client_session:
             connector = aiohttp.TCPConnector(ssl=verify)
             aiohttp_client_session = aiohttp.ClientSession(connector=connector)
 
-        async with aiohttp_client_session.get(url, timeout=timeout) as response:
+        async with aiohttp_client_session.get(url, **kwargs) as response:
             return await cls.new_from_response_async(response)
 
     @classmethod
