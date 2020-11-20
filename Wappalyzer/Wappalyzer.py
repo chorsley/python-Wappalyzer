@@ -6,6 +6,7 @@ import pkg_resources
 import re
 import requests
 import warnings
+import tempfile
 
 from bs4 import BeautifulSoup
 from typing import Union
@@ -178,18 +179,25 @@ class Wappalyzer:
             self._prepare_technology(technology)
 
     @classmethod
-    def latest(cls, technologies_file:str=None):
+    def latest(cls, technologies_file:str=None, update:bool=False):
         """
         Construct a Wappalyzer instance using a technologies db path passed in via
         `technologies_file`, or alternatively the default in `data/technologies.json`.
 
         :param technologies_file: File path
+        :param update: Download and use the latest ``technologies.json`` file from AliasIO/wappalyzer repository.  
         """
+        default=pkg_resources.resource_string(__name__, "data/technologies.json")
+
         if technologies_file:
             with open(technologies_file, 'r') as fd:
                 obj = json.load(fd)
+        elif update:
+            # Get the lastest file
+            lastest_technologies_file=requests.get('https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/technologies.json')
+            obj = lastest_technologies_file.json()
         else:
-            obj = json.loads(pkg_resources.resource_string(__name__, "data/technologies.json"))
+            obj = json.loads(default)
 
         return cls(categories=obj['categories'], technologies=obj['technologies'])
 

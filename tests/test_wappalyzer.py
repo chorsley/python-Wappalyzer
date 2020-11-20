@@ -1,5 +1,6 @@
 import pytest
 import asyncio
+import requests
 
 from httpretty import HTTPretty, httprettified
 from aioresponses import aioresponses
@@ -35,6 +36,23 @@ def test_latest():
     print((analyzer.categories))
     assert analyzer.categories['1']['name'] == 'CMS'
     assert 'Apache' in analyzer.technologies
+
+def test_latest_update():
+    
+    # Get the lastest file
+    lastest_technologies_file=requests.get('https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/technologies.json')
+
+    # Write the content to a tmp file
+    with open('/tmp/lastest_technologies_file.json', 'w') as t_file:
+        t_file.write(lastest_technologies_file.text)
+
+    # Create Wappalyzer with this file in argument
+    wappalyzer1=Wappalyzer.latest(technologies_file='/tmp/lastest_technologies_file.json')
+
+    wappalyzer2=Wappalyzer.latest(update=True)
+
+    assert wappalyzer1.technologies==wappalyzer2.technologies
+    assert wappalyzer1.categories==wappalyzer2.categories
 
 def test_analyze_no_technologies():
     analyzer = Wappalyzer(categories={}, technologies={})
@@ -89,7 +107,6 @@ def test_get_analyze_with_categories():
     result = analyzer.analyze_with_categories(webpage)
 
     assert result == {"a": {"categories": ["cat1"]}}
-
 
 def test_get_analyze_with_versions():
 
