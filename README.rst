@@ -22,11 +22,12 @@ Install
 
     $ pip install python-Wappalyzer
 
+Require Python3.6 or later. 
 
 Usage
 -----
 
-The API exposes two objects: `Wappalyzer.Wappalyzer` and `Wappalyzer.WebPage`. 
+The API exposes two objects: ``Wappalyzer.Wappalyzer`` and ``Wappalyzer.WebPage``. 
 
 >>> from Wappalyzer import Wappalyzer, WebPage
 >>> wappalyzer = Wappalyzer.latest()
