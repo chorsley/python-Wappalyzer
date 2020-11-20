@@ -26,51 +26,7 @@
         <h1>Module Index</h1>
       </div>
 
-      <ul><li><a href="Wappalyzer.html" class="code" data-type="Package">Wappalyzer</a> - <span><div class="rst-section" id="rst-python-wappalyzer">
-<h1 class="heading">python-Wappalyzer</h1>
-<a class="rst-reference external image-reference" href="https://travis-ci.org/chorsley/python-Wappalyzer" target="_top"><img alt="https://travis-ci.org/chorsley/python-Wappalyzer.svg?branch=master" src="https://travis-ci.org/chorsley/python-Wappalyzer.svg?branch=master" /></a>
-<a class="rst-reference external image-reference" href="https://pypi.org/project/python-Wappalyzer/" target="_top"><object data="https://badge.fury.io/py/python-Wappalyzer.svg" type="image/svg+xml">https://badge.fury.io/py/python-Wappalyzer.svg</object></a>
-<a class="rst-reference external image-reference" href="https://coveralls.io/github/chorsley/python-Wappalyzer?branch=master" target="_top"><img alt="https://coveralls.io/repos/github/chorsley/python-Wappalyzer/badge.svg?branch=master" src="https://coveralls.io/repos/github/chorsley/python-Wappalyzer/badge.svg?branch=master" /></a>
-<p>Python implementation of the <a class="rst-reference external" href="https://github.com/AliasIO/wappalyzer" target="_top">Wappalyzer</a> web application detection utility.</p>
-</div>
-<div class="rst-section" id="rst-install">
-<h1 class="heading">Install</h1>
-<pre class="rst-literal-block">
-$ pip install python-Wappalyzer
-</pre>
-</div>
-<div class="rst-section" id="rst-usage">
-<h1 class="heading">Usage</h1>
-<p>The API exposes two objects: <a href="Wappalyzer.Wappalyzer.html"><code>Wappalyzer.Wappalyzer</code></a> and <a href="Wappalyzer.WebPage.html"><code>Wappalyzer.WebPage</code></a>.</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> Wappalyzer <span class="py-keyword">import</span> Wappalyzer, WebPage
-<span class="py-prompt">&gt;&gt;&gt; </span>wappalyzer = Wappalyzer.latest()</pre><pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>webpage = WebPage.new_from_url(<span class="py-string">'http://example.com'</span>)
-<span class="py-prompt">&gt;&gt;&gt; </span>wappalyzer.analyze(webpage)
-<span class="py-output">{'Docker', 'Azure CDN', 'Amazon Web Services', 'Amazon ECS'}</span>
-</pre><pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>wappalyzer.analyze_with_categories(webpage)
-<span class="py-output">{'Amazon ECS': {'categories': ['IaaS']},</span>
-<span class="py-output"> 'Amazon Web Services': {'categories': ['PaaS']},</span>
-<span class="py-output"> 'Azure CDN': {'categories': ['CDN']},</span>
-<span class="py-output"> 'Docker': {'categories': ['Containers']}}</span>
-</pre><pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>webpage = WebPage.new_from_url(<span class="py-string">'http://wordpress-example.com'</span>)
-<span class="py-prompt">&gt;&gt;&gt; </span>wappalyzer.analyze_with_versions_and_categories(webpage)
-<span class="py-output">{'Font Awesome': {'categories': ['Font scripts'], 'versions': ['5.4.2']},</span>
-<span class="py-output"> 'Google Font API': {'categories': ['Font scripts'], 'versions': []},</span>
-<span class="py-output"> 'MySQL': {'categories': ['Databases'], 'versions': []},</span>
-<span class="py-output"> 'Nginx': {'categories': ['Web servers', 'Reverse proxies'], 'versions': []},</span>
-<span class="py-output"> 'PHP': {'categories': ['Programming languages'], 'versions': ['5.6.40']},</span>
-<span class="py-output"> 'WordPress': {'categories': ['CMS', 'Blogs'], 'versions': ['5.4.2']},</span>
-<span class="py-output"> 'Yoast SEO': {'categories': ['SEO'], 'versions': ['14.6.1']}}</span>
-</pre><p>Read the <a class="rst-reference external" href="https://chorsley/github.io/python-Wappalyzer/Wappalyzer.html" target="_top">API Reference</a> for more documentation.</p>
-<dl class="rst-docutils">
-<dt>Note:</dt>
-<dd>Last version to support Python2 was <code>0.2.2</code>.</dd>
-</dl>
-</div>
-</span><ul><li><a href="Wappalyzer.Wappalyzer.html" class="code" data-type="Module">Wappalyzer.Wappalyzer</a> - <span class="undocumented">No module1/1 classes docstring; , 0/1 variables documented</span></li></ul></li></ul>
+      <ul><li><a href="Wappalyzer.html" class="code" data-type="Package">Wappalyzer</a> - <span>Welcome to <tt class="rst-docutils literal"><span class="pre">python-Wappalyzer</span></tt> API documentation!</span><ul><li><a href="Wappalyzer.Wappalyzer.html" class="code" data-type="Module">Wappalyzer.Wappalyzer</a> - <span class="undocumented">No module1/1 classes docstring; , 0/1 variables documented</span></li></ul></li></ul>
 
     </div>
   </body>
