@@ -27,21 +27,18 @@ class WebPage:
     from any particular HTTP library's API.
     """
 
-    def __init__(self, url, html, headers):
+    def __init__(self, url:str, html:str, headers:dict):
         """
         Initialize a new WebPage object.
 
-        Parameters:
-            - url : str
-              The web page URL.
-            - html : str
-              The web page content (HTML)
-            - headers : dict
-              The HTTP response headers
+        :param url: The web page URL.
+        :param html : The web page content (HTML)
+        :param headers: The HTTP response headers
         """
         self.url = url
         self.html = html
         self.headers = headers
+        self.scripts= []
 
         try:
             list(self.headers.keys())
@@ -69,10 +66,13 @@ class WebPage:
         Constructs a new WebPage object for the URL,
         using the `requests` module to fetch the HTML.
 
-        Parameters:
-            - url : str  
-            - ``**kwargs``: Any other arguments are passed to `requests.get`. 
-              See `requests.get`
+        :param url: URL 
+        :param headers: (optional) Dictionary of HTTP Headers to send.
+        :param cookies: (optional) Dict or CookieJar object to send.
+        :param timeout: (optional) How many seconds to wait for the server to send data before giving up. 
+        :param proxies: (optional) Dictionary mapping protocol to the URL of the proxy.
+        :param verify: (optional) Boolean, it controls whether we verify the SSL certificate validity. 
+        :param **kwargs: Any other arguments are passed to `requests.get` method as well. 
         """
         response = requests.get(url, **kwargs)
         return cls.new_from_response(response)
@@ -86,11 +86,14 @@ class WebPage:
         Constructs a new WebPage object for the URL,
         using the `aiohttp` module to fetch the HTML.
 
-        Parameters:
-            - url : str
-            - verify: bool
-            - ``**kwargs``: Any other arguments are passed to `aiohttp.ClientSession.get`. 
-              See `aiohttp.ClientSession`
+        :param url: URL
+        :param verify: (optional) Boolean, it controls whether we verify the SSL certificate validity. 
+        :param headers: Dict. HTTP Headers to send with the request (optional).
+        :param cookies: Dict. HTTP Cookies to send with the request (optional).
+        :param timeout: Int. override the session's timeout (optional)
+        :param proxy: Proxy URL, `str` or `yarl.URL` (optional).
+        :param **kwargs: Any other arguments are passed to `aiohttp.ClientSession.get` method as well. 
+
         """
 
         if not aiohttp_client_session:
@@ -106,8 +109,7 @@ class WebPage:
         Constructs a new WebPage object for the response,
         using the `BeautifulSoup` module to parse the HTML.
 
-        Parameters:
-            - response : `requests.Response` object
+        :param response: `requests.Response` object
         """
         return cls(response.url, html=response.text, headers=response.headers)
 
@@ -117,8 +119,7 @@ class WebPage:
         Constructs a new WebPage object for the response,
         using the `BeautifulSoup` module to parse the HTML.
 
-        Parameters:
-            - response : `aiohttp.ClientResponse` object
+        :param response: `aiohttp.ClientResponse` object
         """
         html = await response.text()
         return cls(str(response.url), html=html, headers=response.headers)
