@@ -36,17 +36,26 @@
       </div>
 
       <div class="extrasDocstring">
-        <p><code><span class="py-keyword">class</span> Wappalyzer.Wappalyzer: <a href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L128">(source)</a></code></p>
+        <p><code><span class="py-keyword">class</span> Wappalyzer.Wappalyzer: <a href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L123">(source)</a></code></p>
         <p><a href="classIndex.html#Wappalyzer.Wappalyzer">View In Hierarchy</a></p>
       </div>
 
       <div class="moduleDocstring">
         <div><p>Python Wappalyzer driver.</p>
 <p>Consider the following exemples.</p>
-<p>Here is how you can use the latest technologies file from AliasIO/wappalyzer repository.</p>
+<p>Here is how you can use the latest technologies file from wappalyzer's git repo:</p>
 <pre class="py-doctest">
-<span class="py-keyword">from</span> Wappalyzer <span class="py-keyword">import</span> Wappalyzer
-wappalyzer=Wappalyzer.latest(update=<span class="py-builtin">True</span>)
+<span class="py-keyword">import</span> requests
+<span class="py-keyword">from</span> Wappalyzer <span class="py-keyword">import</span> Wappalyzer, WebPage
+<span class="py-comment"># Get the lastest file</span>
+lastest_technologies_file=requests.get(<span class="py-string">'https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/technologies.json'</span>)
+
+<span class="py-comment"># Write the content to a tmp file</span>
+<span class="py-keyword">with</span> <span class="py-builtin">open</span>(<span class="py-string">'/tmp/lastest_technologies_file.json'</span>, <span class="py-string">'w'</span>) <span class="py-keyword">as</span> t_file:
+    t_file.write(lastest_technologies_file.text)
+
+<span class="py-comment"># Create Wappalyzer with this file in argument</span>
+wappalyzer=Wappalyzer.latest(technologies_file=<span class="py-string">'/tmp/lastest_technologies_file.json'</span>)
 <span class="py-comment"># Create webpage</span>
 webpage=WebPage.new_from_url(<span class="py-string">'http://example.com'</span>)
 <span class="py-comment"># analyze</span>
@@ -184,7 +193,7 @@ wappalyzer.analyze_with_categories(webpage)</pre></div>
     
     def
     __init__(self, categories, technologies):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L159">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L164">
       
       (source)
     </a>
@@ -204,7 +213,7 @@ wappalyzer.analyze_with_categories(webpage)</pre></div>
   </a>
   <div class="functionHeader">
     categories =
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L166">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L171">
       
       (source)
     </a>
@@ -223,7 +232,7 @@ wappalyzer.analyze_with_categories(webpage)</pre></div>
   </a>
   <div class="functionHeader">
     technologies =
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L167">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L172">
       
       (source)
     </a>
@@ -242,7 +251,7 @@ wappalyzer.analyze_with_categories(webpage)</pre></div>
   </a>
   <div class="functionHeader">
     confidence_regexp =
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L168">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L173">
       
       (source)
     </a>
@@ -262,8 +271,8 @@ wappalyzer.analyze_with_categories(webpage)</pre></div>
   <div class="functionHeader">
     @classmethod<br />
     def
-    latest(cls, technologies_file=None, update=(False)):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L174">
+    latest(cls, technologies_file=None):
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L179">
       
       (source)
     </a>
@@ -272,7 +281,7 @@ wappalyzer.analyze_with_categories(webpage)</pre></div>
     
     
     <div>Construct a Wappalyzer instance using a technologies db path passed in via
-<code>technologies_file</code>, or alternatively the default in <code>data/technologies.json</code>.<table class="fieldTable"><tr class="fieldStart"><td class="fieldName">Parameters</td><td class="fieldArg">technologies_file</td><td>File path (type: <code>str</code>)</td></tr><tr><td></td><td class="fieldArg">update</td><td>Download and use the latest <tt class="rst-docutils literal">technologies.json</tt> file from AliasIO/wappalyzer repository. (type: <code>bool</code>)</td></tr></table></div>
+<code>technologies_file</code>, or alternatively the default in <code>data/technologies.json</code>.<table class="fieldTable"><tr class="fieldStart"><td class="fieldName">Parameters</td><td class="fieldArg">technologies_file</td><td>File path (type: <code>str</code>)</td></tr></table></div>
   </div>
 </div><div class="basemethod private">
   
@@ -286,7 +295,7 @@ wappalyzer.analyze_with_categories(webpage)</pre></div>
     
     def
     _prepare_technology(self, technology):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L197">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L195">
       
       (source)
     </a>
@@ -308,7 +317,7 @@ wappalyzer.analyze_with_categories(webpage)</pre></div>
     
     def
     _prepare_pattern(self, pattern):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L237">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L235">
       
       (source)
     </a>
@@ -331,7 +340,7 @@ expression.</div>
     
     def
     _has_technology(self, technology, webpage):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L264">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L263">
       
       (source)
     </a>
@@ -353,7 +362,7 @@ expression.</div>
     
     def
     _set_detected_app(self, app, app_type, pattern, value, key=""""""):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L312">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L311">
       
       (source)
     </a>
@@ -375,7 +384,7 @@ expression.</div>
     
     def
     _set_app_version(self, app):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L355">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L354">
       
       (source)
     </a>
@@ -397,7 +406,7 @@ expression.</div>
     
     def
     _get_implied_technologies(self, detected_technologies):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L364">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L363">
       
       (source)
     </a>
@@ -419,7 +428,7 @@ expression.</div>
     
     def
     get_categories(self, tech_name):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L401">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L400">
       
       (source)
     </a>
@@ -441,7 +450,7 @@ expression.</div>
     
     def
     get_versions(self, app_name):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L413">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L412">
       
       (source)
     </a>
@@ -463,7 +472,7 @@ expression.</div>
     
     def
     get_confidence(self, app_name):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L421">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L420">
       
       (source)
     </a>
@@ -485,7 +494,7 @@ expression.</div>
     
     def
     analyze(self, webpage):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L429">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L428">
       
       (source)
     </a>
@@ -507,7 +516,7 @@ expression.</div>
     
     def
     analyze_with_versions(self, webpage):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L445">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L444">
       
       (source)
     </a>
@@ -529,7 +538,7 @@ expression.</div>
     
     def
     analyze_with_categories(self, webpage):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L460">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L459">
       
       (source)
     </a>
@@ -558,7 +567,7 @@ expression.</div>
     
     def
     analyze_with_versions_and_categories(self, webpage):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L482">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L481">
       
       (source)
     </a>
@@ -590,7 +599,7 @@ expression.</div>
     
     def
     _sort_app_versions(self, version_a, version_b):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L507">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L506">
       
       (source)
     </a>
@@ -612,7 +621,7 @@ expression.</div>
     
     def
     _cmp_to_key(self, mycmp):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L510">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L509">
       
       (source)
     </a>
@@ -626,7 +635,7 @@ expression.</div>
 
       </div>
       <address>
-        <a href="index.html">API Documentation</a> for <a href="https://github.com/chorsley/python-Wappalyzer">python-Wappalyzer</a>, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> 20.7.1 at 2020-11-20 22:24:17.
+        <a href="index.html">API Documentation</a> for <a href="https://github.com/chorsley/python-Wappalyzer">python-Wappalyzer</a>, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> 20.7.1 at 2020-11-22 20:43:11.
       </address>
 
     </div>

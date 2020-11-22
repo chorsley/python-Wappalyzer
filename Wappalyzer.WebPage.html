@@ -36,7 +36,7 @@
       </div>
 
       <div class="extrasDocstring">
-        <p><code><span class="py-keyword">class</span> Wappalyzer.WebPage: <a href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L24">(source)</a></code></p>
+        <p><code><span class="py-keyword">class</span> Wappalyzer.WebPage: <a href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L22">(source)</a></code></p>
         <p><a href="classIndex.html#Wappalyzer.WebPage">View In Hierarchy</a></p>
       </div>
 
@@ -71,12 +71,12 @@ from any particular HTTP library's API.</div>
   </tr><tr class="instancevariable">
     
     <td>Instance Variable</td>
-    <td><a href="Wappalyzer.WebPage.html#scripts" class="code" data-type="Instance Variable">scripts</a></td>
+    <td><a href="Wappalyzer.WebPage.html#parsed_html" class="code" data-type="Instance Variable">parsed_html</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="instancevariable">
     
     <td>Instance Variable</td>
-    <td><a href="Wappalyzer.WebPage.html#parsed_html" class="code" data-type="Instance Variable">parsed_html</a></td>
+    <td><a href="Wappalyzer.WebPage.html#scripts" class="code" data-type="Instance Variable">scripts</a></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr><tr class="instancevariable">
     
@@ -87,7 +87,7 @@ from any particular HTTP library's API.</div>
     
     <td>Class Method</td>
     <td><a href="Wappalyzer.WebPage.html#new_from_url" class="code" data-type="Class Method">new_from_url</a></td>
-    <td><span>Constructs a new WebPage object for the URL, using the <a href="https://requests.readthedocs.io/en/stable/api/#module-requests"><code>requests</code></a> module to fetch the HTML.</span></td>
+    <td><span>Constructs a new WebPage object for the URL, using the <code>requests</code> module to fetch the HTML.</span></td>
   </tr><tr class="classvariable">
     
     <td>Class Variable</td>
@@ -129,7 +129,7 @@ from any particular HTTP library's API.</div>
     
     def
     __init__(self, url, html, headers):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L30">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L28">
       
       (source)
     </a>
@@ -137,7 +137,20 @@ from any particular HTTP library's API.</div>
   <div class="docstring functionBody">
     
     
-    <div>Initialize a new WebPage object.<table class="fieldTable"><tr class="fieldStart"><td class="fieldName">Parameters</td><td class="fieldArg">url</td><td>The web page URL. (type: <code>str</code>)</td></tr><tr><td></td><td class="fieldArg">html</td><td>The web page content (HTML) (type: <code>str</code>)</td></tr><tr><td></td><td class="fieldArg">headers</td><td>The HTTP response headers (type: <code>dict</code>)</td></tr></table></div>
+    <div><p>Initialize a new WebPage object.</p>
+<dl class="rst-docutils">
+<dt>Parameters:</dt>
+<dd><ul class="rst-first rst-last rst-simple">
+<li>url : str
+The web page URL.</li>
+<li>html : str
+The web page content (HTML)</li>
+<li>headers : dict
+The HTTP response headers</li>
+</ul>
+</dd>
+</dl>
+</div>
   </div>
 </div><div class="baseinstancevariable">
   
@@ -149,7 +162,7 @@ from any particular HTTP library's API.</div>
   </a>
   <div class="functionHeader">
     url =
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L38">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L40">
       
       (source)
     </a>
@@ -168,7 +181,7 @@ from any particular HTTP library's API.</div>
   </a>
   <div class="functionHeader">
     html =
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L39">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L41">
       
       (source)
     </a>
@@ -187,26 +200,7 @@ from any particular HTTP library's API.</div>
   </a>
   <div class="functionHeader">
     headers =
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L40">
-      
-      (source)
-    </a>
-  </div>
-  <div class="functionBody">
-    
-    <div class="undocumented">Undocumented</div>
-  </div>
-</div><div class="baseinstancevariable">
-  
-  <a name="Wappalyzer.WebPage.scripts">
-    
-  </a>
-  <a name="scripts">
-    
-  </a>
-  <div class="functionHeader">
-    scripts =
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L41">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L42">
       
       (source)
     </a>
@@ -227,7 +221,7 @@ from any particular HTTP library's API.</div>
     
     def
     _parse_html(self):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L50">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L51">
       
       (source)
     </a>
@@ -247,7 +241,26 @@ from any particular HTTP library's API.</div>
   </a>
   <div class="functionHeader">
     parsed_html =
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L54">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L55">
+      
+      (source)
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="baseinstancevariable">
+  
+  <a name="Wappalyzer.WebPage.scripts">
+    
+  </a>
+  <a name="scripts">
+    
+  </a>
+  <div class="functionHeader">
+    scripts =
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L56">
       
       (source)
     </a>
@@ -266,7 +279,7 @@ from any particular HTTP library's API.</div>
   </a>
   <div class="functionHeader">
     meta =
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L57">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L58">
       
       (source)
     </a>
@@ -286,8 +299,8 @@ from any particular HTTP library's API.</div>
   <div class="functionHeader">
     @classmethod<br />
     def
-    new_from_url(cls, url, **kwargs):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L63">
+    new_from_url(cls, url, verify=(True), timeout=10):
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L64">
       
       (source)
     </a>
@@ -295,8 +308,18 @@ from any particular HTTP library's API.</div>
   <div class="docstring functionBody">
     
     
-    <div>Constructs a new WebPage object for the URL,
-using the <a href="https://requests.readthedocs.io/en/stable/api/#module-requests"><code>requests</code></a> module to fetch the HTML.<table class="fieldTable"><tr class="fieldStart"><td class="fieldName">Parameters</td><td class="fieldArg">url</td><td>URL (type: <code>str</code>)</td></tr><tr><td></td><td class="fieldArg">headers</td><td>(optional) Dictionary of HTTP Headers to send.</td></tr><tr><td></td><td class="fieldArg">cookies</td><td>(optional) Dict or CookieJar object to send.</td></tr><tr><td></td><td class="fieldArg">timeout</td><td>(optional) How many seconds to wait for the server to send data before giving up.</td></tr><tr><td></td><td class="fieldArg">proxies</td><td>(optional) Dictionary mapping protocol to the URL of the proxy.</td></tr><tr><td></td><td class="fieldArg">verify</td><td>(optional) Boolean, it controls whether we verify the SSL certificate validity.</td></tr><tr><td></td><td class="fieldArg">kwargs</td><td>Any other arguments are passed to <a href="https://requests.readthedocs.io/en/stable/api/#requests.get"><code>requests.get</code></a> method as well.</td></tr></table></div>
+    <div><p>Constructs a new WebPage object for the URL,
+using the <code>requests</code> module to fetch the HTML.</p>
+<dl class="rst-docutils">
+<dt>Parameters:</dt>
+<dd><ul class="rst-first rst-last rst-simple">
+<li>url : str</li>
+<li>verify: bool</li>
+<li>timeout: int, float</li>
+</ul>
+</dd>
+</dl>
+</div>
   </div>
 </div><div class="baseclassvariable">
   
@@ -308,7 +331,7 @@ using the <a href="https://requests.readthedocs.io/en/stable/api/#module-request
   </a>
   <div class="functionHeader">
     connector =
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L100">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L93">
       
       (source)
     </a>
@@ -327,7 +350,7 @@ using the <a href="https://requests.readthedocs.io/en/stable/api/#module-request
   </a>
   <div class="functionHeader">
     aiohttp_client_session =
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L101">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L94">
       
       (source)
     </a>
@@ -348,7 +371,7 @@ using the <a href="https://requests.readthedocs.io/en/stable/api/#module-request
     @classmethod<br />
     def
     new_from_response(cls, response):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7e3668ef572e049f5adcda58ab28d9e9722edf7b/Wappalyzer/Wappalyzer.py#L106">
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/9d022241aefba51557b823ba776b847b186d6fb6/Wappalyzer/Wappalyzer.py#L99">
       
       (source)
     </a>
@@ -356,14 +379,22 @@ using the <a href="https://requests.readthedocs.io/en/stable/api/#module-request
   <div class="docstring functionBody">
     
     
-    <div>Constructs a new WebPage object for the response,
-using the <code>BeautifulSoup</code> module to parse the HTML.<table class="fieldTable"><tr class="fieldStart"><td class="fieldName">Parameters</td><td class="fieldArg">response</td><td><a href="https://requests.readthedocs.io/en/stable/api/#requests.Response"><code>requests.Response</code></a> object</td></tr></table></div>
+    <div><p>Constructs a new WebPage object for the response,
+using the <code>BeautifulSoup</code> module to parse the HTML.</p>
+<dl class="rst-docutils">
+<dt>Parameters:</dt>
+<dd><ul class="rst-first rst-last rst-simple">
+<li>response : <code>requests.Response</code> object</li>
+</ul>
+</dd>
+</dl>
+</div>
   </div>
 </div>
 
       </div>
       <address>
-        <a href="index.html">API Documentation</a> for <a href="https://github.com/chorsley/python-Wappalyzer">python-Wappalyzer</a>, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> 20.7.1 at 2020-11-20 22:24:17.
+        <a href="index.html">API Documentation</a> for <a href="https://github.com/chorsley/python-Wappalyzer">python-Wappalyzer</a>, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> 20.7.1 at 2020-11-22 20:43:11.
       </address>
 
     </div>
