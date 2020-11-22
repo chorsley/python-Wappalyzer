@@ -126,22 +126,12 @@ class Wappalyzer:
 
     Consider the following exemples.
     
-    
-    Here is how you can use the latest technologies file from wappalyzer's git repo:
+    Here is how you can use the latest technologies file from AliasIO/wappalyzer repository. 
     
     .. python::
-    
-        import requests
-        from Wappalyzer import Wappalyzer, WebPage
-        # Get the lastest file
-        lastest_technologies_file=requests.get('https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/technologies.json')
 
-        # Write the content to a tmp file
-        with open('/tmp/lastest_technologies_file.json', 'w') as t_file:
-            t_file.write(lastest_technologies_file.text)
-
-        # Create Wappalyzer with this file in argument 
-        wappalyzer=Wappalyzer.latest(technologies_file='/tmp/lastest_technologies_file.json')
+        from Wappalyzer import Wappalyzer
+        wappalyzer=Wappalyzer.latest(update=True)
         # Create webpage
         webpage=WebPage.new_from_url('http://example.com')
         # analyze
@@ -177,18 +167,25 @@ class Wappalyzer:
             self._prepare_technology(technology)
 
     @classmethod
-    def latest(cls, technologies_file:str=None):
+    def latest(cls, technologies_file:str=None, update:bool=False):
         """
         Construct a Wappalyzer instance using a technologies db path passed in via
         `technologies_file`, or alternatively the default in `data/technologies.json`.
 
         :param technologies_file: File path
+        :param update: Download and use the latest ``technologies.json`` file from AliasIO/wappalyzer repository.  
         """
+        default=pkg_resources.resource_string(__name__, "data/technologies.json")
+
         if technologies_file:
             with open(technologies_file, 'r') as fd:
                 obj = json.load(fd)
+        elif update:
+            # Get the lastest file
+            lastest_technologies_file=requests.get('https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/technologies.json')
+            obj = lastest_technologies_file.json()
         else:
-            obj = json.loads(pkg_resources.resource_string(__name__, "data/technologies.json"))
+            obj = json.loads(default)
 
         return cls(categories=obj['categories'], technologies=obj['technologies'])
 
