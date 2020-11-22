@@ -5,8 +5,6 @@ import logging
 import pkg_resources
 import re
 import requests
-import warnings
-import tempfile
 
 from bs4 import BeautifulSoup
 from typing import Union
@@ -244,7 +242,8 @@ class Wappalyzer:
                 try:
                     attrs['regex'] = re.compile(expression, re.I)
                 except re.error as err:
-                    warnings.warn(
+                    # Wappalyzer is a JavaScript application therefore some of the regex wont compile in Python.
+                    logging.getLogger('python-Wappalyzer').debug(
                         "Caught '{error}' compiling regex: {regex}".format(
                             error=err, regex=pattern)
                     )
