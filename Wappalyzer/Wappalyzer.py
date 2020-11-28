@@ -24,7 +24,7 @@ class WebPage:
     Simple representation of a web page, decoupled
     from any particular HTTP library's API.
 
-    Well, except for the ``@classmethod``s that use `requests`
+    Well, except for the class methods that use `requests`
     or `aiohttp` to create the WebPage.
 
     This object is designed to be created for each website scanned
@@ -590,11 +590,11 @@ def analyze(url:str,
     Quick utility method method to analyze a website with minimal configurable options. 
 
     :Parameters:
-        - url: URL
-        - update: Update the technologies file from the internet
-        - useragent: Request user agent
-        - timeout: Request timeout
-        - verify: SSL cert verify
+        - `url`: URL
+        - `update`: Update the technologies file from the internet
+        - `useragent`: Request user agent
+        - `timeout`: Request timeout
+        - `verify`: SSL cert verify
     """
     # Create Wappalyzer
     wappalyzer=Wappalyzer.latest(update=update)
