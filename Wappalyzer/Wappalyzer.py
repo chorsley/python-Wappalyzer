@@ -7,7 +7,7 @@ import re
 import requests
 
 from bs4 import BeautifulSoup
-from typing import Union
+from typing import Union, Optional
 
 logger = logging.getLogger(name=__name__)
 
@@ -23,11 +23,25 @@ class WebPage:
     """
     Simple representation of a web page, decoupled
     from any particular HTTP library's API.
+
+    Well, except for the ``@classmethod``s that use `requests`
+    or `aiohttp` to create the WebPage.
+
+    This object is designed to be created for each website scanned
+    by python-Wappalyzer. 
+    It will parse the HTML with BeautifulSoup to find <script> and <meta> tags.
+
+    You can create it from manually from HTML with the `WebPage()` method
+    or from the class methods. 
+
     """
 
     def __init__(self, url:str, html:str, headers:dict):
         """
-        Initialize a new WebPage object.
+        Initialize a new WebPage object manually.  
+
+        >>> from Wappalyzer import WebPage
+        >>> w = WebPage('exemple.com',  html='<strong>Hello World</strong>', headers={'Server': 'Apache', })
 
         :param url: The web page URL.
         :param html: The web page content (HTML)
@@ -59,10 +73,13 @@ class WebPage:
         }
 
     @classmethod
-    def new_from_url(cls, url: str, **kwargs):
+    def new_from_url(cls, url: str, **kwargs) -> 'WebPage':
         """
         Constructs a new WebPage object for the URL,
         using the `requests` module to fetch the HTML.
+
+        >>> from Wappalyzer import WebPage
+        >>> page = WebPage.new_from_url('exemple.com', timeout=5)
 
         :param url: URL 
         :param headers: (optional) Dictionary of HTTP Headers to send.
@@ -76,15 +93,32 @@ class WebPage:
         return cls.new_from_response(response)
 
     @classmethod
+    def new_from_response(cls, response:requests.Response) -> 'WebPage':
+        """
+        Constructs a new WebPage object for the response,
+        using the `BeautifulSoup` module to parse the HTML.
+
+        :param response: `requests.Response` object
+        """
+        return cls(response.url, html=response.text, headers=response.headers)
+
+
+    @classmethod
     async def new_from_url_async(cls, url: str, verify: bool = True,
-                                 aiohttp_client_session: aiohttp.ClientSession = None, **kwargs):
+                                 aiohttp_client_session: aiohttp.ClientSession = None, **kwargs) -> 'WebPage':
         """
         Same as new_from_url only Async.
 
         Constructs a new WebPage object for the URL,
         using the `aiohttp` module to fetch the HTML.
 
+        >>> from Wappalyzer import WebPage
+        >>> from aiohttp import ClientSession
+        >>> async with ClientSession() as session:
+        ...     page = await WebPage.new_from_url_async(aiohttp_client_session=session)
+        
         :param url: URL
+        :param aiohttp_client_session: `aiohttp.ClientSession` instance to use, optional.
         :param verify: (optional) Boolean, it controls whether we verify the SSL certificate validity. 
         :param headers: Dict. HTTP Headers to send with the request (optional).
         :param cookies: Dict. HTTP Cookies to send with the request (optional).
@@ -102,20 +136,17 @@ class WebPage:
             return await cls.new_from_response_async(response)
 
     @classmethod
-    def new_from_response(cls, response):
+    async def new_from_response_async(cls, response:aiohttp.ClientResponse) -> 'WebPage':
         """
         Constructs a new WebPage object for the response,
         using the `BeautifulSoup` module to parse the HTML.
 
-        :param response: `requests.Response` object
-        """
-        return cls(response.url, html=response.text, headers=response.headers)
-
-    @classmethod
-    async def new_from_response_async(cls, response):
-        """
-        Constructs a new WebPage object for the response,
-        using the `BeautifulSoup` module to parse the HTML.
+        >>> from aiohttp import ClientSession
+        >>> wappalyzer = Wappalyzer.latest()
+        >>> async with ClientSession() as session:
+        ...     page = await session.get("http://example.com")
+        ...
+        >>> webpage = await WebPage.new_from_response_async(page)
 
         :param response: `aiohttp.ClientResponse` object
         """
@@ -147,10 +178,11 @@ class Wappalyzer:
 
         import requests
         from Wappalyzer import Wappalyzer, WebPage
-        response = requests.get('http://exemple.com', headers={'User-Agent': 'Custom user agent'})
         wappalyzer = Wappalyzer.latest()
-        webpage = WebPage.new_from_response(response)
+        webpage = WebPage.new_from_url('http://exemple.com', headers={'User-Agent': 'Custom user agent'})
         wappalyzer.analyze_with_categories(webpage)
+
+    *New in version 0.4.0*
 
     """
 
@@ -170,13 +202,23 @@ class Wappalyzer:
             self._prepare_technology(technology)
 
     @classmethod
-    def latest(cls, technologies_file:str=None, update:bool=False):
+    def latest(cls, technologies_file:str=None, update:bool=False) -> 'Wappalyzer':
         """
-        Construct a Wappalyzer instance using a technologies db path passed in via
-        `technologies_file`, or alternatively the default in `data/technologies.json`.
+        Construct a Wappalyzer instance.
+        
+        Use ``update=True`` to download the very latest file from internet. 
+        *New in version 0.4.0*
+
+        Use ``technologies_file=/some/path/technologies.json`` to load a 
+        custom technologies file. 
+        
+        Use no argument to load the default ``data/technologies.json`` file
+        inside the package ressource.
 
         :param technologies_file: File path
-        :param update: Download and use the latest ``technologies.json`` file from AliasIO/wappalyzer repository.  
+        :param update: Download and use the latest ``technologies.json`` file 
+            from `AliasIO/wappalyzer <https://github.com/AliasIO/wappalyzer>`_ repository.  
+        
         """
         default=pkg_resources.resource_string(__name__, "data/technologies.json")
 
@@ -185,8 +227,11 @@ class Wappalyzer:
                 obj = json.load(fd)
         elif update:
             # Get the lastest file
-            lastest_technologies_file=requests.get('https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/technologies.json')
-            obj = lastest_technologies_file.json()
+            try:
+                lastest_technologies_file=requests.get('https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/technologies.json')
+                obj = lastest_technologies_file.json()
+            except: # Or loads default
+                obj = json.loads(default)
         else:
             obj = json.loads(default)
 
@@ -409,7 +454,7 @@ class Wappalyzer:
 
         return cat_names
 
-    def get_versions(self, app_name:str):
+    def get_versions(self, app_name:str) -> list:
         """
         Retuns a list of the discovered versions for an app name.
 
@@ -417,15 +462,15 @@ class Wappalyzer:
         """
         return [] if 'versions' not in self.technologies[app_name] else self.technologies[app_name]['versions']
 
-    def get_confidence(self, app_name:str):
+    def get_confidence(self, app_name:str) -> Optional[int]:
         """
         Returns the total confidence for an app name.
 
         :param app_name: App name
         """
-        return [] if 'confidenceTotal' not in self.technologies[app_name] else self.technologies[app_name]['confidenceTotal']
+        return None if 'confidenceTotal' not in self.technologies[app_name] else self.technologies[app_name]['confidenceTotal']
 
-    def analyze(self, webpage:WebPage):
+    def analyze(self, webpage:WebPage) -> set:
         """
         Return a list of technologylications that can be detected on the web page.
 
@@ -441,9 +486,9 @@ class Wappalyzer:
 
         return detected_technologies
 
-    def analyze_with_versions(self, webpage:WebPage):
+    def analyze_with_versions(self, webpage:WebPage) -> dict:
         """
-        Return a list of applications and versions that can be detected on the web page.
+        Return a dict of applications and versions that can be detected on the web page.
 
         :param webpage: The Webpage to analyze
         """
@@ -456,9 +501,9 @@ class Wappalyzer:
 
         return versioned_apps
 
-    def analyze_with_categories(self, webpage:WebPage):
+    def analyze_with_categories(self, webpage:WebPage) -> dict:
         """
-        Return a list of technologies and categories that can be detected on the web page.
+        Return a dict of technologies and categories that can be detected on the web page.
 
         :param webpage: The Webpage to analyze
 
@@ -478,9 +523,9 @@ class Wappalyzer:
 
         return categorised_technologies
 
-    def analyze_with_versions_and_categories(self, webpage:WebPage):
+    def analyze_with_versions_and_categories(self, webpage:WebPage) -> dict:
         """
-        Return a list of applications and versions and categories that can be detected on the web page.
+        Return a dict of applications and versions and categories that can be detected on the web page.
 
         :param webpage: The Webpage to analyze
 
