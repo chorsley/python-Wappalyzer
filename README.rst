@@ -60,8 +60,10 @@ CLI
 
 Additionnaly, there is now a CLI interface. It prints the analyzer results as JSON:
 
-```
-% python -m Wappalyzer -h                   
+::
+
+    % python -m Wappalyzer -h         
+
 usage: __main__.py [-h] [--update] [--user-agent USERAGENT] [--timeout TIMEOUT] [--no-verify] url
 
 python-Wappalyzer CLI
@@ -76,7 +78,7 @@ optional arguments:
                         Request user agent
   --timeout TIMEOUT     Request timeout
   --no-verify           Skip SSL cert verify
-```
+
 
 Note:
     Last version to support Python2 was `0.2.2`.  
