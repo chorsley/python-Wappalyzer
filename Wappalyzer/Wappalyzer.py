@@ -580,3 +580,32 @@ class Wappalyzer:
                 return mycmp(self.obj, other.obj) != 0
 
         return CmpToKey
+
+def analyze(url:str, 
+            update:bool=False, 
+            useragent:str=None,
+            timeout:int=10,
+            verify:bool=True) -> dict:
+    """
+    Quick utility method method to analyze a website with minimal configurable options. 
+
+    :Parameters:
+        - url: URL
+        - update: Update the technologies file from the internet
+        - useragent: Request user agent
+        - timeout: Request timeout
+        - verify: SSL cert verify
+    """
+    # Create Wappalyzer
+    wappalyzer=Wappalyzer.latest(update=update)
+    # Create WebPage
+    headers={}
+    if useragent:
+        headers['User-Agent'] = useragent
+    webpage=WebPage.new_from_url(url, 
+        headers=headers, 
+        timeout=timeout, 
+        verify=verify)
+    # Analyze
+    results = wappalyzer.analyze_with_versions_and_categories(webpage)
+    return results
