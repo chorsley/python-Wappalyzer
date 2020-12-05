@@ -58,15 +58,11 @@ Read the `API Reference <https://chorsley.github.io/python-Wappalyzer/Wappalyzer
 CLI
 ---
 
-Additionnaly, there is now a CLI interface. It prints the analyzer results as JSON:
+Additionnaly, there is now a CLI interface. It prints the analyzer results as JSON.
 
-::
+Call it with::
 
-    % python -m Wappalyzer -h         
-
-usage: __main__.py [-h] [--update] [--user-agent USERAGENT] [--timeout TIMEOUT] [--no-verify] url
-
-python-Wappalyzer CLI
+    % python -m Wappalyzer      
 
 positional arguments:
   url                   URL to analyze

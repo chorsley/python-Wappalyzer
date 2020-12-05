@@ -188,7 +188,9 @@ class Wappalyzer:
 
     def __init__(self, categories:dict, technologies:dict):
         """
-        Initialize a new Wappalyzer instance.
+        Manually initialize a new Wappalyzer instance. 
+        
+        You might want to use the factory method: `latest`
 
         :param categories: Map of category ids to names, as in ``technologies.json``.
         :param technologies: Map of technology names to technology dicts, as in ``technologies.json``.
@@ -589,12 +591,18 @@ def analyze(url:str,
     """
     Quick utility method method to analyze a website with minimal configurable options. 
 
+    :See: `WebPage` and `Wappalyzer`. 
+
     :Parameters:
         - `url`: URL
         - `update`: Update the technologies file from the internet
         - `useragent`: Request user agent
         - `timeout`: Request timeout
         - `verify`: SSL cert verify
+    
+    :Return: 
+        `dict`. Just as `Wappalyzer.analyze_with_versions_and_categories`. 
+    :Note: More information might be added to the returned values in the future
     """
     # Create Wappalyzer
     wappalyzer=Wappalyzer.latest(update=update)
