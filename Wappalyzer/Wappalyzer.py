@@ -477,7 +477,7 @@ class Wappalyzer:
 
     def analyze(self, webpage:WebPage) -> Set[str]:
         """
-        Return a list of technologylications that can be detected on the web page.
+        Return a set of technology that can be detected on the web page.
 
         :param webpage: The Webpage to analyze
         """
