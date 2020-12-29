@@ -2,7 +2,7 @@ import argparse
 import json
 from .Wappalyzer import analyze
 
-def get_parser():
+def get_parser() -> argparse.ArgumentParser:
     """Get the CLI `argparse.ArgumentParser`"""
     parser = argparse.ArgumentParser(description="python-Wappalyzer CLI", prog="python -m Wappalyzer")
     parser.add_argument('url', help='URL to analyze')
@@ -12,7 +12,7 @@ def get_parser():
     parser.add_argument('--no-verify', action='store_true', help='Skip SSL cert verify', dest='noverify')
     return parser
 
-def main(args):
+def main(args) -> None:
     """Entrypoint
     :param args: `Namespace` returned by `argparse.ArgumentParser.parse_args`. 
     """

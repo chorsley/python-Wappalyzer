@@ -1,15 +1,15 @@
 import aiohttp
-import asyncio
+from typing import Callable, Dict, Iterable, List, Mapping, Any, Set
 import json
 import logging
 import pkg_resources
 import re
 import requests
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup # type: ignore
 from typing import Union, Optional
 
-logger = logging.getLogger(name=__name__)
+logger = logging.getLogger(name="python-Wappalyzer")
 
 
 class WappalyzerError(Exception):
@@ -36,7 +36,7 @@ class WebPage:
 
     """
 
-    def __init__(self, url:str, html:str, headers:dict):
+    def __init__(self, url:str, html:str, headers:Mapping[str, Any]):
         """
         Initialize a new WebPage object manually.  
 
@@ -50,7 +50,7 @@ class WebPage:
         self.url = url
         self.html = html
         self.headers = headers
-        self.scripts= []
+        self.scripts :List[str] = []
 
         try:
             list(self.headers.keys())
@@ -73,7 +73,7 @@ class WebPage:
         }
 
     @classmethod
-    def new_from_url(cls, url: str, **kwargs) -> 'WebPage':
+    def new_from_url(cls, url: str, **kwargs:Any) -> 'WebPage':
         """
         Constructs a new WebPage object for the URL,
         using the `requests` module to fetch the HTML.
@@ -105,7 +105,7 @@ class WebPage:
 
     @classmethod
     async def new_from_url_async(cls, url: str, verify: bool = True,
-                                 aiohttp_client_session: aiohttp.ClientSession = None, **kwargs) -> 'WebPage':
+                                 aiohttp_client_session: aiohttp.ClientSession = None, **kwargs:Any) -> 'WebPage':
         """
         Same as new_from_url only Async.
 
@@ -186,7 +186,7 @@ class Wappalyzer:
 
     """
 
-    def __init__(self, categories:dict, technologies:dict):
+    def __init__(self, categories:Dict[str, Any], technologies:Dict[str, Any]):
         """
         Manually initialize a new Wappalyzer instance. 
         
@@ -197,7 +197,7 @@ class Wappalyzer:
         """
         self.categories = categories
         self.technologies = technologies
-        self.confidence_regexp = re.compile(r"(.+)\\;confidence:(\d+)")
+        self._confidence_regexp = re.compile(r"(.+)\\;confidence:(\d+)")
 
         # TODO
         for name, technology in list(self.technologies.items()):
@@ -232,14 +232,15 @@ class Wappalyzer:
             try:
                 lastest_technologies_file=requests.get('https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/technologies.json')
                 obj = lastest_technologies_file.json()
-            except: # Or loads default
+            except Exception as err: # Or loads default
+                logger.error("Could not download latest Wappalyzer technologies.json file because of error : '{}'. Using default. ".format(err))
                 obj = json.loads(default)
         else:
             obj = json.loads(default)
 
         return cls(categories=obj['categories'], technologies=obj['technologies'])
 
-    def _prepare_technology(self, technology):
+    def _prepare_technology(self, technology: Dict[str, Any]) -> None:
         """
         Normalize technology data, preparing it for the detection phase.
         """
@@ -279,27 +280,27 @@ class Wappalyzer:
             for name, pattern in list(obj.items()):
                 obj[name] = self._prepare_pattern(obj[name])
 
-    def _prepare_pattern(self, pattern):
+    def _prepare_pattern(self, pattern:str) -> Dict[str, Any]:
         """
         Strip out key:value pairs from the pattern and compile the regular
         expression.
         """
         attrs = {}
-        pattern = pattern.split('\\;')
-        for index, expression in enumerate(pattern):
+        patterns = pattern.split('\\;')
+        for index, expression in enumerate(patterns):
             if index == 0:
                 attrs['string'] = expression
                 try:
-                    attrs['regex'] = re.compile(expression, re.I)
+                    attrs['regex'] = re.compile(expression, re.I) # type: ignore
                 except re.error as err:
                     # Wappalyzer is a JavaScript application therefore some of the regex wont compile in Python.
-                    logging.getLogger('python-Wappalyzer').debug(
+                    logger.debug(
                         "Caught '{error}' compiling regex: {regex}".format(
-                            error=err, regex=pattern)
+                            error=err, regex=patterns)
                     )
                     # regex that never matches:
                     # http://stackoverflow.com/a/1845097/413622
-                    attrs['regex'] = re.compile(r'(?!x)x')
+                    attrs['regex'] = re.compile(r'(?!x)x') # type: ignore
             else:
                 attr = expression.split(':')
                 if len(attr) > 1:
@@ -307,7 +308,7 @@ class Wappalyzer:
                     attrs[str(key)] = ':'.join(attr)
         return attrs
 
-    def _has_technology(self, technology, webpage):
+    def _has_technology(self, technology: Dict[str, Any], webpage: WebPage) -> bool:
         """
         Determine whether the web page matches the technology signature.
         """
@@ -355,7 +356,7 @@ class Wappalyzer:
 
         return has_app
 
-    def _set_detected_app(self, app, app_type, pattern, value, key=''):
+    def _set_detected_app(self, app: Dict[str, Any], app_type:str, pattern: Dict[str, Any], value:str, key='') -> None:
         """
         Store detected app.
         """
@@ -398,20 +399,22 @@ class Wappalyzer:
                         app['versions'].append(version)
             self._set_app_version(app)
 
-    def _set_app_version(self, app):
+    def _set_app_version(self, app: Dict[str, Any]) -> None:
         """
-        Resolve version number (find the longest version number that contains all shorter detected version numbers).
+        Resolve version number (find the longest version number that *is supposed to* contains all shorter detected version numbers).
+
+        TODO: think if it's the right wat to handled version detection.
         """
         if 'versions' not in app:
             return
 
         app['versions'] = sorted(app['versions'], key=self._cmp_to_key(self._sort_app_versions))
 
-    def _get_implied_technologies(self, detected_technologies):
+    def _get_implied_technologies(self, detected_technologies:Iterable[str]) -> Iterable[str]:
         """
         Get the set of technologies implied by `detected_technologies`.
         """
-        def __get_implied_technologies(technologies):
+        def __get_implied_technologies(technologies:Iterable[str]) -> Iterable[str] :
             _implied_technologies = set()
             for tech in technologies:
                 try:
@@ -425,7 +428,7 @@ class Wappalyzer:
                             try:
                                 # Use more strict regexp (cause we have already checked the entry of "confidence")
                                 # Also, better way to compile regexp one time, instead of every time
-                                app_name, confidence = self.confidence_regexp.search(implie).groups()
+                                app_name, confidence = self._confidence_regexp.search(implie).groups() # type: ignore
                                 if int(confidence) >= 50:
                                     _implied_technologies.add(app_name)
                             except (ValueError, AttributeError):
@@ -435,7 +438,7 @@ class Wappalyzer:
             return _implied_technologies
 
         implied_technologies = __get_implied_technologies(detected_technologies)
-        all_implied_technologies = set()
+        all_implied_technologies : Set[str] = set()
 
         # Descend recursively until we've found all implied technologies
         while not all_implied_technologies.issuperset(implied_technologies):
@@ -444,7 +447,7 @@ class Wappalyzer:
 
         return all_implied_technologies
 
-    def get_categories(self, tech_name:str):
+    def get_categories(self, tech_name:str) -> List[str]:
         """
         Returns a list of the categories for an technology name.
 
@@ -456,7 +459,7 @@ class Wappalyzer:
 
         return cat_names
 
-    def get_versions(self, app_name:str) -> list:
+    def get_versions(self, app_name:str) -> List[str]:
         """
         Retuns a list of the discovered versions for an app name.
 
@@ -472,7 +475,7 @@ class Wappalyzer:
         """
         return None if 'confidenceTotal' not in self.technologies[app_name] else self.technologies[app_name]['confidenceTotal']
 
-    def analyze(self, webpage:WebPage) -> set:
+    def analyze(self, webpage:WebPage) -> Set[str]:
         """
         Return a list of technologylications that can be detected on the web page.
 
@@ -484,11 +487,11 @@ class Wappalyzer:
             if self._has_technology(technology, webpage):
                 detected_technologies.add(tech_name)
 
-        detected_technologies |= self._get_implied_technologies(detected_technologies)
+        detected_technologies.update(self._get_implied_technologies(detected_technologies))
 
         return detected_technologies
 
-    def analyze_with_versions(self, webpage:WebPage) -> dict:
+    def analyze_with_versions(self, webpage:WebPage) -> Dict[str, Dict[str, Any]]:
         """
         Return a dict of applications and versions that can be detected on the web page.
 
@@ -503,7 +506,7 @@ class Wappalyzer:
 
         return versioned_apps
 
-    def analyze_with_categories(self, webpage:WebPage) -> dict:
+    def analyze_with_categories(self, webpage:WebPage) -> Dict[str, Dict[str, Any]]:
         """
         Return a dict of technologies and categories that can be detected on the web page.
 
@@ -525,7 +528,7 @@ class Wappalyzer:
 
         return categorised_technologies
 
-    def analyze_with_versions_and_categories(self, webpage:WebPage) -> dict:
+    def analyze_with_versions_and_categories(self, webpage:WebPage) -> Dict[str, Dict[str, Any]]:
         """
         Return a dict of applications and versions and categories that can be detected on the web page.
 
@@ -550,10 +553,10 @@ class Wappalyzer:
 
         return versioned_and_categorised_apps
 
-    def _sort_app_versions(self, version_a, version_b):
+    def _sort_app_versions(self, version_a: str, version_b: str) -> int:
         return len(version_a) - len(version_b)
 
-    def _cmp_to_key(self, mycmp):
+    def _cmp_to_key(self, mycmp: Callable[..., Any]):
         """
         Convert a cmp= function into a key= function
         """
@@ -587,9 +590,9 @@ def analyze(url:str,
             update:bool=False, 
             useragent:str=None,
             timeout:int=10,
-            verify:bool=True) -> dict:
+            verify:bool=True) -> Dict[str, Dict[str, Any]]:
     """
-    Quick utility method method to analyze a website with minimal configurable options. 
+    Quick utility method to analyze a website with minimal configurable options. 
 
     :See: `WebPage` and `Wappalyzer`. 
 
