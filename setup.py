@@ -32,6 +32,3 @@ setup(
     extras_require      =   {'docs': ["pydoctor", "docutils"], 
                              'dev': ["tox", "mypy", "pytest", "pytest-asyncio"]},
 )
-
-# Publish to PyPi with this line: 
-#   rm -fr ./dist && python3 setup.py build check sdist bdist_wheel && python3 -m twine upload --verbose dist/*
