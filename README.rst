@@ -30,12 +30,23 @@ Usage
 The API exposes two objects: ``Wappalyzer.Wappalyzer`` and ``Wappalyzer.WebPage``. 
 
 >>> from Wappalyzer import Wappalyzer, WebPage
-# Download and use the latest technologies file from AliasIO/wappalyzer repository
->>> wappalyzer = Wappalyzer.latest(update=True)
+
+First create a WebPage. The following code creates a webpage with the ``request`` module. 
 
 >>> webpage = WebPage.new_from_url('http://example.com')
+
+Then analyze it with Wappalyzer. 
+
+>>> wappalyzer = Wappalyzer.latest()
 >>> wappalyzer.analyze(webpage)
 {'Docker', 'Azure CDN', 'Amazon Web Services', 'Amazon ECS'}
+
+To download and use the latest technologies file from AliasIO/wappalyzer repository, 
+create the Wappalyzer driver with the ``update=True`` parameter. 
+
+>>> wappalyzer = Wappalyzer.latest(update=True)
+
+The Wappalyzer object exposes more methods that returns metatada for the detected technologies. 
 
 >>> wappalyzer.analyze_with_categories(webpage)
 {'Amazon ECS': {'categories': ['IaaS']},
@@ -58,7 +69,7 @@ Read the `API Reference <https://chorsley.github.io/python-Wappalyzer/Wappalyzer
 CLI
 ---
 
-Additionnaly, there is now a CLI interface. It prints the analyzer results as JSON.
+Additionnaly, there is now a CLI interface. It prints the analyzer results (with metatada) as JSON.
 
 Call it with::
 
