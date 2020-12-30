@@ -17,7 +17,7 @@ def main(args) -> None:
     :param args: `Namespace` returned by `argparse.ArgumentParser.parse_args`. 
     """
     result = analyze(args.url, update=args.update, useragent=args.useragent, timeout=args.timeout, verify=not args.noverify)
-    print(json.dumps(result, indent=4))
+    print(json.dumps(result))
 
 if __name__ == '__main__':
     main(get_parser().parse_args())
