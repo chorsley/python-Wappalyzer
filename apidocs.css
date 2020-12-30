@@ -141,7 +141,7 @@ tr.class, tr.classvariable, tr.baseclassvariable {
     background-color: #fffde7;
 }
 
-tr.instancevariable, tr.baseinstancevariable, tr.variable, tr.attribute {
+tr.instancevariable, tr.baseinstancevariable, tr.variable, tr.attribute, tr.property {
     background-color: #f3e5f5;
 }
 
@@ -204,9 +204,12 @@ or `bar` in restructuredtext
 
 - <a class="code"> links that are present in summary tables
 */
-a > code, a.code, .page-header > h1 > code {
+a > code, a.code {
     color:#c7254e;
     background-color:#f9f2f4;
+}
+.page-header > h1 > code {
+    color: #971c3a;
 }
 
 /*
@@ -269,7 +272,9 @@ pre {
 
 /* Private stuff */
 
-body.private-hidden #splitTables .private, body.private-hidden #childList .private {
+body.private-hidden #splitTables .private,
+body.private-hidden #childList .private,
+body.private-hidden #summaryTree .private {
     display: none;
 }
 

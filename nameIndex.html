@@ -3,7 +3,7 @@
           "DTD/xhtml1-strict.dtd">
 <html>
   <head>
-    <title>Index Of Names</title>
+    <title>Index of Names</title>
 
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
@@ -22,11 +22,14 @@
       </div>
     </nav>
 
+    <div id="showPrivate">
+      <button class="btn btn-link" onclick="togglePrivate()">Toggle Private API</button>
+    </div>
 
     <div class="container">
 
       <div class="page-header">
-        <h1>Index Of Names</h1>
+        <h1>Index of Names</h1>
       </div>
 
       
@@ -35,7 +38,7 @@
         </a>
         <h2>A</h2>
         <p class="letterlinks">A - <a href="#C">C</a> - <a href="#G">G</a> - <a href="#H">H</a> - <a href="#L">L</a> - <a href="#M">M</a> - <a href="#N">N</a> - <a href="#P">P</a> - <a href="#S">S</a> - <a href="#T">T</a> - <a href="#U">U</a> - <a href="#W">W</a> - <a href="#_">_</a></p>
-        <ul>
+        <ul id="summaryTree">
           <li>analyze - <a href="Wappalyzer.html#analyze" class="code" data-type="Function">Wappalyzer.analyze</a></li><li>analyze_with_categories - <a href="Wappalyzer.Wappalyzer.html#analyze_with_categories" class="code" data-type="Method">Wappalyzer.Wappalyzer.analyze_with_categories</a></li><li>analyze_with_versions - <a href="Wappalyzer.Wappalyzer.html#analyze_with_versions" class="code" data-type="Method">Wappalyzer.Wappalyzer.analyze_with_versions</a></li><li>analyze_with_versions_and_categories - <a href="Wappalyzer.Wappalyzer.html#analyze_with_versions_and_categories" class="code" data-type="Method">Wappalyzer.Wappalyzer.analyze_with_versions_and_categories</a></li>
         </ul>
       
@@ -44,8 +47,8 @@
         </a>
         <h2>C</h2>
         <p class="letterlinks"><a href="#A">A</a> - C - <a href="#G">G</a> - <a href="#H">H</a> - <a href="#L">L</a> - <a href="#M">M</a> - <a href="#N">N</a> - <a href="#P">P</a> - <a href="#S">S</a> - <a href="#T">T</a> - <a href="#U">U</a> - <a href="#W">W</a> - <a href="#_">_</a></p>
-        <ul>
-          <li>categories - <a href="Wappalyzer.Wappalyzer.html#categories" class="code" data-type="Instance Variable">Wappalyzer.Wappalyzer.categories</a></li><li>confidence_regexp - <a href="Wappalyzer.Wappalyzer.html#confidence_regexp" class="code" data-type="Instance Variable">Wappalyzer.Wappalyzer.confidence_regexp</a></li>
+        <ul id="summaryTree">
+          <li>categories - <a href="Wappalyzer.Wappalyzer.html#categories" class="code" data-type="Instance Variable">Wappalyzer.Wappalyzer.categories</a></li>
         </ul>
       
         <a name="G">
@@ -53,8 +56,8 @@
         </a>
         <h2>G</h2>
         <p class="letterlinks"><a href="#A">A</a> - <a href="#C">C</a> - G - <a href="#H">H</a> - <a href="#L">L</a> - <a href="#M">M</a> - <a href="#N">N</a> - <a href="#P">P</a> - <a href="#S">S</a> - <a href="#T">T</a> - <a href="#U">U</a> - <a href="#W">W</a> - <a href="#_">_</a></p>
-        <ul>
-          <li>get_categories - <a href="Wappalyzer.Wappalyzer.html#get_categories" class="code" data-type="Method">Wappalyzer.Wappalyzer.get_categories</a></li><li>get_confidence - <a href="Wappalyzer.Wappalyzer.html#get_confidence" class="code" data-type="Method">Wappalyzer.Wappalyzer.get_confidence</a></li><li>get_parser - <a href="Wappalyzer.__main__.html#get_parser" class="code" data-type="Function">Wappalyzer.__main__.get_parser</a></li><li>get_versions - <a href="Wappalyzer.Wappalyzer.html#get_versions" class="code" data-type="Method">Wappalyzer.Wappalyzer.get_versions</a></li>
+        <ul id="summaryTree">
+          <li>get_categories - <a href="Wappalyzer.Wappalyzer.html#get_categories" class="code" data-type="Method">Wappalyzer.Wappalyzer.get_categories</a></li><li>get_confidence - <a href="Wappalyzer.Wappalyzer.html#get_confidence" class="code" data-type="Method">Wappalyzer.Wappalyzer.get_confidence</a></li><li class="private">get_parser - <a href="Wappalyzer.__main__.html#get_parser" class="code" data-type="Function">Wappalyzer.__main__.get_parser</a></li><li>get_versions - <a href="Wappalyzer.Wappalyzer.html#get_versions" class="code" data-type="Method">Wappalyzer.Wappalyzer.get_versions</a></li>
         </ul>
       
         <a name="H">
@@ -62,7 +65,7 @@
         </a>
         <h2>H</h2>
         <p class="letterlinks"><a href="#A">A</a> - <a href="#C">C</a> - <a href="#G">G</a> - H - <a href="#L">L</a> - <a href="#M">M</a> - <a href="#N">N</a> - <a href="#P">P</a> - <a href="#S">S</a> - <a href="#T">T</a> - <a href="#U">U</a> - <a href="#W">W</a> - <a href="#_">_</a></p>
-        <ul>
+        <ul id="summaryTree">
           <li>headers - <a href="Wappalyzer.WebPage.html#headers" class="code" data-type="Instance Variable">Wappalyzer.WebPage.headers</a></li><li>html - <a href="Wappalyzer.WebPage.html#html" class="code" data-type="Instance Variable">Wappalyzer.WebPage.html</a></li>
         </ul>
       
@@ -71,7 +74,7 @@
         </a>
         <h2>L</h2>
         <p class="letterlinks"><a href="#A">A</a> - <a href="#C">C</a> - <a href="#G">G</a> - <a href="#H">H</a> - L - <a href="#M">M</a> - <a href="#N">N</a> - <a href="#P">P</a> - <a href="#S">S</a> - <a href="#T">T</a> - <a href="#U">U</a> - <a href="#W">W</a> - <a href="#_">_</a></p>
-        <ul>
+        <ul id="summaryTree">
           <li>latest - <a href="Wappalyzer.Wappalyzer.html#latest" class="code" data-type="Class Method">Wappalyzer.Wappalyzer.latest</a></li><li>logger - <a href="Wappalyzer.Wappalyzer.html#logger" class="code" data-type="Variable">Wappalyzer.Wappalyzer.logger</a></li>
         </ul>
       
@@ -80,8 +83,8 @@
         </a>
         <h2>M</h2>
         <p class="letterlinks"><a href="#A">A</a> - <a href="#C">C</a> - <a href="#G">G</a> - <a href="#H">H</a> - <a href="#L">L</a> - M - <a href="#N">N</a> - <a href="#P">P</a> - <a href="#S">S</a> - <a href="#T">T</a> - <a href="#U">U</a> - <a href="#W">W</a> - <a href="#_">_</a></p>
-        <ul>
-          <li>main - <a href="Wappalyzer.__main__.html#main" class="code" data-type="Function">Wappalyzer.__main__.main</a></li><li>meta - <a href="Wappalyzer.WebPage.html#meta" class="code" data-type="Instance Variable">Wappalyzer.WebPage.meta</a></li>
+        <ul id="summaryTree">
+          <li class="private">main - <a href="Wappalyzer.__main__.html#main" class="code" data-type="Function">Wappalyzer.__main__.main</a></li><li>meta - <a href="Wappalyzer.WebPage.html#meta" class="code" data-type="Instance Variable">Wappalyzer.WebPage.meta</a></li>
         </ul>
       
         <a name="N">
@@ -89,7 +92,7 @@
         </a>
         <h2>N</h2>
         <p class="letterlinks"><a href="#A">A</a> - <a href="#C">C</a> - <a href="#G">G</a> - <a href="#H">H</a> - <a href="#L">L</a> - <a href="#M">M</a> - N - <a href="#P">P</a> - <a href="#S">S</a> - <a href="#T">T</a> - <a href="#U">U</a> - <a href="#W">W</a> - <a href="#_">_</a></p>
-        <ul>
+        <ul id="summaryTree">
           <li>new_from_response - <a href="Wappalyzer.WebPage.html#new_from_response" class="code" data-type="Class Method">Wappalyzer.WebPage.new_from_response</a></li><li>new_from_response_async - <a href="Wappalyzer.WebPage.html#new_from_response_async" class="code" data-type="Class Method">Wappalyzer.WebPage.new_from_response_async</a></li><li>new_from_url - <a href="Wappalyzer.WebPage.html#new_from_url" class="code" data-type="Class Method">Wappalyzer.WebPage.new_from_url</a></li><li>new_from_url_async - <a href="Wappalyzer.WebPage.html#new_from_url_async" class="code" data-type="Class Method">Wappalyzer.WebPage.new_from_url_async</a></li>
         </ul>
       
@@ -98,7 +101,7 @@
         </a>
         <h2>P</h2>
         <p class="letterlinks"><a href="#A">A</a> - <a href="#C">C</a> - <a href="#G">G</a> - <a href="#H">H</a> - <a href="#L">L</a> - <a href="#M">M</a> - <a href="#N">N</a> - P - <a href="#S">S</a> - <a href="#T">T</a> - <a href="#U">U</a> - <a href="#W">W</a> - <a href="#_">_</a></p>
-        <ul>
+        <ul id="summaryTree">
           <li>parsed_html - <a href="Wappalyzer.WebPage.html#parsed_html" class="code" data-type="Instance Variable">Wappalyzer.WebPage.parsed_html</a></li>
         </ul>
       
@@ -107,7 +110,7 @@
         </a>
         <h2>S</h2>
         <p class="letterlinks"><a href="#A">A</a> - <a href="#C">C</a> - <a href="#G">G</a> - <a href="#H">H</a> - <a href="#L">L</a> - <a href="#M">M</a> - <a href="#N">N</a> - <a href="#P">P</a> - S - <a href="#T">T</a> - <a href="#U">U</a> - <a href="#W">W</a> - <a href="#_">_</a></p>
-        <ul>
+        <ul id="summaryTree">
           <li>scripts - <a href="Wappalyzer.WebPage.html#scripts" class="code" data-type="Instance Variable">Wappalyzer.WebPage.scripts</a></li>
         </ul>
       
@@ -116,7 +119,7 @@
         </a>
         <h2>T</h2>
         <p class="letterlinks"><a href="#A">A</a> - <a href="#C">C</a> - <a href="#G">G</a> - <a href="#H">H</a> - <a href="#L">L</a> - <a href="#M">M</a> - <a href="#N">N</a> - <a href="#P">P</a> - <a href="#S">S</a> - T - <a href="#U">U</a> - <a href="#W">W</a> - <a href="#_">_</a></p>
-        <ul>
+        <ul id="summaryTree">
           <li>technologies - <a href="Wappalyzer.Wappalyzer.html#technologies" class="code" data-type="Instance Variable">Wappalyzer.Wappalyzer.technologies</a></li>
         </ul>
       
@@ -125,7 +128,7 @@
         </a>
         <h2>U</h2>
         <p class="letterlinks"><a href="#A">A</a> - <a href="#C">C</a> - <a href="#G">G</a> - <a href="#H">H</a> - <a href="#L">L</a> - <a href="#M">M</a> - <a href="#N">N</a> - <a href="#P">P</a> - <a href="#S">S</a> - <a href="#T">T</a> - U - <a href="#W">W</a> - <a href="#_">_</a></p>
-        <ul>
+        <ul id="summaryTree">
           <li>url - <a href="Wappalyzer.WebPage.html#url" class="code" data-type="Instance Variable">Wappalyzer.WebPage.url</a></li>
         </ul>
       
@@ -134,7 +137,7 @@
         </a>
         <h2>W</h2>
         <p class="letterlinks"><a href="#A">A</a> - <a href="#C">C</a> - <a href="#G">G</a> - <a href="#H">H</a> - <a href="#L">L</a> - <a href="#M">M</a> - <a href="#N">N</a> - <a href="#P">P</a> - <a href="#S">S</a> - <a href="#T">T</a> - <a href="#U">U</a> - W - <a href="#_">_</a></p>
-        <ul>
+        <ul id="summaryTree">
           <li>Wappalyzer<ul><li><a href="Wappalyzer.html" class="code" data-type="Package">Wappalyzer</a></li><li><a href="Wappalyzer.Wappalyzer.html" class="code" data-type="Class">Wappalyzer.Wappalyzer</a></li></ul></li><li>WappalyzerError - <a href="Wappalyzer.Wappalyzer.WappalyzerError.html" class="code" data-type="Class">Wappalyzer.Wappalyzer.WappalyzerError</a></li><li>WebPage - <a href="Wappalyzer.WebPage.html" class="code" data-type="Class">Wappalyzer.WebPage</a></li>
         </ul>
       
@@ -143,12 +146,15 @@
         </a>
         <h2>_</h2>
         <p class="letterlinks"><a href="#A">A</a> - <a href="#C">C</a> - <a href="#G">G</a> - <a href="#H">H</a> - <a href="#L">L</a> - <a href="#M">M</a> - <a href="#N">N</a> - <a href="#P">P</a> - <a href="#S">S</a> - <a href="#T">T</a> - <a href="#U">U</a> - <a href="#W">W</a> - _</p>
-        <ul>
-          <li>__init__<ul><li><a href="Wappalyzer.html#__init__" class="code" data-type="Module">Wappalyzer.__init__</a></li><li><a href="Wappalyzer.Wappalyzer.html#__init__" class="code" data-type="Method">Wappalyzer.Wappalyzer.__init__</a></li><li><a href="Wappalyzer.WebPage.html#__init__" class="code" data-type="Method">Wappalyzer.WebPage.__init__</a></li></ul></li><li>__main__ - <a href="Wappalyzer.__main__.html" class="code" data-type="Module">Wappalyzer.__main__</a></li><li>_cmp_to_key - <a href="Wappalyzer.Wappalyzer.html#_cmp_to_key" class="code" data-type="Method">Wappalyzer.Wappalyzer._cmp_to_key</a></li><li>_get_implied_technologies - <a href="Wappalyzer.Wappalyzer.html#_get_implied_technologies" class="code" data-type="Method">Wappalyzer.Wappalyzer._get_implied_technologies</a></li><li>_has_technology - <a href="Wappalyzer.Wappalyzer.html#_has_technology" class="code" data-type="Method">Wappalyzer.Wappalyzer._has_technology</a></li><li>_parse_html - <a href="Wappalyzer.WebPage.html#_parse_html" class="code" data-type="Method">Wappalyzer.WebPage._parse_html</a></li><li>_prepare_pattern - <a href="Wappalyzer.Wappalyzer.html#_prepare_pattern" class="code" data-type="Method">Wappalyzer.Wappalyzer._prepare_pattern</a></li><li>_prepare_technology - <a href="Wappalyzer.Wappalyzer.html#_prepare_technology" class="code" data-type="Method">Wappalyzer.Wappalyzer._prepare_technology</a></li><li>_set_app_version - <a href="Wappalyzer.Wappalyzer.html#_set_app_version" class="code" data-type="Method">Wappalyzer.Wappalyzer._set_app_version</a></li><li>_set_detected_app - <a href="Wappalyzer.Wappalyzer.html#_set_detected_app" class="code" data-type="Method">Wappalyzer.Wappalyzer._set_detected_app</a></li><li>_sort_app_versions - <a href="Wappalyzer.Wappalyzer.html#_sort_app_versions" class="code" data-type="Method">Wappalyzer.Wappalyzer._sort_app_versions</a></li>
+        <ul id="summaryTree">
+          <li>__init__<ul><li><a href="Wappalyzer.html#__init__" class="code" data-type="Module">Wappalyzer.__init__</a></li><li><a href="Wappalyzer.Wappalyzer.html#__init__" class="code" data-type="Method">Wappalyzer.Wappalyzer.__init__</a></li><li><a href="Wappalyzer.WebPage.html#__init__" class="code" data-type="Method">Wappalyzer.WebPage.__init__</a></li></ul></li><li class="private">__main__ - <a href="Wappalyzer.__main__.html" class="code" data-type="Module">Wappalyzer.__main__</a></li><li class="private">_cmp_to_key - <a href="Wappalyzer.Wappalyzer.html#_cmp_to_key" class="code" data-type="Method">Wappalyzer.Wappalyzer._cmp_to_key</a></li><li class="private">_confidence_regexp - <a href="Wappalyzer.Wappalyzer.html#_confidence_regexp" class="code" data-type="Instance Variable">Wappalyzer.Wappalyzer._confidence_regexp</a></li><li class="private">_find_files - <a href="Wappalyzer.Wappalyzer.html#_find_files" class="code" data-type="Static Method">Wappalyzer.Wappalyzer._find_files</a></li><li class="private">_get_implied_technologies - <a href="Wappalyzer.Wappalyzer.html#_get_implied_technologies" class="code" data-type="Method">Wappalyzer.Wappalyzer._get_implied_technologies</a></li><li class="private">_has_technology - <a href="Wappalyzer.Wappalyzer.html#_has_technology" class="code" data-type="Method">Wappalyzer.Wappalyzer._has_technology</a></li><li class="private">_parse_html - <a href="Wappalyzer.WebPage.html#_parse_html" class="code" data-type="Method">Wappalyzer.WebPage._parse_html</a></li><li class="private">_prepare_pattern - <a href="Wappalyzer.Wappalyzer.html#_prepare_pattern" class="code" data-type="Method">Wappalyzer.Wappalyzer._prepare_pattern</a></li><li class="private">_prepare_technology - <a href="Wappalyzer.Wappalyzer.html#_prepare_technology" class="code" data-type="Method">Wappalyzer.Wappalyzer._prepare_technology</a></li><li class="private">_set_app_version - <a href="Wappalyzer.Wappalyzer.html#_set_app_version" class="code" data-type="Method">Wappalyzer.Wappalyzer._set_app_version</a></li><li class="private">_set_detected_app - <a href="Wappalyzer.Wappalyzer.html#_set_detected_app" class="code" data-type="Method">Wappalyzer.Wappalyzer._set_detected_app</a></li><li class="private">_sort_app_versions - <a href="Wappalyzer.Wappalyzer.html#_sort_app_versions" class="code" data-type="Method">Wappalyzer.Wappalyzer._sort_app_versions</a></li>
         </ul>
       
 
     </div>
+
+    <script src="pydoctor.js" type="text/javascript"></script>
+
   </body>
 
 </html>
