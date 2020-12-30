@@ -24,7 +24,7 @@ jobs:
     - name: Generate pydoctor documentation
       run: |
         # Run pydoctor build
-        tox -e docs
+        tox -e docs -- $(git rev-parse HEAD)
 
     - name: Publish pydoctor documentation to the gh-pages branch
       uses: peaceiris/actions-gh-pages@v3
