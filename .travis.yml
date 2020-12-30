@@ -16,6 +16,7 @@ install:
 
 script:
   - pipenv run python -m pytest --cov Wappalyzer
+  - tox -e mypy
 
 after_success:
   - pipenv run python -m coveralls

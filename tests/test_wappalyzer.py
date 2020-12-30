@@ -1,12 +1,16 @@
 import pytest
 import asyncio
 import requests
+import json
+
+from contextlib import redirect_stdout
+from io import StringIO
 
 from httpretty import HTTPretty, httprettified
 from aioresponses import aioresponses
 
 from Wappalyzer import WebPage, Wappalyzer
-
+from Wappalyzer.__main__ import get_parser, main
 
 @pytest.fixture
 def async_mock():
@@ -210,9 +214,24 @@ def test_pass_request_params():
 
     try:
         webpage = WebPage.new_from_url('http://example.com/', timeout=0.00001)
-        assert False #"Shoud have triggered TimeoutError"
+        assert False #"Shoud have triggered ConnectTimeout"
     except requests.exceptions.ConnectTimeout:
         assert True
     except:
-        assert False #"Shoud have triggered TimeoutError"
+        assert False #"Shoud have triggered ConnectTimeout"
+
+def cli(*args):
+    """Wrap python-Wappalyzer CLI exec"""
+
+    with StringIO() as stream:
+        with redirect_stdout(stream):
+            main(get_parser().parse_args(args))
+        result = json.loads(stream.getvalue())
+    return result
+
+def test_cli():
+    r = cli('http://exemple.com', '--update', '--user-agent', 'Mozilla/5.0', '--timeout', '30')
+    assert len(r) > 2
+    assert "Bootstrap" in r
+
 
