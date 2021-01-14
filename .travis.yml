@@ -11,7 +11,7 @@ jobs:
     - python: "3.9-dev"
 
 install:
-  - pip install pipenv
+  - pip install pipenv tox
   - pipenv install --dev
 
 script:
