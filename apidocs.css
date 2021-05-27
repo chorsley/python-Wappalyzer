@@ -1,3 +1,7 @@
+body {
+    overflow-y: scroll;
+}
+
 .navbar {
     margin-bottom: 0px;
 }
@@ -6,6 +10,10 @@
     margin-top: 22px;
     position: sticky;
     top: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
     background-color: #fff;
     margin-bottom: 3px;
     border-bottom: 0;
@@ -23,7 +31,8 @@
 
 a[name] {
     position: relative;
-    bottom: 62px;
+    bottom: 80px;
+    font-size: 0;
 }
 
 ul {
@@ -76,7 +85,6 @@ ul ul ul ul ul ul ul {
 
 .pre {
     white-space: pre;
-    font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
 }
 
 .undocumented {
@@ -125,7 +133,6 @@ ul ul ul ul ul ul ul {
 }
 
 #splitTables > table tr td:nth-child(2), .fieldTable tr td.fieldArg {
-    font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
     width: 200px;
 }
 
@@ -196,40 +203,42 @@ tr.private {
 }
 
 /*
-- <h1><code></code></h1> : This is for the main top navagation bar
-
-- <a><code></code><a> for links in docstrings texts
-This is inline docstring content marked up as code, for example L{foo} in epytext
-or `bar` in restructuredtext
-
-- <a class="code"> links that are present in summary tables
+- Links to class/function/etc names are nested like this:
+    <code><a>label</a></code>
+  This applies to inline docstring content marked up as code,
+  for example L{foo} in epytext or `bar` in restructuredtext,
+  but also to links that are present in summary tables.
+- 'functionHeader' is used for lines like `def func():` and `var =`
 */
-a > code, a.code {
+code, .pre, #childList > div .functionHeader,
+#splitTables > table tr td:nth-child(2), .fieldTable tr td.fieldArg {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+code, #childList > div .functionHeader, .fieldTable tr td.fieldArg {
+    font-size: 90%;
+    color: #222222;
+}
+code > a {
     color:#c7254e;
     background-color:#f9f2f4;
+}
+/* top navagation bar */
+.page-header > h1 {
+    margin-top: 0;
 }
 .page-header > h1 > code {
     color: #971c3a;
 }
 
 /*
-This defines  the "code" class, it's black on light gray,
-
+This defines the code style, it's black on light gray.
 It also overwrite the default values inherited from bootstrap min
 */
-code, .code {
-    font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+code {
     padding:2px 4px;
-    font-size:90%;
-    color: #222222;
     background-color: #f4f4f4;
     border-radius:4px
 }
-
-code > .code {
-    padding: 0px;
-}
-
 
 
 a.functionSourceLink {
@@ -242,15 +251,6 @@ a.functionSourceLink {
     border-left-width: 1px;
     border-left-style: solid;
     background: #fafafa;
-}
-
-/* Function definitions `def func():` and `var =` */
-
-#childList > div .functionHeader {
-    font-family: monospace;
-    font-weight: bold;
-    color: #222222;
-
 }
 
 .moduleDocstring {
@@ -279,15 +279,7 @@ body.private-hidden #summaryTree .private {
 }
 
 #showPrivate {
-    position: fixed;
-    bottom: 0;
-    left: 0;
     padding: 10px;
-    opacity: 0.7;
-}
-
-#showPrivate:hover {
-    opacity: 1;
 }
 
 #current-docs-container {
@@ -332,4 +324,46 @@ pre.py-doctest {
 }
 .py-output {
     color: #c7254e;
+}
+
+/* Admonitions */
+
+div.rst-admonition p.rst-admonition-title:after {
+    content: ":";
+}
+
+div.rst-admonition p.rst-admonition-title {
+    margin: 0;
+    padding: 0.1em 0 0.35em 0em;
+    font-weight: bold;
+}
+
+div.rst-admonition p.rst-admonition-title {
+    color: #333333;
+}
+
+div.rst-admonition {
+    padding: 8px;
+    margin-bottom: 20px;
+    background-color: #EEE;
+    border: 1px solid #CCC;
+    border-radius: 4px;
+}
+
+div.warning, div.attention, div.danger, div.error, div.caution {
+    background-color: #ffcf9cb0;
+    border: 1px solid #ffbbaa;
+}
+
+div.danger p.rst-admonition-title, div.error p.rst-admonition-title, div.caution p.rst-admonition-title {
+    color: #b94a48;
+}
+
+div.tip p.rst-admonition-title, div.hint p.rst-admonition-title, div.important p.rst-admonition-title{
+    color: #3a87ad;
+}
+
+div.tip, div.hint, div.important {
+    background-color: #d9edf7;
+    border-color: #bce8f1;
 }

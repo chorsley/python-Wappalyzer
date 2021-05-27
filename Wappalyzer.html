@@ -13,22 +13,20 @@
 
     <nav class="navbar navbar-default">
       <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="index.html">
-            <a href="https://github.com/chorsley/python-Wappalyzer/">python-Wappalyzer</a> API Documentation
-          </a>
+        <div class="navbar-header navbar-brand">
+          <a href="https://github.com/chorsley/python-Wappalyzer/">python-Wappalyzer</a>
+          <a href="index.html">API Documentation</a>
         </div>
       </div>
     </nav>
 
-    <div id="showPrivate">
-      <button class="btn btn-link" onclick="togglePrivate()">Toggle Private API</button>
-    </div>
-
     <div class="container">
 
       <div class="page-header">
-        <h1 class="package"><code><a href="Wappalyzer.html" class="code" data-type="Package">Wappalyzer</a></code></h1>
+        <h1 class="package"><code><code><a href="Wappalyzer.html">Wappalyzer</a></code></code></h1>
+        <div id="showPrivate">
+          <button class="btn btn-link" onclick="togglePrivate()">Toggle Private API</button>
+        </div>
       </div>
 
       <div class="categoryHeader">
@@ -36,12 +34,12 @@
       </div>
 
       <div class="extrasDocstring">
-        <a href="https://github.com/chorsley/python-Wappalyzer/tree/7610a74255e664ffb70f1d7e48c3c3fa3c77ca2b//Wappalyzer/__init__.py">(source)</a>
+        <a href="https://github.com/chorsley/python-Wappalyzer/tree/ceb2f8ecd88a003bb3f4c9100959cdc0970dc270//Wappalyzer/__init__.py">(source)</a>
         <p></p>
       </div>
 
       <div class="moduleDocstring">
-        <div>Welcome to <tt class="rst-docutils literal"><span class="pre">python-Wappalyzer</span></tt> API documentation!<table class="fieldTable"><tr class="fieldStart"><td class="fieldName">See Also</td><td colspan="2"><a href="Wappalyzer.html"><code>Wappalyzer</code></a></td></tr></table></div>
+        <div>Welcome to <tt class="rst-docutils literal"><span class="pre">python-Wappalyzer</span></tt> API documentation!<table class="fieldTable"><tr class="fieldStart"><td class="fieldName">See Also</td><td colspan="2"><code><a href="Wappalyzer.html">Wappalyzer</a></code></td></tr></table></div>
       </div>
 
       <div id="splitTables">
@@ -50,12 +48,12 @@
   <tr class="module">
     
     <td>Module</td>
-    <td><a href="Wappalyzer.Wappalyzer.html" class="code" data-type="Module">Wappalyzer</a></td>
+    <td><code><a href="Wappalyzer.Wappalyzer.html">Wappalyzer</a></code></td>
     <td><span class="undocumented">No module docstring; 1/1 classes, 0/1 variables documented</span></td>
   </tr><tr class="module private">
     
     <td>Module</td>
-    <td><a href="Wappalyzer.__main__.html" class="code" data-type="Module">__main__</a></td>
+    <td><code><a href="Wappalyzer.__main__.html">__main__</a></code></td>
     <td><span class="undocumented">No module docstring; 2/2 functions documented</span></td>
   </tr>
 </table>
@@ -66,17 +64,17 @@
   <tr class="class">
     
     <td>Class</td>
-    <td><a href="Wappalyzer.Wappalyzer.html" class="code" data-type="Class">Wappalyzer</a></td>
+    <td><code><a href="Wappalyzer.Wappalyzer.html">Wappalyzer</a></code></td>
     <td><span>Python Wappalyzer driver.</span></td>
   </tr><tr class="class">
     
     <td>Class</td>
-    <td><a href="Wappalyzer.WebPage.html" class="code" data-type="Class">WebPage</a></td>
+    <td><code><a href="Wappalyzer.WebPage.html">WebPage</a></code></td>
     <td><span>Simple representation of a web page, decoupled from any particular HTTP library's API.</span></td>
   </tr><tr class="function">
     
     <td>Function</td>
-    <td><a href="Wappalyzer.html#analyze" class="code" data-type="Function">analyze</a></td>
+    <td><code><a href="Wappalyzer.html#analyze">analyze</a></code></td>
     <td><span>Quick utility method to analyze a website with minimal configurable options.</span></td>
   </tr>
 </table>
@@ -94,8 +92,8 @@
   </a>
   <div class="functionHeader">
     
-    def analyze(url, update=False, useragent=None, timeout=10, verify=True):
-    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/7610a74255e664ffb70f1d7e48c3c3fa3c77ca2b//Wappalyzer/Wappalyzer.py#L655">
+    <span class="py-keyword">def</span> <span class="py-defname">analyze</span>(url, update=False, useragent=None, timeout=10, verify=True):
+    <a class="functionSourceLink" href="https://github.com/chorsley/python-Wappalyzer/tree/ceb2f8ecd88a003bb3f4c9100959cdc0970dc270//Wappalyzer/Wappalyzer.py#L667">
       
       (source)
     </a>
@@ -103,13 +101,13 @@
   <div class="docstring functionBody">
     
     
-    <div>Quick utility method to analyze a website with minimal configurable options.<table class="fieldTable"><tr class="fieldStart"><td class="fieldName">Parameters</td><td class="fieldArg">url</td><td>URL (type: <code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="code">str</a></code>)</td></tr><tr><td></td><td class="fieldArg">update</td><td>Update the technologies file from the internet (type: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="code">bool</a></code>)</td></tr><tr><td></td><td class="fieldArg">useragent</td><td>Request user agent (type: <code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="code">str</a></code>)</td></tr><tr><td></td><td class="fieldArg">timeout</td><td>Request timeout (type: <code><a href="https://docs.python.org/3/library/functions.html#int" class="code">int</a></code>)</td></tr><tr><td></td><td class="fieldArg">verify</td><td>SSL cert verify (type: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="code">bool</a></code>)</td></tr><tr class="fieldStart"><td class="fieldName">Returns</td><td colspan="2"><a href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a>. Just as <a href="Wappalyzer.Wappalyzer.html#analyze_with_versions_and_categories"><code>Wappalyzer.analyze_with_versions_and_categories</code></a>. (type: <code>Dict[<a href="https://docs.python.org/3/library/stdtypes.html#str" class="code">str</a>, Dict[<a href="https://docs.python.org/3/library/stdtypes.html#str" class="code">str</a>, Any]]</code>)</td></tr><tr class="fieldStart"><td class="fieldName">See Also</td><td colspan="2"><a href="Wappalyzer.WebPage.html"><code>WebPage</code></a> and <a href="Wappalyzer.html"><code>Wappalyzer</code></a>.</td></tr><tr class="fieldStart"><td class="fieldName">Note</td><td colspan="2">More information might be added to the returned values in the future</td></tr></table></div>
+    <div>Quick utility method to analyze a website with minimal configurable options.<table class="fieldTable"><tr class="fieldStart"><td class="fieldName">Parameters</td><td class="fieldArg">url</td><td>URL (type: <code><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>)</td></tr><tr><td></td><td class="fieldArg">update</td><td>Update the technologies file from the internet (type: <code><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>)</td></tr><tr><td></td><td class="fieldArg">useragent</td><td>Request user agent (type: <code><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>)</td></tr><tr><td></td><td class="fieldArg">timeout</td><td>Request timeout (type: <code><a href="https://docs.python.org/3/library/functions.html#int">int</a></code>)</td></tr><tr><td></td><td class="fieldArg">verify</td><td>SSL cert verify (type: <code><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>)</td></tr><tr class="fieldStart"><td class="fieldName">Returns</td><td colspan="2"><code><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></code>. Just as <code><a href="Wappalyzer.Wappalyzer.html#analyze_with_versions_and_categories">Wappalyzer.analyze_with_versions_and_categories</a></code>. (type: <code>Dict[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, Dict[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, Any]]</code>)</td></tr><tr class="fieldStart"><td class="fieldName">See Also</td><td colspan="2"><code><a href="Wappalyzer.WebPage.html">WebPage</a></code> and <code><a href="Wappalyzer.html">Wappalyzer</a></code>.</td></tr><tr class="fieldStart"><td class="fieldName">Note</td><td colspan="2">More information might be added to the returned values in the future</td></tr></table></div>
   </div>
 </div>
 
       </div>
       <address>
-        <a href="index.html">API Documentation</a> for <a href="https://github.com/chorsley/python-Wappalyzer/">python-Wappalyzer</a>, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> 20.12.1 at 2021-01-14 21:31:32.
+        <a href="index.html">API Documentation</a> for <a href="https://github.com/chorsley/python-Wappalyzer/">python-Wappalyzer</a>, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> 21.2.2 at 2021-05-27 18:31:31.
       </address>
 
     </div>
