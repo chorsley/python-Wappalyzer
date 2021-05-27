@@ -210,6 +210,55 @@ def test_analyze_with_versions_and_categories():
 
     assert ("WordPress", {"categories": ["CMS", "Blog"], "versions": ["5.4.2"]}) in result.items()
 
+def test_analyze_with_versions_and_categories_pattern_lists():
+    
+    webpage = WebPage('http://wordpress-example.com', '<html><head><meta name="generator" content="WordPress 5.4.2"></head></html>', {})
+    
+    categories = {
+        "1": {
+            "name": "CMS",
+            "priority": 1
+        },
+        "11": {
+            "name": "Blog",
+            "priority": 1
+        }
+    }
+
+    technologies = {
+        "WordPress": {
+            "cats": [
+                1,
+                11
+            ],
+            "html": [],
+            "icon": "WordPress.svg",
+            "implies": [
+                "PHP",
+                "MySQL"
+            ],
+            "meta": {
+                "generator": ["Whatever123", "Whatever456", "^WordPress ?([\\d.]+)?\\;version:\\1", "Whatever"]
+            },
+            "website": "https://wordpress.org"
+            },
+        'b': {
+            'html': 'bbb',
+            'cats': [1, 2],
+        },
+        "PHP": {
+            "website": "http://php.net"
+        },
+        "MySQL": {
+            "website": "http://mysql.com"
+        },
+    }
+
+    analyzer = Wappalyzer(categories=categories, technologies=technologies)
+    result = analyzer.analyze_with_versions_and_categories(webpage)
+
+    assert ("WordPress", {"categories": ["CMS", "Blog"], "versions": ["5.4.2"]}) in result.items()
+
 def test_pass_request_params():
 
     try:
