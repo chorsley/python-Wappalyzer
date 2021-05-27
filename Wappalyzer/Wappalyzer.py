@@ -236,7 +236,7 @@ class Wappalyzer:
             if _files:
                 technologies_file = pathlib.Path(_files.pop())
                 last_modification_time = datetime.fromtimestamp(technologies_file.stat().st_mtime)
-                if datetime.now() - last_modification_time < timedelta(hours=2):
+                if datetime.now() - last_modification_time < timedelta(hours=24):
                     should_update = False
 
             # Get the lastest file
@@ -257,7 +257,7 @@ class Wappalyzer:
                     logger.error("Could not download latest Wappalyzer technologies.json file because of error : '{}'. Using default. ".format(err))
                     obj = json.loads(default)
             else:
-                logger.info("python-Wappalyzer technologies.json file not updated because already update in the last 24h")
+                logger.info("python-Wappalyzer technologies.json file not updated because already updated in the last 24h")
                 with technologies_file.open('r') as tfile:
                     obj = json.load(tfile)
 
@@ -339,40 +339,50 @@ class Wappalyzer:
 
         # Prepare regular expression patterns
         for key in ['url', 'html', 'scripts']:
-            technology[key] = [self._prepare_pattern(pattern) for pattern in technology[key]]
+            patterns = []
+            for pattern in technology[key]:
+                patterns.extend(self._prepare_pattern(pattern))
+            technology[key] = patterns
 
         for key in ['headers', 'meta']:
             obj = technology[key]
             for name, pattern in list(obj.items()):
                 obj[name] = self._prepare_pattern(obj[name])
 
-    def _prepare_pattern(self, pattern:str) -> Dict[str, Any]:
+    def _prepare_pattern(self, pattern:Union[str, List[str]]) -> List[Dict[str, Any]]:
         """
         Strip out key:value pairs from the pattern and compile the regular
         expression.
         """
-        attrs = {}
-        patterns = pattern.split('\\;')
-        for index, expression in enumerate(patterns):
-            if index == 0:
-                attrs['string'] = expression
-                try:
-                    attrs['regex'] = re.compile(expression, re.I) # type: ignore
-                except re.error as err:
-                    # Wappalyzer is a JavaScript application therefore some of the regex wont compile in Python.
-                    logger.debug(
-                        "Caught '{error}' compiling regex: {regex}".format(
-                            error=err, regex=patterns)
-                    )
-                    # regex that never matches:
-                    # http://stackoverflow.com/a/1845097/413622
-                    attrs['regex'] = re.compile(r'(?!x)x') # type: ignore
-            else:
-                attr = expression.split(':')
-                if len(attr) > 1:
-                    key = attr.pop(0)
-                    attrs[str(key)] = ':'.join(attr)
-        return attrs
+        prep_patterns = []
+        if isinstance(pattern, list):
+            for p in pattern:
+                prep_patterns.extend(self._prepare_pattern(p))
+        else:
+            attrs = {}
+            patterns = pattern.split('\\;')
+            for index, expression in enumerate(patterns):
+                if index == 0:
+                    attrs['string'] = expression
+                    try:
+                        attrs['regex'] = re.compile(expression, re.I) # type: ignore
+                    except re.error as err:
+                        # Wappalyzer is a JavaScript application therefore some of the regex wont compile in Python.
+                        logger.debug(
+                            "Caught '{error}' compiling regex: {regex}".format(
+                                error=err, regex=patterns)
+                        )
+                        # regex that never matches:
+                        # http://stackoverflow.com/a/1845097/413622
+                        attrs['regex'] = re.compile(r'(?!x)x') # type: ignore
+                else:
+                    attr = expression.split(':')
+                    if len(attr) > 1:
+                        key = attr.pop(0)
+                        attrs[str(key)] = ':'.join(attr)
+            prep_patterns.append(attrs)
+
+        return prep_patterns
 
     def _has_technology(self, technology: Dict[str, Any], webpage: WebPage) -> bool:
         """
@@ -388,12 +398,13 @@ class Wappalyzer:
             if pattern['regex'].search(webpage.url):
                 self._set_detected_app(app, 'url', pattern, webpage.url)
 
-        for name, pattern in list(app['headers'].items()):
+        for name, patterns in list(app['headers'].items()):
             if name in webpage.headers:
                 content = webpage.headers[name]
-                if pattern['regex'].search(content):
-                    self._set_detected_app(app, 'headers', pattern, content, name)
-                    has_app = True
+                for pattern in patterns:
+                    if pattern['regex'].search(content):
+                        self._set_detected_app(app, 'headers', pattern, content, name)
+                        has_app = True
 
         for pattern in technology['scripts']:
             for script in webpage.scripts:
@@ -401,12 +412,13 @@ class Wappalyzer:
                     self._set_detected_app(app, 'scripts', pattern, script)
                     has_app = True
 
-        for name, pattern in list(technology['meta'].items()):
+        for name, patterns in list(technology['meta'].items()):
             if name in webpage.meta:
                 content = webpage.meta[name]
-                if pattern['regex'].search(content):
-                    self._set_detected_app(app, 'meta', pattern, content, name)
-                    has_app = True
+                for pattern in patterns:
+                    if pattern['regex'].search(content):
+                        self._set_detected_app(app, 'meta', pattern, content, name)
+                        has_app = True
 
         for pattern in app['html']:
             if pattern['regex'].search(webpage.html):
