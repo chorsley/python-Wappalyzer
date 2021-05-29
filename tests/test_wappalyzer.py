@@ -1,9 +1,9 @@
 import pytest
-import asyncio
 import requests
 import json
 import os
 
+from pathlib import Path
 from contextlib import redirect_stdout
 from io import StringIO
 
@@ -42,17 +42,18 @@ def test_latest():
     assert analyzer.categories['1']['name'] == 'CMS'
     assert 'Apache' in analyzer.technologies
 
-def test_latest_update():
+def test_latest_update(tmp_path: Path):
     
     # Get the lastest file
     lastest_technologies_file=requests.get('https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/technologies.json')
-
+    
+    tmp_file = tmp_path.joinpath('technologies.json')
     # Write the content to a tmp file
-    with open('/tmp/lastest_technologies_file.json', 'w') as t_file:
+    with tmp_file.open('w') as t_file:
         t_file.write(lastest_technologies_file.text)
 
     # Create Wappalyzer with this file in argument
-    wappalyzer1=Wappalyzer.latest(technologies_file='/tmp/lastest_technologies_file.json')
+    wappalyzer1=Wappalyzer.latest(technologies_file=str(tmp_file))
 
     wappalyzer2=Wappalyzer.latest(update=True)
 
