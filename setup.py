@@ -30,5 +30,5 @@ setup(
         'aioresponses'
     ],
     extras_require      =   {'docs': ["pydoctor", "docutils"], 
-                             'dev': ["tox", "mypy", "pytest", "pytest-asyncio"]},
+                             'dev': ["tox", "mypy>=0.812", "pytest", "pytest-asyncio"]},
 )
