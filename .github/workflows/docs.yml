@@ -1,6 +1,7 @@
-name: publish-pydoctor-apidocs
+name: Publish API Docs
 on:
-- push
+  push:
+    branches: [ master ]
 
 jobs:
   deploy:
@@ -21,14 +22,14 @@ jobs:
 
         pydoctor --version
 
-    - name: Generate pydoctor documentation
+    - name: Generate API documentation with pydoctor
       run: |
         # Run pydoctor build
         tox -e docs -- $(git rev-parse HEAD)
 
-    - name: Publish pydoctor documentation to the gh-pages branch
+    - name: Publish API documentation to the gh-pages branch
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./apidocs
-        commit_message: "Generate pydoctor documentation"
+        commit_message: "Generate API documentation"

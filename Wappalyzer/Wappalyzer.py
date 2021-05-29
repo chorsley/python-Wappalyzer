@@ -225,17 +225,18 @@ class Wappalyzer:
         
         """
         default=pkg_resources.resource_string(__name__, "data/technologies.json")
+        defaultobj = json.loads(default)
 
         if technologies_file:
-            with open(technologies_file, 'r') as fd:
+            with open(technologies_file, 'r', encoding='utf-8') as fd:
                 obj = json.load(fd)
         elif update:
             should_update = True
-            technologies_file: Optional[pathlib.Path] = None
+            _technologies_file: pathlib.Path
             _files = cls._find_files(['HOME', 'APPDATA',], ['.python-Wappalyzer/technologies.json'])
             if _files:
-                technologies_file = pathlib.Path(_files.pop())
-                last_modification_time = datetime.fromtimestamp(technologies_file.stat().st_mtime)
+                _technologies_file = pathlib.Path(_files[0])
+                last_modification_time = datetime.fromtimestamp(_technologies_file.stat().st_mtime)
                 if datetime.now() - last_modification_time < timedelta(hours=24):
                     should_update = False
 
@@ -244,26 +245,28 @@ class Wappalyzer:
                 try:
                     lastest_technologies_file=requests.get('https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/technologies.json')
                     obj = lastest_technologies_file.json()
-                    technologies_file = pathlib.Path(cls._find_files(
+                    _technologies_file = pathlib.Path(cls._find_files(
                         ['HOME', 'APPDATA',],
                         ['.python-Wappalyzer/technologies.json'],
                         create = True
                         ).pop())
-                    with technologies_file.open('w') as tfile:
-                        tfile.write(lastest_technologies_file.text)
-                    logger.info("python-Wappalyzer technologies.json file updated")
+                    
+                    if obj != defaultobj:
+                        with _technologies_file.open('w', encoding='utf-8') as tfile:
+                            tfile.write(lastest_technologies_file.text)
+                        logger.info("python-Wappalyzer technologies.json file updated")
 
                 except Exception as err: # Or loads default
                     logger.error("Could not download latest Wappalyzer technologies.json file because of error : '{}'. Using default. ".format(err))
-                    obj = json.loads(default)
+                    obj = defaultobj
             else:
-                logger.info("python-Wappalyzer technologies.json file not updated because already updated in the last 24h")
-                with technologies_file.open('r') as tfile:
+                logger.debug("python-Wappalyzer technologies.json file not updated because already updated in the last 24h")
+                with _technologies_file.open('r', encoding='utf-8') as tfile:
                     obj = json.load(tfile)
 
-            logger.info("Using technologies.json file at {}".format(technologies_file.as_posix()))
+            logger.info("Using technologies.json file at {}".format(_technologies_file.as_posix()))
         else:
-            obj = json.loads(default)
+            obj = defaultobj
 
         
         return cls(categories=obj['categories'], technologies=obj['technologies'])
@@ -301,7 +304,7 @@ class Wappalyzer:
         # If no file foud and create=True, init new file
         if len(existent_files) == 0 and create:
             os.makedirs(os.path.dirname(potential_paths[0]), exist_ok=True)
-            with open(potential_paths[0], "w") as config_file:
+            with open(potential_paths[0], "w", encoding='utf-8') as config_file:
                 config_file.write(default_content)
             existent_files.append(potential_paths[0])
         return existent_files
