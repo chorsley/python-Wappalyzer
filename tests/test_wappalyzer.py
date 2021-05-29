@@ -2,6 +2,7 @@ import pytest
 import asyncio
 import requests
 import json
+import os
 
 from contextlib import redirect_stdout
 from io import StringIO
@@ -259,15 +260,6 @@ def test_analyze_with_versions_and_categories_pattern_lists():
 
     assert ("WordPress", {"categories": ["CMS", "Blog"], "versions": ["5.4.2"]}) in result.items()
 
-def test_pass_request_params():
-
-    try:
-        webpage = WebPage.new_from_url('http://example.com/', timeout=0.00001)
-        assert False #"Shoud have triggered ConnectTimeout"
-    except requests.exceptions.ConnectTimeout:
-        assert True
-    except:
-        assert False #"Shoud have triggered ConnectTimeout"
 
 def cli(*args):
     """Wrap python-Wappalyzer CLI exec"""
