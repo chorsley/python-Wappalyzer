@@ -49,7 +49,7 @@ def test_latest_update(tmp_path: Path):
     
     tmp_file = tmp_path.joinpath('technologies.json')
     # Write the content to a tmp file
-    with tmp_file.open('w') as t_file:
+    with tmp_file.open('w', encoding='utf-8') as t_file:
         t_file.write(lastest_technologies_file.text)
 
     # Create Wappalyzer with this file in argument

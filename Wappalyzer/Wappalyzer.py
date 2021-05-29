@@ -228,7 +228,7 @@ class Wappalyzer:
         defaultobj = json.loads(default)
 
         if technologies_file:
-            with open(technologies_file, 'r') as fd:
+            with open(technologies_file, 'r', encoding='utf-8') as fd:
                 obj = json.load(fd)
         elif update:
             should_update = True
@@ -252,7 +252,7 @@ class Wappalyzer:
                         ).pop())
                     
                     if obj != defaultobj:
-                        with _technologies_file.open('w') as tfile:
+                        with _technologies_file.open('w', encoding='utf-8') as tfile:
                             tfile.write(lastest_technologies_file.text)
                         logger.info("python-Wappalyzer technologies.json file updated")
 
@@ -261,7 +261,7 @@ class Wappalyzer:
                     obj = defaultobj
             else:
                 logger.debug("python-Wappalyzer technologies.json file not updated because already updated in the last 24h")
-                with _technologies_file.open('r') as tfile:
+                with _technologies_file.open('r', encoding='utf-8') as tfile:
                     obj = json.load(tfile)
 
             logger.info("Using technologies.json file at {}".format(_technologies_file.as_posix()))
@@ -304,7 +304,7 @@ class Wappalyzer:
         # If no file foud and create=True, init new file
         if len(existent_files) == 0 and create:
             os.makedirs(os.path.dirname(potential_paths[0]), exist_ok=True)
-            with open(potential_paths[0], "w") as config_file:
+            with open(potential_paths[0], "w", encoding='utf-8') as config_file:
                 config_file.write(default_content)
             existent_files.append(potential_paths[0])
         return existent_files
