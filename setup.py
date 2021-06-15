@@ -1,7 +1,4 @@
 from setuptools import setup, find_packages
-import sys
-if sys.version_info[0] < 3: 
-    raise RuntimeError("You must use Python 3, sorry")
 import pathlib
 setup(
     name="python-Wappalyzer",
@@ -30,5 +27,7 @@ setup(
         'aioresponses'
     ],
     extras_require      =   {'docs': ["pydoctor", "docutils"], 
-                             'dev': ["tox", "mypy>=0.812", "pytest", "pytest-asyncio"]},
+                             'dev': ["tox", "mypy>=0.902", "pytest", "pytest-asyncio", 
+                                     "types-requests", "types-pkg_resources" ]},
+    python_requires='>=3.6',
 )
