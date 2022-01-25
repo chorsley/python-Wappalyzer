@@ -243,8 +243,12 @@ class Wappalyzer:
             # Get the lastest file
             if should_update:
                 try:
-                    lastest_technologies_file=requests.get('https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/technologies.json')
-                    obj = lastest_technologies_file.json()
+                    cats = requests.get('https://github.com/AliasIO/wappalyzer/raw/master/src/categories.json').json()
+                    techs = {}
+                    for _ in '_abcdefghijklmnopqrstuvwxyz':
+                        r = requests.get(f'https://github.com/AliasIO/wappalyzer/raw/master/src/technologies/{_}.json')
+                        techs = {**techs, **r.json()}
+                    obj = {'categories': cats, 'technologies': techs}
                     _technologies_file = pathlib.Path(cls._find_files(
                         ['HOME', 'APPDATA',],
                         ['.python-Wappalyzer/technologies.json'],
@@ -253,7 +257,7 @@ class Wappalyzer:
                     
                     if obj != defaultobj:
                         with _technologies_file.open('w', encoding='utf-8') as tfile:
-                            tfile.write(lastest_technologies_file.text)
+                            tfile.write(json.dumps(obj))
                         logger.info("python-Wappalyzer technologies.json file updated")
 
                 except Exception as err: # Or loads default
