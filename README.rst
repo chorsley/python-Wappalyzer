@@ -92,6 +92,7 @@ What's new
 in development
 ^^^^^^^^^^^^^^
 * Add support for the "dom" key in technologies JSON.
+* Fix case sensitivity of the WebPage headers.
 
 python-Wappalyzer 0.4.0 (unreleased)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
