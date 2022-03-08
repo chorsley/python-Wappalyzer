@@ -42,6 +42,8 @@ def test_latest():
     assert analyzer.categories['1']['name'] == 'CMS'
     assert 'Apache' in analyzer.technologies
 
+# Until https://github.com/chorsley/python-Wappalyzer/pull/66 is merged
+@pytest.mark.xfail
 def test_latest_update(tmp_path: Path):
     
     # Get the lastest file
@@ -261,6 +263,99 @@ def test_analyze_with_versions_and_categories_pattern_lists():
 
     assert ("WordPress", {"categories": ["CMS", "Blog"], "versions": ["5.4.2"]}) in result.items()
 
+def test_analyze_dom_string():
+
+    webpageA = WebPage('http://example.com', '<html><p class="aaa">webpage a</p></html>', {})
+    webpageB = WebPage('http://example.com', '<html><p id="bbb">webpage b</p></html>', {})
+    categories = {}
+    technologies = {
+        'a': { 'dom': '.aaa', },
+        'b': {'dom': '#bbb', }
+    }
+    analyzer = Wappalyzer(categories=categories, technologies=technologies)
+    assert analyzer.technologies['a']['dom'] == {'.aaa': {'exists': ''}}
+    assert analyzer.technologies['b']['dom'] == {'#bbb': {'exists': ''}}
+    
+    assert analyzer.analyze(webpageA) == {"a"}
+    assert analyzer.analyze(webpageB) == {"b"}
+
+def test_analyze_dom_list():
+    webpageA = WebPage('http://example.com', '<html><p class="aaa">webpage a</p></html>', {})
+    webpageB = WebPage('http://example.com', '<html><p id="bbb">webpage b</p></html>', {})
+    categories = {}
+    technologies = {
+        'a': { 'dom': ['.aaa', '[some-other-css-selector]'], },
+        'b': { 'dom': ['[some-other-css-selector]', '#bbb'], }
+    }
+    analyzer = Wappalyzer(categories=categories, technologies=technologies)
+    assert analyzer.technologies['a']['dom'] == {'.aaa': {'exists': ''}, '[some-other-css-selector]': {'exists': ''}}
+    assert analyzer.technologies['b']['dom'] == {'[some-other-css-selector]': {'exists': ''}, '#bbb': {'exists': ''}}
+
+    assert analyzer.analyze(webpageA) == {"a"}
+    assert analyzer.analyze(webpageB) == {"b"}
+
+def test_analyze_dom_dict_text():
+    webpageA = WebPage('http://example.com', '<html><p class="aaa">webpage a</p></html>', {})
+    webpageB = WebPage('http://example.com', '<html><p id="bbb">webpage b</p></html>', {})
+    categories = {}
+    get_dom_val = lambda cat: {
+                '#bbb': { 'text': f"webpage\\ {cat}", },
+                '.aaa': { 'text': f"webpage\\ {cat}", }
+            }
+    technologies = {
+        'a': { 'dom': get_dom_val('a') },
+        'b': { 'dom': get_dom_val('b'), }
+    }
+    analyzer = Wappalyzer(categories=categories, technologies=technologies)
+
+    assert analyzer.analyze(webpageA) == {"a"}
+    assert analyzer.analyze(webpageB) == {"b"}
+
+def test_analyze_dom_dict_exists():
+    webpageA = WebPage('http://example.com', '<html><p class="aaa">webpage a</p></html>', {})
+    webpageB = WebPage('http://example.com', '<html><p id="bbb">webpage b</p></html>', {})
+    categories = {}
+    get_dom_val = lambda cat: {
+                f'#{cat*3}': { 'exists': "", },
+                f'.{cat*3}': { 'exists': "", }
+            }
+    technologies = {
+        'a': { 'dom': get_dom_val('a') },
+        'b': { 'dom': get_dom_val('b'), }
+    }
+    analyzer = Wappalyzer(categories=categories, technologies=technologies)
+
+    assert analyzer.analyze(webpageA) == {"a"}
+    assert analyzer.analyze(webpageB) == {"b"}
+
+def test_analyze_dom_dict_attributes():
+    webpageA = WebPage('http://example.com', '<html><p class="aaa" onclick="webpageAScript()">webpage a</p></html>', {})
+    webpageB = WebPage('http://example.com', '<html><p id="bbb" onclick="webpageBScript()>webpage b</p></html>', {})
+    categories = {}
+    get_dom_val = lambda cat: {
+                f'#{cat*3}': { 'attributes': {'onclick': f'webpage{cat.upper()}Script.*'}, },
+                f'.{cat*3}': { 'attributes': {'onclick': f'webpage{cat.upper()}Script.*'}, }
+            }
+    technologies = {
+        'a': { 'dom': get_dom_val('a') },
+        'b': { 'dom': get_dom_val('b'), }
+    }
+    analyzer = Wappalyzer(categories=categories, technologies=technologies)
+    assert repr(analyzer.technologies['a']['dom']) == ("{'#aaa': {'attributes': {'onclick': [{'string': 'webpageAScript.*', "
+                                                      "'regex': re.compile('webpageAScript.*', re.IGNORECASE)}]}}, "
+                                                      "'.aaa': {'attributes': {'onclick': [{'string': 'webpageAScript.*', "
+                                                      "'regex': re.compile('webpageAScript.*', re.IGNORECASE)}]}}}")
+
+    assert analyzer.analyze(webpageA) == {"a"}
+    assert analyzer.analyze(webpageB) == {"b"}
+
+def test_analyze_scriptSrc():
+    ...
+    #TODO
+
+def test_analyze_text():
+    ...
+    #TODO
 
 def cli(*args):
     """Wrap python-Wappalyzer CLI exec"""

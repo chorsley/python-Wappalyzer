@@ -9,11 +9,14 @@ import pathlib
 import requests
 from datetime import datetime, timedelta
 
-from bs4 import BeautifulSoup # type: ignore
+from bs4 import BeautifulSoup, Tag # type: ignore
 from typing import Union, Optional
 
 logger = logging.getLogger(name="python-Wappalyzer")
 
+def _innerHTML(element:Tag) -> str:
+    """Returns the inner HTML of an element as a UTF-8 encoded bytestring"""
+    return element.decode_contents()
 
 class WappalyzerError(Exception):
     """
@@ -200,7 +203,6 @@ class Wappalyzer:
         self.technologies = technologies
         self._confidence_regexp = re.compile(r"(.+)\\;confidence:(\d+)")
 
-        # TODO
         for name, technology in list(self.technologies.items()):
             self._prepare_technology(technology)
 
@@ -314,7 +316,7 @@ class Wappalyzer:
         Normalize technology data, preparing it for the detection phase.
         """
         # Ensure these keys' values are lists
-        for key in ['url', 'html', 'scripts', 'implies']:
+        for key in ('url', 'html', 'scripts', 'implies'):
             try:
                 value = technology[key]
             except KeyError:
@@ -324,7 +326,7 @@ class Wappalyzer:
                     technology[key] = [value]
 
         # Ensure these keys exist
-        for key in ['headers', 'meta']:
+        for key in ('headers', 'meta', 'dom'):
             try:
                 value = technology[key]
             except KeyError:
@@ -336,21 +338,48 @@ class Wappalyzer:
             technology['meta'] = {'generator': obj}
 
         # Ensure keys are lowercase
-        for key in ['headers', 'meta']:
+        for key in ('headers', 'meta'):
             obj = technology[key]
             technology[key] = {k.lower(): v for k, v in list(obj.items())}
 
         # Prepare regular expression patterns
-        for key in ['url', 'html', 'scripts']:
+        for key in ('url', 'html', 'scripts'):
             patterns = []
             for pattern in technology[key]:
                 patterns.extend(self._prepare_pattern(pattern))
             technology[key] = patterns
 
-        for key in ['headers', 'meta']:
+        for key in ('headers', 'meta'):
             obj = technology[key]
-            for name, pattern in list(obj.items()):
+            for name, pattern in obj.items():
                 obj[name] = self._prepare_pattern(obj[name])
+        
+        # Prepare the dom selectors and regexes
+        for key in ('dom',):
+            obj = technology[key]
+            selector = {}
+            if isinstance(obj, str):
+                selector[obj] = {"exists": ""}
+            elif isinstance(obj, list):
+                for _o in obj: selector[_o] = {"exists": ""}
+            if isinstance(obj, dict):
+                selector = obj
+                for _, _clause in obj.items():
+                    # prepare regexes
+                    _text = _clause.get('text')
+                    _attributes = _clause.get('attributes')
+                    if _text:
+                        _clause['text'] = self._prepare_pattern(_clause['text'])
+                    if _attributes:
+                        for _key, pattern in _clause['attributes'].items():
+                            _clause['attributes'][_key] = self._prepare_pattern(pattern)
+            technology[key] = selector
+        
+        # Prepare patterns for fields (TODO): 
+        # - "scriptSrc": "regex string"
+        # - "js": dict string contains ins file to string (ignore for now, TODO with version extraction).
+        # - "requires" / "excludes" rules/
+        # - "text" field.
 
     def _prepare_pattern(self, pattern:Union[str, List[str]]) -> List[Dict[str, Any]]:
         """
@@ -382,6 +411,7 @@ class Wappalyzer:
                     attr = expression.split(':')
                     if len(attr) > 1:
                         key = attr.pop(0)
+                        # This adds pattern['version'] when specified with "\\;version:\\1"
                         attrs[str(key)] = ':'.join(attr)
             prep_patterns.append(attrs)
 
@@ -427,6 +457,30 @@ class Wappalyzer:
             if pattern['regex'].search(webpage.html):
                 self._set_detected_app(app, 'html', pattern, webpage.html)
                 has_app = True
+        
+        # - "dom": css selector, list of css selectors, or dict from css selector to dict with some of keys:
+        #           - "exists": "": only check if the selector matches somthing, equivalent to the list form. 
+        #           - "text": "regex": check if the .innerText property of the element that matches the css selector matches the regex (with version extraction).
+        #           - "attributes": {dict from attr name to regex}: check if the attribute value of the element that matches the css selector matches the regex (with version extraction).
+        for selector, fields in app['dom'].items():
+            for item in webpage.parsed_html.select(selector):
+                if 'exists' in fields:
+                    self._set_detected_app(app, 'dom', {'string':selector}, '')
+                    has_app = True
+                if 'text' in fields:
+                    for pattern in fields['text']:
+                        _html = _innerHTML(item)
+                        if pattern['regex'].search(_html):
+                            self._set_detected_app(app, 'dom', pattern, _html)
+                            has_app = True
+                if 'attributes' in fields:
+                    for attrname, patterns in fields['attributes'].items():
+                        _content = item.attrs.get(attrname)
+                        if _content:
+                            for pattern in patterns:
+                                if pattern['regex'].search(_content):
+                                    self._set_detected_app(app, 'dom', pattern, _content)
+                                    has_app = True
 
         # Set total confidence
         if has_app:
