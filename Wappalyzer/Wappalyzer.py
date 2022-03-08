@@ -7,6 +7,7 @@ import re
 import os
 import pathlib
 import requests
+from requests.structures import CaseInsensitiveDict
 from datetime import datetime, timedelta
 from typing import Union, Optional
 
@@ -48,7 +49,7 @@ class IWebPage(Protocol):
     """
     url: str
     html: str
-    headers: Mapping[str, Any]
+    headers: Mapping[str, str]
     scripts: List[str]
     meta: Mapping[str, str]
     def select(self, selector:str) -> Iterator[Tag]: ...
@@ -70,7 +71,7 @@ class WebPage(IWebPage):
 
     """
 
-    def __init__(self, url:str, html:str, headers:Mapping[str, Any]):
+    def __init__(self, url:str, html:str, headers:Mapping[str, str]):
         """
         Initialize a new WebPage object manually.  
 
@@ -83,7 +84,7 @@ class WebPage(IWebPage):
         """
         self.url = url
         self.html = html
-        self.headers = headers
+        self.headers = CaseInsensitiveDict(headers)
         self.scripts: List[str] = []
         self._parsed_html: BeautifulSoup
 
