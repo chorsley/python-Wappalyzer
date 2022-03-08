@@ -86,6 +86,24 @@ optional arguments:
   --timeout TIMEOUT     Request timeout
   --no-verify           Skip SSL cert verify
 
+What's new
+----------
+
+in development
+^^^^^^^^^^^^^^
+* Add support for the "dom" key in technologies JSON.
+
+python-Wappalyzer 0.4.0 (unreleased)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* Add ``python -m Wappalyzer`` entrypoint.
+* Support list of regular expressions in technologies JSON.
+* Add auto-update feature (unstable).
+
+python-Wappalyzer 0.3.x
+^^^^^^^^^^^^^^^^^^^^^^^
+* Python 3 support.
+* Async support.
+* Add confidence and version parsing.
 
 Note:
     Last version to support Python2 was `0.2.2`.  

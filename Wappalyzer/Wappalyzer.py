@@ -1,5 +1,5 @@
 import aiohttp
-from typing import Callable, Dict, Iterable, List, Mapping, Any, Set
+from typing import Callable, Dict, Iterable, Iterator, List, Mapping, Any, Set
 import json
 import logging
 import pkg_resources
@@ -8,12 +8,20 @@ import os
 import pathlib
 import requests
 from datetime import datetime, timedelta
-
-from bs4 import BeautifulSoup # type: ignore
 from typing import Union, Optional
+
+try:
+    from typing import Protocol
+except ImportError:
+    Protocol = object # type: ignore
+
+from bs4 import BeautifulSoup, Tag as bs4Tag # type: ignore
 
 logger = logging.getLogger(name="python-Wappalyzer")
 
+def _innerHTML(element:bs4Tag) -> str:
+    """Returns the inner HTML of an element as a UTF-8 encoded bytestring"""
+    return element.decode_contents()
 
 class WappalyzerError(Exception):
     """
@@ -21,8 +29,31 @@ class WappalyzerError(Exception):
     """
     pass
 
+class Tag:
+    """
+    A HTML tag, decoupled from any particular HTTP library's API.
+    """
+    def __init__(self, name:str, 
+                        attributes:Mapping[str, str], 
+                        inner_html:str) -> None:
+        self.name = name
+        self.attributes = attributes
+        self.inner_html = inner_html
 
-class WebPage:
+class IWebPage(Protocol):
+    """
+    Interfacte declaring the required methods/attributes of a WebPage object.
+
+    Simple representation of a web page, decoupled from any particular HTTP library's API.
+    """
+    url: str
+    html: str
+    headers: Mapping[str, Any]
+    scripts: List[str]
+    meta: Mapping[str, str]
+    def select(self, selector:str) -> Iterator[Tag]: ...
+
+class WebPage(IWebPage):
     """
     Simple representation of a web page, decoupled
     from any particular HTTP library's API.
@@ -53,7 +84,8 @@ class WebPage:
         self.url = url
         self.html = html
         self.headers = headers
-        self.scripts :List[str] = []
+        self.scripts: List[str] = []
+        self._parsed_html: BeautifulSoup
 
         try:
             list(self.headers.keys())
@@ -66,7 +98,7 @@ class WebPage:
         """
         Parse the HTML with BeautifulSoup to find <script> and <meta> tags.
         """
-        self.parsed_html = soup = BeautifulSoup(self.html, 'lxml')
+        self._parsed_html = soup = BeautifulSoup(self.html, 'lxml')
         self.scripts.extend(script['src'] for script in
                         soup.findAll('script', src=True))
         self.meta = {
@@ -74,6 +106,11 @@ class WebPage:
                 meta['content'] for meta in soup.findAll(
                     'meta', attrs=dict(name=True, content=True))
         }
+    
+    def select(self, selector: str) -> Iterator[Tag]:
+        """Execute a CSS select and returns results as Tag objects."""
+        for item in self._parsed_html.select(selector):
+            yield Tag(item.name, item.attrs, _innerHTML(item))
 
     @classmethod
     def new_from_url(cls, url: str, **kwargs:Any) -> 'WebPage':
@@ -200,7 +237,6 @@ class Wappalyzer:
         self.technologies = technologies
         self._confidence_regexp = re.compile(r"(.+)\\;confidence:(\d+)")
 
-        # TODO
         for name, technology in list(self.technologies.items()):
             self._prepare_technology(technology)
 
@@ -314,7 +350,7 @@ class Wappalyzer:
         Normalize technology data, preparing it for the detection phase.
         """
         # Ensure these keys' values are lists
-        for key in ['url', 'html', 'scripts', 'implies']:
+        for key in ('url', 'html', 'scripts', 'implies'):
             try:
                 value = technology[key]
             except KeyError:
@@ -324,7 +360,7 @@ class Wappalyzer:
                     technology[key] = [value]
 
         # Ensure these keys exist
-        for key in ['headers', 'meta']:
+        for key in ('headers', 'meta', 'dom'):
             try:
                 value = technology[key]
             except KeyError:
@@ -336,21 +372,48 @@ class Wappalyzer:
             technology['meta'] = {'generator': obj}
 
         # Ensure keys are lowercase
-        for key in ['headers', 'meta']:
+        for key in ('headers', 'meta'):
             obj = technology[key]
             technology[key] = {k.lower(): v for k, v in list(obj.items())}
 
         # Prepare regular expression patterns
-        for key in ['url', 'html', 'scripts']:
+        for key in ('url', 'html', 'scripts'):
             patterns = []
             for pattern in technology[key]:
                 patterns.extend(self._prepare_pattern(pattern))
             technology[key] = patterns
 
-        for key in ['headers', 'meta']:
+        for key in ('headers', 'meta'):
             obj = technology[key]
-            for name, pattern in list(obj.items()):
+            for name, pattern in obj.items():
                 obj[name] = self._prepare_pattern(obj[name])
+        
+        # Prepare the dom selectors and regexes
+        for key in ('dom',):
+            obj = technology[key]
+            selector = {}
+            if isinstance(obj, str):
+                selector[obj] = {"exists": ""}
+            elif isinstance(obj, list):
+                for _o in obj: selector[_o] = {"exists": ""}
+            if isinstance(obj, dict):
+                selector = obj
+                for _, _clause in obj.items():
+                    # prepare regexes
+                    _text = _clause.get('text')
+                    _attributes = _clause.get('attributes')
+                    if _text:
+                        _clause['text'] = self._prepare_pattern(_clause['text'])
+                    if _attributes:
+                        for _key, pattern in _clause['attributes'].items():
+                            _clause['attributes'][_key] = self._prepare_pattern(pattern)
+            technology[key] = selector
+        
+        # Prepare patterns for fields (TODO): 
+        # - "scriptSrc": "regex string"
+        # - "js": dict string contains ins file to string (ignore for now, TODO with version extraction).
+        # - "requires" / "excludes" rules/
+        # - "text" field.
 
     def _prepare_pattern(self, pattern:Union[str, List[str]]) -> List[Dict[str, Any]]:
         """
@@ -382,12 +445,13 @@ class Wappalyzer:
                     attr = expression.split(':')
                     if len(attr) > 1:
                         key = attr.pop(0)
+                        # This adds pattern['version'] when specified with "\\;version:\\1"
                         attrs[str(key)] = ':'.join(attr)
             prep_patterns.append(attrs)
 
         return prep_patterns
 
-    def _has_technology(self, technology: Dict[str, Any], webpage: WebPage) -> bool:
+    def _has_technology(self, technology: Dict[str, Any], webpage: IWebPage) -> bool:
         """
         Determine whether the web page matches the technology signature.
         """
@@ -427,6 +491,29 @@ class Wappalyzer:
             if pattern['regex'].search(webpage.html):
                 self._set_detected_app(app, 'html', pattern, webpage.html)
                 has_app = True
+        
+        # - "dom": css selector, list of css selectors, or dict from css selector to dict with some of keys:
+        #           - "exists": "": only check if the selector matches somthing, equivalent to the list form. 
+        #           - "text": "regex": check if the .innerText property of the element that matches the css selector matches the regex (with version extraction).
+        #           - "attributes": {dict from attr name to regex}: check if the attribute value of the element that matches the css selector matches the regex (with version extraction).
+        for selector, fields in app['dom'].items():
+            for item in webpage.select(selector):
+                if 'exists' in fields:
+                    self._set_detected_app(app, 'dom', {'string':selector}, '')
+                    has_app = True
+                if 'text' in fields:
+                    for pattern in fields['text']:
+                        if pattern['regex'].search(item.inner_html):
+                            self._set_detected_app(app, 'dom', pattern, item.inner_html)
+                            has_app = True
+                if 'attributes' in fields:
+                    for attrname, patterns in fields['attributes'].items():
+                        _content = item.attributes.get(attrname)
+                        if _content:
+                            for pattern in patterns:
+                                if pattern['regex'].search(_content):
+                                    self._set_detected_app(app, 'dom', pattern, _content)
+                                    has_app = True
 
         # Set total confidence
         if has_app:
@@ -556,7 +643,7 @@ class Wappalyzer:
         """
         return None if 'confidenceTotal' not in self.technologies[app_name] else self.technologies[app_name]['confidenceTotal']
 
-    def analyze(self, webpage:WebPage) -> Set[str]:
+    def analyze(self, webpage:IWebPage) -> Set[str]:
         """
         Return a set of technology that can be detected on the web page.
 
@@ -572,7 +659,7 @@ class Wappalyzer:
 
         return detected_technologies
 
-    def analyze_with_versions(self, webpage:WebPage) -> Dict[str, Dict[str, Any]]:
+    def analyze_with_versions(self, webpage:IWebPage) -> Dict[str, Dict[str, Any]]:
         """
         Return a dict of applications and versions that can be detected on the web page.
 
@@ -587,7 +674,7 @@ class Wappalyzer:
 
         return versioned_apps
 
-    def analyze_with_categories(self, webpage:WebPage) -> Dict[str, Dict[str, Any]]:
+    def analyze_with_categories(self, webpage:IWebPage) -> Dict[str, Dict[str, Any]]:
         """
         Return a dict of technologies and categories that can be detected on the web page.
 
@@ -609,7 +696,7 @@ class Wappalyzer:
 
         return categorised_technologies
 
-    def analyze_with_versions_and_categories(self, webpage:WebPage) -> Dict[str, Dict[str, Any]]:
+    def analyze_with_versions_and_categories(self, webpage:IWebPage) -> Dict[str, Dict[str, Any]]:
         """
         Return a dict of applications and versions and categories that can be detected on the web page.
 
