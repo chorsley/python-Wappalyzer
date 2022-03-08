@@ -33,6 +33,10 @@ jobs:
     - name: Install tox
       run: |
         python -m pip install --upgrade pip tox
+    
+    - name: Install PyPy required dev packages
+      if: matrix.python-version == 'pypy-3.6'
+      run: apt-get install build-dep python3-lxml
 
     - name: Run unit tests
       run: |
