@@ -39,14 +39,16 @@ jobs:
       run: |
         tox -e test
 
-        python3 -m pip install requests aiohttp cached_property dom_query pytest
+        python3 -m pip install pytest pytest-asyncio httpretty aioresponses
+        python3 -m pip install requests aiohttp cached_property dom_query 
         python3 -m pip install . --no-deps
         pytest -vv
     
     - name: Run unit tests (PyPy)
       if: matrix.python-version == 'pypy-3.6'
       run: |
-        python3 -m pip install requests aiohttp cached_property dom_query pytest
+        python3 -m pip install pytest pytest-asyncio httpretty aioresponses
+        python3 -m pip install requests aiohttp cached_property dom_query
         python3 -m pip install . --no-deps
         pytest -vv
 
