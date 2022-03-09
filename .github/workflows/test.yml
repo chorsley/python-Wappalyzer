@@ -38,12 +38,17 @@ jobs:
       if: matrix.python-version != 'pypy-3.6'
       run: |
         tox -e test
-        tox -e test-alt
+
+        python3 -m pip install requests aiohttp cached_property dom_query pytest
+        python3 -m pip install . --no-deps
+        pytest -vv
     
     - name: Run unit tests (PyPy)
       if: matrix.python-version == 'pypy-3.6'
       run: |
-        tox -e test-alt
+        python3 -m pip install requests aiohttp cached_property dom_query pytest
+        python3 -m pip install . --no-deps
+        pytest -vv
 
     - name: Run static code checks
       if: matrix.python-version != 'pypy-3.6'

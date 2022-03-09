@@ -86,6 +86,18 @@ optional arguments:
   --timeout TIMEOUT     Request timeout
   --no-verify           Skip SSL cert verify
 
+Cannot use lxml in your environment?
+------------------------------------
+
+We provide a way to use python-Wappalyzer without ``lxml``.
+This should only be used only lxml cannot be installed, 
+the standard library DOM parser will fail on broken HTML,
+resulting in incomplete results.
+
+It can be used by installing ``python-Wappalyzer`` with ``pip`` 
+option ``--no-deps``. Then install the required packages manually 
+(``pip install requests aiohttp cached_property dom_query pytest``).
+
 What's new
 ----------
 
@@ -94,7 +106,6 @@ in development
 * Add support for the "dom" key in technologies JSON.
 * Fix case sensitivity of the WebPage headers.
 * Provide a fallback WebPage class that works without ``lxml``. 
-  This can be used by installing ``python-Wappalyzer`` with extra ``[no-lxml]``.
 
 python-Wappalyzer 0.4.0 (unreleased)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
