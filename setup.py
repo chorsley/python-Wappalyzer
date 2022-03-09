@@ -38,7 +38,8 @@ setup(
     package_data        =   {'Wappalyzer': ['data/technologies.json']},
     install_requires    =   requirements,
     extras_require      =   {'no-lxml': ['dom-query'],
-                             'docs': ["pydoctor", "docutils"], 
+                             # Pin pydoctor version until https://github.com/twisted/pydoctor/issues/513 if fixed
+                             'docs': ["pydoctor==21.2.2", "docutils"], 
                              'dev': ["tox", "mypy>=0.902", "pytest", "pytest-asyncio", 
                                      "types-requests", "types-pkg_resources" ]},
     python_requires     =   '>=3.6',
