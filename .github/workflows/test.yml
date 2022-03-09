@@ -38,12 +38,12 @@ jobs:
       if: matrix.python-version != 'pypy-3.6'
       run: |
         tox -e test
-        tox -e test-no-lxml
+        tox -e test-alt
     
     - name: Run unit tests (PyPy)
       if: matrix.python-version == 'pypy-3.6'
       run: |
-        tox -e test-no-lxml
+        tox -e test-alt
 
     - name: Run static code checks
       if: matrix.python-version != 'pypy-3.6'

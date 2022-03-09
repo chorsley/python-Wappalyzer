@@ -330,7 +330,7 @@ def test_analyze_dom_dict_exists():
 
 def test_analyze_dom_dict_attributes():
     webpageA = WebPage('http://example.com', '<html><p class="aaa" onclick="webpageAScript()">webpage a</p></html>', {})
-    webpageB = WebPage('http://example.com', '<html><p id="bbb" onclick="webpageBScript()>webpage b</p></html>', {})
+    webpageB = WebPage('http://example.com', '<html><p id="bbb" onclick="webpageBScript()">webpage b</p></html>', {})
     categories = {}
     get_dom_val = lambda cat: {
                 f'#{cat*3}': { 'attributes': {'onclick': f'webpage{cat.upper()}Script.*'}, },
