@@ -29,7 +29,7 @@ setup(
                                 'aiohttp',
                                 'aioresponses',
                                 'cached_property',
-                            ] + [] if not (is_installing or is_minidom_extra_enabled) else ['beautifulsoup4', 'lxml'],
+                            ] + [] if not is_installing or is_minidom_extra_enabled else ['beautifulsoup4', 'lxml'],
     extras_require      =   {
                              'minidom': ['dom_query'],
                              # Pin pydoctor version until https://github.com/twisted/pydoctor/issues/513 is fixed
