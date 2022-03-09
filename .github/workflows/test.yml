@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9, '3.10', 'pypy-36']
         os: [ubuntu-20.04]
         include:
           - os: windows-latest
@@ -34,9 +34,16 @@ jobs:
       run: |
         python -m pip install --upgrade pip tox
 
-    - name: Run unit tests
+    - name: Run unit tests (CPython)
+      if: matrix.python-version == 'CPython'
       run: |
         tox -e test
+        tox -e test-no-lxml
+    
+    - name: Run unit tests (PyPy)
+      if: matrix.python-version == 'PyPy'
+      run: |
+        tox -e test-no-lxml
 
     - name: Run static code checks
       run: |
