@@ -35,13 +35,13 @@ jobs:
         python -m pip install --upgrade pip tox
 
     - name: Run unit tests (CPython)
-      if: matrix.python-version == 'CPython'
+      if: matrix.python-version != 'pypy-3.6'
       run: |
         tox -e test
         tox -e test-no-lxml
     
     - name: Run unit tests (PyPy)
-      if: matrix.python-version == 'PyPy'
+      if: matrix.python-version == 'pypy-3.6'
       run: |
         tox -e test-no-lxml
 
