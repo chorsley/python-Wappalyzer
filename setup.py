@@ -31,7 +31,6 @@ setup(
                                 'cached_property',
                             ] + [] if not (is_installing or is_minidom_extra_enabled) else ['beautifulsoup4', 'lxml'],
     extras_require      =   {
-                             'lxml': ['beautifulsoup4', 'lxml'],
                              'minidom': ['dom_query'],
                              # Pin pydoctor version until https://github.com/twisted/pydoctor/issues/513 is fixed
                              'docs': ["pydoctor==21.2.2", "docutils"], 
