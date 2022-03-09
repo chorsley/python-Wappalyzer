@@ -2,10 +2,19 @@ from setuptools import setup, find_packages
 import pathlib
 import sys
 
-# Hack to implement a default extra require [lxml] for lxml and bs4 packages that can be replaced with [minidom]
+# Hack to implement a default extra require with `lxml` and `bs4` packages that can be replaced with `[minidom]`
 # https://github.com/pypa/setuptools/issues/1139
-is_installing = any('install'==a for a in sys.argv)
+# is_installing = any(a in ['install', 'bdist_wheel'] for a in sys.argv)
 is_minidom_extra_enabled = any('minidom' in a for a in sys.argv)
+
+def get_requirements():
+    requirements = [   'requests',
+                        'aiohttp',
+                        'aioresponses',
+                        'cached_property', ]
+    if not is_minidom_extra_enabled:
+        requirements.extend(['beautifulsoup4', 'lxml'])
+    return requirements
 
 setup(
     name                =   "python-Wappalyzer",
@@ -25,11 +34,7 @@ setup(
                             ],
     packages            =   find_packages(exclude='tests'),
     package_data        =   {'Wappalyzer': ['data/technologies.json']},
-    install_requires    =   [   'requests',
-                                'aiohttp',
-                                'aioresponses',
-                                'cached_property',
-                            ] + [] if not is_installing or is_minidom_extra_enabled else ['beautifulsoup4', 'lxml'],
+    install_requires    =   get_requirements(),
     extras_require      =   {
                              'minidom': ['dom_query'],
                              # Pin pydoctor version until https://github.com/twisted/pydoctor/issues/513 is fixed
