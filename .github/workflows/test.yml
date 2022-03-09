@@ -46,6 +46,7 @@ jobs:
         tox -e test-no-lxml
 
     - name: Run static code checks
+      if: matrix.python-version != 'pypy-3.6'
       run: |
         tox -e mypy
 
