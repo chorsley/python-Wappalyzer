@@ -93,6 +93,8 @@ in development
 ^^^^^^^^^^^^^^
 * Add support for the "dom" key in technologies JSON.
 * Fix case sensitivity of the WebPage headers.
+* Provide a fallback WebPage class that works without ``lxml``. 
+  This can be used by installing ``python-Wappalyzer`` with extra ``[no-lxml]``.
 
 python-Wappalyzer 0.4.0 (unreleased)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
