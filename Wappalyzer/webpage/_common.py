@@ -37,7 +37,7 @@ class BaseTag(ITag, abc.ABC):
         self.name = name
         self.attributes = attributes
     @property
-    def inner_html(self) -> str:
+    def inner_html(self) -> str: # type: ignore
         """Returns the inner HTML of an element as a UTF-8 encoded bytestring"""
         raise NotImplementedError()
 
