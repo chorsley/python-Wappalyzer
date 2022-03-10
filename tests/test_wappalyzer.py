@@ -10,6 +10,7 @@ from io import StringIO
 from httpretty import HTTPretty, httprettified
 from aioresponses import aioresponses
 
+from Wappalyzer.fingerprint import Fingerprint
 from Wappalyzer import WebPage, Wappalyzer
 from Wappalyzer.__main__ import get_parser, main
 
@@ -39,7 +40,7 @@ def test_latest():
     analyzer = Wappalyzer.latest()
 
     print((analyzer.categories))
-    assert analyzer.categories['1']['name'] == 'CMS'
+    assert analyzer.categories['1'].name == 'CMS'
     assert 'Apache' in analyzer.technologies
 
 # Until https://github.com/chorsley/python-Wappalyzer/pull/66 is merged
@@ -211,7 +212,7 @@ def test_analyze_with_versions_and_categories():
 
     analyzer = Wappalyzer(categories=categories, technologies=technologies)
     result = analyzer.analyze_with_versions_and_categories(webpage)
-
+    assert analyzer.get_versions(webpage.url, 'WordPress') == ["5.4.2"], analyzer._detected_technologies[webpage.url]
     assert ("WordPress", {"categories": ["CMS", "Blog"], "versions": ["5.4.2"]}) in result.items()
 
 def test_analyze_with_versions_and_categories_pattern_lists():
@@ -273,9 +274,7 @@ def test_analyze_dom_string():
         'b': {'dom': '#bbb', }
     }
     analyzer = Wappalyzer(categories=categories, technologies=technologies)
-    assert analyzer.technologies['a']['dom'] == {'.aaa': {'exists': ''}}
-    assert analyzer.technologies['b']['dom'] == {'#bbb': {'exists': ''}}
-    
+
     assert analyzer.analyze(webpageA) == {"a"}
     assert analyzer.analyze(webpageB) == {"b"}
 
@@ -288,9 +287,6 @@ def test_analyze_dom_list():
         'b': { 'dom': ['[some-other-css-selector]', '#bbb'], }
     }
     analyzer = Wappalyzer(categories=categories, technologies=technologies)
-    assert analyzer.technologies['a']['dom'] == {'.aaa': {'exists': ''}, '[some-other-css-selector]': {'exists': ''}}
-    assert analyzer.technologies['b']['dom'] == {'[some-other-css-selector]': {'exists': ''}, '#bbb': {'exists': ''}}
-
     assert analyzer.analyze(webpageA) == {"a"}
     assert analyzer.analyze(webpageB) == {"b"}
 
@@ -341,11 +337,6 @@ def test_analyze_dom_dict_attributes():
         'b': { 'dom': get_dom_val('b'), }
     }
     analyzer = Wappalyzer(categories=categories, technologies=technologies)
-    assert repr(analyzer.technologies['a']['dom']) == ("{'#aaa': {'attributes': {'onclick': [{'string': 'webpageAScript.*', "
-                                                      "'regex': re.compile('webpageAScript.*', re.IGNORECASE)}]}}, "
-                                                      "'.aaa': {'attributes': {'onclick': [{'string': 'webpageAScript.*', "
-                                                      "'regex': re.compile('webpageAScript.*', re.IGNORECASE)}]}}}")
-
     assert analyzer.analyze(webpageA) == {"a"}
     assert analyzer.analyze(webpageB) == {"b"}
 
@@ -356,6 +347,26 @@ def test_analyze_scriptSrc():
 def test_analyze_text():
     ...
     #TODO
+
+def test_fingerprint():
+    tech_fingerprint = Fingerprint(name='WordPress', **{
+            "cats": [
+                1,
+                11
+            ],
+            "html": [],
+            "icon": "WordPress.svg",
+            "implies": [
+                "PHP",
+                "MySQL"
+            ],
+            "meta": {
+                "generator": ["Whatever123", "Whatever456", "^WordPress ?([\\d.]+)?\\;version:\\1", "Whatever"]
+            },
+            "website": "https://wordpress.org"
+            })
+    assert tech_fingerprint.meta['generator'][-2].version == '\\1'
+    assert tech_fingerprint.meta['generator'][-2].regex.pattern == '^WordPress ?([\d.]+)?'
 
 def cli(*args):
     """Wrap python-Wappalyzer CLI exec"""
