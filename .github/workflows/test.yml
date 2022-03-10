@@ -53,7 +53,7 @@ jobs:
         pytest -vv
 
     - name: Run static code checks
-      if: matrix.python-version != 'pypy-3.6' ||  matrix.python-version != '3.6'
+      if: matrix.python-version != 'pypy-3.6' &&  matrix.python-version != '3.6'
       run: |
         tox -e mypy
 
