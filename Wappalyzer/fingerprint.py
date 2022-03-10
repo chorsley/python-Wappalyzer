@@ -166,11 +166,13 @@ class Fingerprint:
         # Ensure dict
         if not isinstance(thing, dict):
             thing = {'generator': thing}
-        return cls._prepare_pattern_dict(thing)
+        # Enure lowercase keys
+        return cls._prepare_pattern_dict({k.lower():v for k,v in thing.items()})
 
     @classmethod
     def _prepare_headers(cls,  thing: Dict[str, Union[str, List[str]]]) -> Mapping[str, List[Pattern]]:
-        return cls._prepare_pattern_dict(thing)
+        # Enure lowercase keys
+        return cls._prepare_pattern_dict({k.lower():v for k,v in thing.items()})
     
     @classmethod
     def _prepare_dom(cls, thing: Union[str, List[str], 
