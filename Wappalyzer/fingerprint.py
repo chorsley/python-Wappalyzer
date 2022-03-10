@@ -12,11 +12,11 @@ logger = logging.getLogger(name="python-Wappalyzer")
 
 class Pattern:
     def __init__(self, string:str, 
-                 regex: Optional[re.Pattern]=None, 
+                 regex: Optional['re.Pattern']=None, 
                  version: Optional[str]=None, 
                  confidence: Optional[str] = None) -> None:
         self.string: str = string
-        self.regex: re.Pattern = regex or sre_compile.compile('', 0)
+        self.regex: 're.Pattern' = regex or sre_compile.compile('', 0)
         self.version: Optional[str] = version
         self.confidence: int = int(confidence) if confidence else 100
 
