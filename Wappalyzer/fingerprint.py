@@ -203,7 +203,10 @@ class Fingerprint:
                     _prep_attr_patterns ={}
                     for _key, pattern in clause['attributes'].items(): #type: ignore
                         _prep_attr_patterns[_key] = cls._prepare_pattern(pattern)
-                selectors.append(DomSelector(cssselect, exists=_exists, text=_prep_text_patterns, attributes=_prep_attr_patterns))
+                selectors.append(DomSelector(cssselect, 
+                                             exists=_exists, 
+                                             text=_prep_text_patterns, 
+                                             attributes=_prep_attr_patterns))
         return selectors
 
 def get_latest_tech_data() -> Dict[str, Any]:
