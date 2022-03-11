@@ -1,7 +1,7 @@
 """
 Welcome to ``python-Wappalyzer`` API documentation!
 
-:see: `Wappalyzer`
+:see: `Wappalyzer` and `WebPage`.
 """
 
 from .Wappalyzer import Wappalyzer, analyze
