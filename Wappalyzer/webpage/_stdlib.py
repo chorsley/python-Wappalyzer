@@ -3,7 +3,7 @@ Implementation of WebPage based on the standard library.
 """
 import logging
 from typing import Iterable, Mapping, Optional
-
+import logging
 from html.parser import HTMLParser
 from xml.dom import minidom
 from cached_property import cached_property # type: ignore
@@ -11,6 +11,8 @@ from cached_property import cached_property # type: ignore
 from ._common import BaseWebPage, BaseTag
 
 from dom_query import select_all # type: ignore
+
+logger = logging.getLogger(name="python-Wappalyzer")
 
 # Parsing HTLM with built-in libraries is difficult, we should not reinvent the wheel here. 
 # We provide this module only as a backup for environments where lxml cannot be installed.
@@ -72,5 +74,9 @@ class WebPage(BaseWebPage):
         dom = self._dom
         if not dom:
             return ()
-        for item in select_all(dom, selector):
-            yield Tag(item.tagName, dict(item._get_attributes().items()), item)
+        try:
+            for item in select_all(dom, selector):
+                yield Tag(item.tagName, dict(item._get_attributes().items()), item)
+        except Exception as e:
+            logger.error(f"Error while trying to query the CSS selector {selector!r} on the webpge {self.url} DOM: {e}")
+            return ()
