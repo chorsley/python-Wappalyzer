@@ -50,7 +50,7 @@ class IWebPage(Protocol):
     url: str
     html: str
     headers: Mapping[str, str]
-    scripts: List[str]
+    scripts: List[str] # list of the script sources urls
     meta: Mapping[str, str]
     def select(self, selector:str) -> Iterable[ITag]: 
         raise NotImplementedError()
