@@ -1,5 +1,4 @@
 import pytest
-import requests
 import json
 import os
 
@@ -10,7 +9,7 @@ from io import StringIO
 from httpretty import HTTPretty, httprettified
 from aioresponses import aioresponses
 
-from Wappalyzer.fingerprint import Fingerprint
+from Wappalyzer.fingerprint import Fingerprint, get_latest_tech_data
 from Wappalyzer import WebPage, Wappalyzer
 from Wappalyzer.__main__ import get_parser, main
 
@@ -43,25 +42,23 @@ def test_latest():
     assert analyzer.categories['1'].name == 'CMS'
     assert 'Apache' in analyzer.technologies
 
-# Until https://github.com/chorsley/python-Wappalyzer/pull/66 is merged
-@pytest.mark.xfail
 def test_latest_update(tmp_path: Path):
     
     # Get the lastest file
-    lastest_technologies_file=requests.get('https://raw.githubusercontent.com/AliasIO/wappalyzer/master/src/technologies.json')
+    lastest_technologies = get_latest_tech_data()
     
     tmp_file = tmp_path.joinpath('technologies.json')
     # Write the content to a tmp file
     with tmp_file.open('w', encoding='utf-8') as t_file:
-        t_file.write(lastest_technologies_file.text)
+        t_file.write(json.dumps(lastest_technologies))
 
     # Create Wappalyzer with this file in argument
     wappalyzer1=Wappalyzer.latest(technologies_file=str(tmp_file))
 
     wappalyzer2=Wappalyzer.latest(update=True)
 
-    assert wappalyzer1.technologies==wappalyzer2.technologies
-    assert wappalyzer1.categories==wappalyzer2.categories
+    assert len(wappalyzer1.technologies) >= len(wappalyzer2.technologies)
+    assert len(wappalyzer1.categories) >= len(wappalyzer2.categories)
 
 def test_analyze_no_technologies():
     analyzer = Wappalyzer(categories={}, technologies={})
@@ -379,8 +376,6 @@ def cli(*args):
 
 @pytest.mark.skipif(os.getenv('GITHUB_ACTIONS') is not None, reason="This test fails on the github CI, python3.9 for some reason.")
 def test_cli():
-    r = cli('http://exemple.com', '--update', '--user-agent', 'Mozilla/5.0', '--timeout', '30')
+    r = cli('https://chorsley.github.io/python-Wappalyzer/index.html', '--update', '--user-agent', 'Mozilla/5.0', '--timeout', '30')
     assert len(r) > 2
     assert "Bootstrap" in r
-
-

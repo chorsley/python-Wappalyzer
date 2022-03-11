@@ -8,6 +8,8 @@ import re
 import logging
 from typing import Optional, Optional, Union, Mapping, Dict, List, Any
 
+import requests
+
 logger = logging.getLogger(name="python-Wappalyzer")
 
 class Pattern:
@@ -100,8 +102,11 @@ class Fingerprint:
         self.html: List[Pattern] = self._prepare_pattern(attrs['html']) if 'html' in attrs else []
         self.text: List[Pattern] = self._prepare_pattern(attrs['text']) if 'text' in attrs else []
         self.url: List[Pattern] = self._prepare_pattern(attrs['url']) if 'url' in attrs else []
+        
         self.scriptSrc: List[Pattern] = self._prepare_pattern(attrs['scriptSrc']) if 'scriptSrc' in attrs else []
         self.scripts: List[Pattern] = self._prepare_pattern(attrs['scripts']) if 'scripts' in attrs else []
+        
+        # For python-Wappayzer, we match
 
         # self.cookies: Mapping[str, List[Pattern]] Not supported
         # self.dns: Mapping[str, List[Pattern]] Not supported
@@ -198,5 +203,17 @@ class Fingerprint:
                     _prep_attr_patterns ={}
                     for _key, pattern in clause['attributes'].items(): #type: ignore
                         _prep_attr_patterns[_key] = cls._prepare_pattern(pattern)
-                selectors.append(DomSelector(cssselect, exists=_exists, text=_prep_text_patterns, attributes=_prep_attr_patterns))
+                selectors.append(DomSelector(cssselect, 
+                                             exists=_exists, 
+                                             text=_prep_text_patterns, 
+                                             attributes=_prep_attr_patterns))
         return selectors
+
+def get_latest_tech_data() -> Dict[str, Any]:
+    cats = requests.get('https://github.com/AliasIO/wappalyzer/raw/master/src/categories.json').json()
+    techs: Dict[str, Any] = {}
+    for _ in '_abcdefghijklmnopqrstuvwxyz':
+        r = requests.get(f'https://github.com/AliasIO/wappalyzer/raw/master/src/technologies/{_}.json')
+        techs = {**techs, **r.json()}
+    obj = {'categories': cats, 'technologies': techs}
+    return obj

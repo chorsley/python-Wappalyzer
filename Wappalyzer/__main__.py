@@ -1,5 +1,8 @@
 import argparse
 import json
+import sys
+
+from . import _setup_logger
 from .Wappalyzer import analyze
 
 def get_parser() -> argparse.ArgumentParser:
@@ -20,4 +23,5 @@ def main(args) -> None:
     print(json.dumps(result))
 
 if __name__ == '__main__':
+    _setup_logger('python-Wappalyzer', verbose=False, quiet=True, outstream=sys.stderr)
     main(get_parser().parse_args())

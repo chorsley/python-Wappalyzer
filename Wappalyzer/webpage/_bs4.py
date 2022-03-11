@@ -1,13 +1,16 @@
 """
 Implementation of WebPage based on bs4, depends on lxml.
 """
-from typing import Iterator, Mapping
+from typing import Iterable, Iterator, Mapping
 #Just to check if it's available
 import lxml # type: ignore 
+import logging
 from bs4 import BeautifulSoup, Tag as bs4_Tag # type: ignore
 from cached_property import cached_property # type: ignore
 
 from ._common import BaseWebPage, BaseTag
+
+logger = logging.getLogger(name="python-Wappalyzer")
 
 class Tag(BaseTag):
 
@@ -48,9 +51,13 @@ class WebPage(BaseWebPage):
                     'meta', attrs=dict(name=True, content=True))
         }
     
-    def select(self, selector: str) -> Iterator[Tag]:
+    def select(self, selector: str) -> Iterable[Tag]:
         """Execute a CSS select and returns results as Tag objects."""
-        for item in self._parsed_html.select(selector):
-            yield Tag(item.name, item.attrs, item)
+        try:
+            for item in self._parsed_html.select(selector):
+                yield Tag(item.name, item.attrs, item)
+        except Exception as e:
+            logger.error(f"Error while trying to query the CSS selector {selector!r} on the webpge {self.url} DOM: {e}")
+            return ()
 
 
