@@ -1,5 +1,5 @@
-import aiohttp
-from typing import Callable, Dict, Iterable, List, Mapping, Any, Set
+
+from typing import Callable, Dict, Iterable, List, Any, Mapping, Set
 import json
 import logging
 import pkg_resources
@@ -7,155 +7,21 @@ import re
 import os
 import pathlib
 import requests
-from datetime import datetime, timedelta
 
-from bs4 import BeautifulSoup # type: ignore
-from typing import Union, Optional
+from datetime import datetime, timedelta
+from typing import Optional
+
+from Wappalyzer.fingerprint import Fingerprint, Pattern, Technology, Category
+from Wappalyzer.webpage import WebPage, IWebPage
 
 logger = logging.getLogger(name="python-Wappalyzer")
 
-
 class WappalyzerError(Exception):
+    # unused for now
     """
     Raised for fatal Wappalyzer errors.
     """
     pass
-
-
-class WebPage:
-    """
-    Simple representation of a web page, decoupled
-    from any particular HTTP library's API.
-
-    Well, except for the class methods that use `requests`
-    or `aiohttp` to create the WebPage.
-
-    This object is designed to be created for each website scanned
-    by python-Wappalyzer. 
-    It will parse the HTML with BeautifulSoup to find <script> and <meta> tags.
-
-    You can create it from manually from HTML with the `WebPage()` method
-    or from the class methods. 
-
-    """
-
-    def __init__(self, url:str, html:str, headers:Mapping[str, Any]):
-        """
-        Initialize a new WebPage object manually.  
-
-        >>> from Wappalyzer import WebPage
-        >>> w = WebPage('exemple.com',  html='<strong>Hello World</strong>', headers={'Server': 'Apache', })
-
-        :param url: The web page URL.
-        :param html: The web page content (HTML)
-        :param headers: The HTTP response headers
-        """
-        self.url = url
-        self.html = html
-        self.headers = headers
-        self.scripts :List[str] = []
-
-        try:
-            list(self.headers.keys())
-        except AttributeError:
-            raise ValueError("Headers must be a dictionary-like object")
-
-        self._parse_html()
-
-    def _parse_html(self):
-        """
-        Parse the HTML with BeautifulSoup to find <script> and <meta> tags.
-        """
-        self.parsed_html = soup = BeautifulSoup(self.html, 'lxml')
-        self.scripts.extend(script['src'] for script in
-                        soup.findAll('script', src=True))
-        self.meta = {
-            meta['name'].lower():
-                meta['content'] for meta in soup.findAll(
-                    'meta', attrs=dict(name=True, content=True))
-        }
-
-    @classmethod
-    def new_from_url(cls, url: str, **kwargs:Any) -> 'WebPage':
-        """
-        Constructs a new WebPage object for the URL,
-        using the `requests` module to fetch the HTML.
-
-        >>> from Wappalyzer import WebPage
-        >>> page = WebPage.new_from_url('exemple.com', timeout=5)
-
-        :param url: URL 
-        :param headers: (optional) Dictionary of HTTP Headers to send.
-        :param cookies: (optional) Dict or CookieJar object to send.
-        :param timeout: (optional) How many seconds to wait for the server to send data before giving up. 
-        :param proxies: (optional) Dictionary mapping protocol to the URL of the proxy.
-        :param verify: (optional) Boolean, it controls whether we verify the SSL certificate validity. 
-        :param \*\*kwargs: Any other arguments are passed to `requests.get` method as well. 
-        """
-        response = requests.get(url, **kwargs)
-        return cls.new_from_response(response)
-
-    @classmethod
-    def new_from_response(cls, response:requests.Response) -> 'WebPage':
-        """
-        Constructs a new WebPage object for the response,
-        using the `BeautifulSoup` module to parse the HTML.
-
-        :param response: `requests.Response` object
-        """
-        return cls(response.url, html=response.text, headers=response.headers)
-
-
-    @classmethod
-    async def new_from_url_async(cls, url: str, verify: bool = True,
-                                 aiohttp_client_session: aiohttp.ClientSession = None, **kwargs:Any) -> 'WebPage':
-        """
-        Same as new_from_url only Async.
-
-        Constructs a new WebPage object for the URL,
-        using the `aiohttp` module to fetch the HTML.
-
-        >>> from Wappalyzer import WebPage
-        >>> from aiohttp import ClientSession
-        >>> async with ClientSession() as session:
-        ...     page = await WebPage.new_from_url_async(aiohttp_client_session=session)
-        
-        :param url: URL
-        :param aiohttp_client_session: `aiohttp.ClientSession` instance to use, optional.
-        :param verify: (optional) Boolean, it controls whether we verify the SSL certificate validity. 
-        :param headers: Dict. HTTP Headers to send with the request (optional).
-        :param cookies: Dict. HTTP Cookies to send with the request (optional).
-        :param timeout: Int. override the session's timeout (optional)
-        :param proxy: Proxy URL, `str` or `yarl.URL` (optional).
-        :param \*\*kwargs: Any other arguments are passed to `aiohttp.ClientSession.get` method as well. 
-
-        """
-
-        if not aiohttp_client_session:
-            connector = aiohttp.TCPConnector(ssl=verify)
-            aiohttp_client_session = aiohttp.ClientSession(connector=connector)
-
-        async with aiohttp_client_session.get(url, **kwargs) as response:
-            return await cls.new_from_response_async(response)
-
-    @classmethod
-    async def new_from_response_async(cls, response:aiohttp.ClientResponse) -> 'WebPage':
-        """
-        Constructs a new WebPage object for the response,
-        using the `BeautifulSoup` module to parse the HTML.
-
-        >>> from aiohttp import ClientSession
-        >>> wappalyzer = Wappalyzer.latest()
-        >>> async with ClientSession() as session:
-        ...     page = await session.get("http://example.com")
-        ...
-        >>> webpage = await WebPage.new_from_response_async(page)
-
-        :param response: `aiohttp.ClientResponse` object
-        """
-        html = await response.text()
-        return cls(str(response.url), html=html, headers=response.headers)
-
 
 class Wappalyzer:
     """
@@ -196,13 +62,11 @@ class Wappalyzer:
         :param categories: Map of category ids to names, as in ``technologies.json``.
         :param technologies: Map of technology names to technology dicts, as in ``technologies.json``.
         """
-        self.categories = categories
-        self.technologies = technologies
-        self._confidence_regexp = re.compile(r"(.+)\\;confidence:(\d+)")
+        self.categories: Mapping[str, Category] = {k:Category(**v) for k,v in categories.items()}
+        self.technologies: Mapping[str, Fingerprint] = {k:Fingerprint(name=k, **v) for k,v in technologies.items()}
+        self.detected_technologies: Dict[str, Dict[str, Technology]] = {}
 
-        # TODO
-        for name, technology in list(self.technologies.items()):
-            self._prepare_technology(technology)
+        self._confidence_regexp = re.compile(r"(.+)\\;confidence:(\d+)")
 
     @classmethod
     def latest(cls, technologies_file:str=None, update:bool=False) -> 'Wappalyzer':
@@ -313,158 +177,98 @@ class Wappalyzer:
             existent_files.append(potential_paths[0])
         return existent_files
 
-    def _prepare_technology(self, technology: Dict[str, Any]) -> None:
-        """
-        Normalize technology data, preparing it for the detection phase.
-        """
-        # Ensure these keys' values are lists
-        for key in ['url', 'html', 'scripts', 'implies']:
-            try:
-                value = technology[key]
-            except KeyError:
-                technology[key] = []
-            else:
-                if not isinstance(value, list):
-                    technology[key] = [value]
-
-        # Ensure these keys exist
-        for key in ['headers', 'meta']:
-            try:
-                value = technology[key]
-            except KeyError:
-                technology[key] = {}
-
-        # Ensure the 'meta' key is a dict
-        obj = technology['meta']
-        if not isinstance(obj, dict):
-            technology['meta'] = {'generator': obj}
-
-        # Ensure keys are lowercase
-        for key in ['headers', 'meta']:
-            obj = technology[key]
-            technology[key] = {k.lower(): v for k, v in list(obj.items())}
-
-        # Prepare regular expression patterns
-        for key in ['url', 'html', 'scripts']:
-            patterns = []
-            for pattern in technology[key]:
-                patterns.extend(self._prepare_pattern(pattern))
-            technology[key] = patterns
-
-        for key in ['headers', 'meta']:
-            obj = technology[key]
-            for name, pattern in list(obj.items()):
-                obj[name] = self._prepare_pattern(obj[name])
-
-    def _prepare_pattern(self, pattern:Union[str, List[str]]) -> List[Dict[str, Any]]:
-        """
-        Strip out key:value pairs from the pattern and compile the regular
-        expression.
-        """
-        prep_patterns = []
-        if isinstance(pattern, list):
-            for p in pattern:
-                prep_patterns.extend(self._prepare_pattern(p))
-        else:
-            attrs = {}
-            patterns = pattern.split('\\;')
-            for index, expression in enumerate(patterns):
-                if index == 0:
-                    attrs['string'] = expression
-                    try:
-                        attrs['regex'] = re.compile(expression, re.I) # type: ignore
-                    except re.error as err:
-                        # Wappalyzer is a JavaScript application therefore some of the regex wont compile in Python.
-                        logger.debug(
-                            "Caught '{error}' compiling regex: {regex}".format(
-                                error=err, regex=patterns)
-                        )
-                        # regex that never matches:
-                        # http://stackoverflow.com/a/1845097/413622
-                        attrs['regex'] = re.compile(r'(?!x)x') # type: ignore
-                else:
-                    attr = expression.split(':')
-                    if len(attr) > 1:
-                        key = attr.pop(0)
-                        attrs[str(key)] = ':'.join(attr)
-            prep_patterns.append(attrs)
-
-        return prep_patterns
-
-    def _has_technology(self, technology: Dict[str, Any], webpage: WebPage) -> bool:
+    def _has_technology(self, tech_fingerprint: Fingerprint, webpage: IWebPage) -> bool:
         """
         Determine whether the web page matches the technology signature.
         """
-        app = technology
 
-        has_app = False
+        has_tech = False
         # Search the easiest things first and save the full-text search of the
         # HTML for last
 
-        for pattern in app['url']:
-            if pattern['regex'].search(webpage.url):
-                self._set_detected_app(app, 'url', pattern, webpage.url)
-
-        for name, patterns in list(app['headers'].items()):
+        # analyze url patterns
+        for pattern in tech_fingerprint.url:
+            if pattern.regex.search(webpage.url):
+                self._set_detected_app(webpage.url, tech_fingerprint, 'url', pattern, value=webpage.url)
+        # analyze headers patterns
+        for name, patterns in list(tech_fingerprint.headers.items()):
             if name in webpage.headers:
                 content = webpage.headers[name]
                 for pattern in patterns:
-                    if pattern['regex'].search(content):
-                        self._set_detected_app(app, 'headers', pattern, content, name)
-                        has_app = True
-
-        for pattern in technology['scripts']:
+                    if pattern.regex.search(content):
+                        self._set_detected_app(webpage.url, tech_fingerprint, 'headers', pattern, value=content, key=name)
+                        has_tech = True
+        # analyze scripts patterns
+        for pattern in tech_fingerprint.scripts:
             for script in webpage.scripts:
-                if pattern['regex'].search(script):
-                    self._set_detected_app(app, 'scripts', pattern, script)
-                    has_app = True
-
-        for name, patterns in list(technology['meta'].items()):
+                if pattern.regex.search(script):
+                    self._set_detected_app(webpage.url, tech_fingerprint, 'scripts', pattern, value=script)
+                    has_tech = True
+        # analyze meta patterns
+        for name, patterns in list(tech_fingerprint.meta.items()):
             if name in webpage.meta:
                 content = webpage.meta[name]
                 for pattern in patterns:
-                    if pattern['regex'].search(content):
-                        self._set_detected_app(app, 'meta', pattern, content, name)
-                        has_app = True
+                    if pattern.regex.search(content):
+                        self._set_detected_app(webpage.url, tech_fingerprint, 'meta', pattern, value=content, key=name)
+                        has_tech = True
+        # analyze html patterns
+        for pattern in tech_fingerprint.html:
+            if pattern.regex.search(webpage.html):
+                self._set_detected_app(webpage.url, tech_fingerprint, 'html', pattern, value=webpage.html)
+                has_tech = True
+        # analyze dom patterns
+        # css selector, list of css selectors, or dict from css selector to dict with some of keys:
+        #           - "exists": "": only check if the selector matches somthing, equivalent to the list form. 
+        #           - "text": "regex": check if the .innerText property of the element that matches the css selector matches the regex (with version extraction).
+        #           - "attributes": {dict from attr name to regex}: check if the attribute value of the element that matches the css selector matches the regex (with version extraction).
+        for selector in tech_fingerprint.dom:
+            for item in webpage.select(selector.selector):
+                if selector.exists:
+                    self._set_detected_app(webpage.url, tech_fingerprint, 'dom', Pattern(string=selector.selector), value='')
+                    has_tech = True
+                if selector.text:
+                    for pattern in selector.text:
+                        if pattern.regex.search(item.inner_html):
+                            self._set_detected_app(webpage.url, tech_fingerprint, 'dom', pattern, value=item.inner_html)
+                            has_tech = True
+                if selector.attributes:
+                    for attrname, patterns in list(selector.attributes.items()):
+                        _content = item.attributes.get(attrname)
+                        if _content:
+                            for pattern in patterns:
+                                if pattern.regex.search(_content):
+                                    self._set_detected_app(webpage.url, tech_fingerprint, 'dom', pattern, value=_content)
+                                    has_tech = True
+        return has_tech
 
-        for pattern in app['html']:
-            if pattern['regex'].search(webpage.html):
-                self._set_detected_app(app, 'html', pattern, webpage.html)
-                has_app = True
-
-        # Set total confidence
-        if has_app:
-            total = 0
-            for index in app['confidence']:
-                total += app['confidence'][index]
-            app['confidenceTotal'] = total
-
-        return has_app
-
-    def _set_detected_app(self, app: Dict[str, Any], app_type:str, pattern: Dict[str, Any], value:str, key='') -> None:
+    def _set_detected_app(self, url:str,
+                                tech_fingerprint: Fingerprint, 
+                                app_type:str, 
+                                pattern: Pattern, 
+                                value:str, 
+                                key='') -> None:
         """
-        Store detected app.
+        Store detected technology to the detected_technologies dict.
         """
-        app['detected'] = True
+        # Lookup Technology object in the cache
+        if url not in self.detected_technologies:
+            self.detected_technologies[url] = {}
+        if tech_fingerprint.name not in self.detected_technologies[url]:
+            self.detected_technologies[url][tech_fingerprint.name] = Technology(tech_fingerprint.name)
+        detected_tech = self.detected_technologies[url][tech_fingerprint.name]
 
         # Set confidence level
-        if key != '':
-            key += ' '
-        if 'confidence' not in app:
-            app['confidence'] = {}
-        if 'confidence' not in pattern:
-            pattern['confidence'] = 100
-        else:
-            # Convert to int for easy adding later
-            pattern['confidence'] = int(pattern['confidence'])
-        app['confidence'][app_type + ' ' + key + pattern['string']] = pattern['confidence']
+        if key != '': key += ' '
+        match_name = app_type + ' ' + key + pattern.string
+        
+        detected_tech.confidence[match_name] = pattern.confidence
 
         # Dectect version number
-        if 'version' in pattern:
-            allmatches = re.findall(pattern['regex'], value)
+        if pattern.version:
+            allmatches = re.findall(pattern.regex, value)
             for i, matches in enumerate(allmatches):
-                version = pattern['version']
-
+                version = pattern.version
                 # Check for a string to avoid enumerating the string
                 if isinstance(matches, str):
                     matches = [(matches)]
@@ -474,26 +278,19 @@ class Wappalyzer:
                     if ternary and len(ternary.groups()) == 2 and ternary.group(1) is not None and ternary.group(2) is not None:
                         version = version.replace(ternary.group(0), ternary.group(1) if match != ''
                                                   else ternary.group(2))
-
                     # Replace back references
                     version = version.replace('\\' + str(index + 1), match)
-                if version != '':
-                    if 'versions' not in app:
-                        app['versions'] = [version]
-                    elif version not in app['versions']:
-                        app['versions'].append(version)
-            self._set_app_version(app)
+                if version != '' and version not in detected_tech.versions:
+                    detected_tech.versions.append(version)
+            self._sort_app_version(detected_tech)
 
-    def _set_app_version(self, app: Dict[str, Any]) -> None:
+    def _sort_app_version(self, detected_tech: Technology) -> None:
         """
-        Resolve version number (find the longest version number that *is supposed to* contains all shorter detected version numbers).
-
-        TODO: think if it's the right wat to handled version detection.
+        Sort version number (find the longest version number that *is supposed to* contains all shorter detected version numbers).
         """
-        if 'versions' not in app:
+        if len(detected_tech.versions) >= 1:
             return
-
-        app['versions'] = sorted(app['versions'], key=self._cmp_to_key(self._sort_app_versions))
+        detected_tech.versions = sorted(detected_tech.versions, key=self._cmp_to_key(self._sort_app_versions))
 
     def _get_implied_technologies(self, detected_technologies:Iterable[str]) -> Iterable[str]:
         """
@@ -503,7 +300,7 @@ class Wappalyzer:
             _implied_technologies = set()
             for tech in technologies:
                 try:
-                    for implie in self.technologies[tech]['implies']:
+                    for implie in self.technologies[tech].implies:
                         # If we have no doubts just add technology
                         if 'confidence' not in implie:
                             _implied_technologies.add(implie)
@@ -538,29 +335,36 @@ class Wappalyzer:
 
         :param tech_name: Tech name
         """
-        cat_nums = self.technologies.get(tech_name, {}).get("cats", [])
-        cat_names = [self.categories.get(str(cat_num), "").get("name", "")
-                     for cat_num in cat_nums]
-
+        cat_nums = self.technologies[tech_name].cats if tech_name in self.technologies else []
+        cat_names = [self.categories[str(cat_num)].name
+                     for cat_num in cat_nums if str(cat_num) in self.categories]
         return cat_names
 
-    def get_versions(self, app_name:str) -> List[str]:
+    def get_versions(self, url:str, app_name:str) -> List[str]:
         """
         Retuns a list of the discovered versions for an app name.
 
+        :param url: URL of the webpage
         :param app_name: App name
         """
-        return [] if 'versions' not in self.technologies[app_name] else self.technologies[app_name]['versions']
+        try:
+            return self.detected_technologies[url][app_name].versions
+        except KeyError:
+            return []
 
-    def get_confidence(self, app_name:str) -> Optional[int]:
+    def get_confidence(self, url:str, app_name:str) -> Optional[int]:
         """
         Returns the total confidence for an app name.
 
+        :param url: URL of the webpage
         :param app_name: App name
         """
-        return None if 'confidenceTotal' not in self.technologies[app_name] else self.technologies[app_name]['confidenceTotal']
+        try:
+            return self.detected_technologies[url][app_name].confidenceTotal
+        except KeyError:
+            return None
 
-    def analyze(self, webpage:WebPage) -> Set[str]:
+    def analyze(self, webpage:IWebPage) -> Set[str]:
         """
         Return a set of technology that can be detected on the web page.
 
@@ -576,7 +380,7 @@ class Wappalyzer:
 
         return detected_technologies
 
-    def analyze_with_versions(self, webpage:WebPage) -> Dict[str, Dict[str, Any]]:
+    def analyze_with_versions(self, webpage:IWebPage) -> Dict[str, Dict[str, Any]]:
         """
         Return a dict of applications and versions that can be detected on the web page.
 
@@ -586,12 +390,12 @@ class Wappalyzer:
         versioned_apps = {}
 
         for app_name in detected_apps:
-            versions = self.get_versions(app_name)
+            versions = self.get_versions(webpage.url, app_name)
             versioned_apps[app_name] = {"versions": versions}
 
         return versioned_apps
 
-    def analyze_with_categories(self, webpage:WebPage) -> Dict[str, Dict[str, Any]]:
+    def analyze_with_categories(self, webpage:IWebPage) -> Dict[str, Dict[str, Any]]:
         """
         Return a dict of technologies and categories that can be detected on the web page.
 
@@ -613,7 +417,7 @@ class Wappalyzer:
 
         return categorised_technologies
 
-    def analyze_with_versions_and_categories(self, webpage:WebPage) -> Dict[str, Dict[str, Any]]:
+    def analyze_with_versions_and_categories(self, webpage:IWebPage) -> Dict[str, Dict[str, Any]]:
         """
         Return a dict of applications and versions and categories that can be detected on the web page.
 
