@@ -7,6 +7,7 @@ import re
 import os
 import pathlib
 import requests
+import soupsieve as sv
 
 from datetime import datetime, timedelta
 from typing import Optional
