@@ -21,7 +21,7 @@ def is_valid_selector(sel):
 	try:
 		sv.compile(sel)
 	except (sv.SelectorSyntaxError, NotImplementedError):
-		print(sel)
+		logger.debug("Broken Selector:",sel)
 		return False
 	return True
 
