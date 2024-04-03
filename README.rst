@@ -1,3 +1,5 @@
+# This repo is no longer maintained and is archived. There are many forks available, however.
+
 python-Wappalyzer
 -----------------
 
