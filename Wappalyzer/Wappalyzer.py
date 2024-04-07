@@ -1,4 +1,3 @@
-
 from typing import Callable, Dict, Iterable, List, Any, Mapping, Set
 import json
 import logging
@@ -26,31 +25,25 @@ class WappalyzerError(Exception):
 class Wappalyzer:
     """
     Python Wappalyzer driver.
-
     Consider the following exemples.
     
     Here is how you can use the latest technologies file from AliasIO/wappalyzer repository. 
     
     .. python::
-
         from Wappalyzer import Wappalyzer
         wappalyzer=Wappalyzer.latest(update=True)
         # Create webpage
         webpage=WebPage.new_from_url('http://example.com')
         # analyze
         results = wappalyzer.analyze_with_categories(webpage)
-
-
     Here is how you can custom request and headers arguments:
     
     .. python::
-
         import requests
         from Wappalyzer import Wappalyzer, WebPage
         wappalyzer = Wappalyzer.latest()
         webpage = WebPage.new_from_url('http://exemple.com', headers={'User-Agent': 'Custom user agent'})
         wappalyzer.analyze_with_categories(webpage)
-
     """
 
     def __init__(self, categories:Dict[str, Any], technologies:Dict[str, Any]):
@@ -58,7 +51,6 @@ class Wappalyzer:
         Manually initialize a new Wappalyzer instance. 
         
         You might want to use the factory method: `latest`
-
         :param categories: Map of category ids to names, as in ``technologies.json``.
         :param technologies: Map of technology names to technology dicts, as in ``technologies.json``.
         """
@@ -76,13 +68,11 @@ class Wappalyzer:
         Use ``update=True`` to download the very latest file from internet. 
         Do not update if the file has already been updated in the last 24 hours. 
         *New in version 0.4.0*
-
         Use ``technologies_file=/some/path/technologies.json`` to load a 
         custom technologies file. 
         
         If no arguments is passed, load the default ``data/technologies.json`` file
         inside the package ressource.
-
         :param technologies_file: File path
         :param update: Download and use the latest ``technologies.json`` file 
             from `AliasIO/wappalyzer <https://github.com/AliasIO/wappalyzer>`_ repository.  
@@ -328,7 +318,6 @@ class Wappalyzer:
     def get_categories(self, tech_name:str) -> List[str]:
         """
         Returns a list of the categories for an technology name.
-
         :param tech_name: Tech name
         """
         cat_nums = self.technologies[tech_name].cats if tech_name in self.technologies else []
@@ -339,7 +328,6 @@ class Wappalyzer:
     def get_versions(self, url:str, app_name:str) -> List[str]:
         """
         Retuns a list of the discovered versions for an app name.
-
         :param url: URL of the webpage
         :param app_name: App name
         """
@@ -351,7 +339,6 @@ class Wappalyzer:
     def get_confidence(self, url:str, app_name:str) -> Optional[int]:
         """
         Returns the total confidence for an app name.
-
         :param url: URL of the webpage
         :param app_name: App name
         """
@@ -363,7 +350,6 @@ class Wappalyzer:
     def analyze(self, webpage:IWebPage) -> Set[str]:
         """
         Return a set of technology that can be detected on the web page.
-
         :param webpage: The Webpage to analyze
         """
         detected_technologies = set()
@@ -379,7 +365,6 @@ class Wappalyzer:
     def analyze_with_versions(self, webpage:IWebPage) -> Dict[str, Dict[str, Any]]:
         """
         Return a dict of applications and versions that can be detected on the web page.
-
         :param webpage: The Webpage to analyze
         """
         detected_apps = self.analyze(webpage)
@@ -390,19 +375,53 @@ class Wappalyzer:
             versioned_apps[app_name] = {"versions": versions}
 
         return versioned_apps
+    
+        def analyze_with_cpe(self, webpage):
+        """
+        Return a list of applications with their CPEs (Common Platform Enumeration) that can be detected on the web page.
+        """
+        detected_apps = self.analyze(webpage)
+        cpe_detected_apps = {}
 
+        for app_name in detected_apps:
+            cpes = self.get_cpe(app_name)
+            cpe_detected_apps[app_name] = {"cpes": cpes}
+
+        return cpe_detected_apps
+
+    def analyze_with_cpe_and_version(self, webpage):
+        """
+        Return a list of applications with their CPEs (Common Platform Enumeration) and versions that can be detected on the web page.
+        """
+        detected_apps = self.analyze(webpage)
+        cpe_detected_apps = {}
+
+        for app_name in detected_apps:
+            cpe = self.get_cpe(app_name)
+            versions = self.get_versions(app_name)
+            if cpe == []:
+                cpe_detected_apps[app_name] = {"Versions": versions}
+            else:
+                cpe = cpe.replace("/","2.3:") 
+                full_cpes = []
+                for version in versions:
+                    full_cpes.append(cpe + ":" + version)
+
+                cpe_detected_apps[app_name] = {"CPEs": full_cpes}
+
+
+        return cpe_detected_apps
+
+    
     def analyze_with_categories(self, webpage:IWebPage) -> Dict[str, Dict[str, Any]]:
         """
         Return a dict of technologies and categories that can be detected on the web page.
-
         :param webpage: The Webpage to analyze
-
         >>> wappalyzer.analyze_with_categories(webpage)
         {'Amazon ECS': {'categories': ['IaaS']},
         'Amazon Web Services': {'categories': ['PaaS']},
         'Azure CDN': {'categories': ['CDN']},
         'Docker': {'categories': ['Containers']}}
-
         """
         detected_technologies = self.analyze(webpage)
         categorised_technologies = {}
@@ -416,9 +435,7 @@ class Wappalyzer:
     def analyze_with_versions_and_categories(self, webpage:IWebPage) -> Dict[str, Dict[str, Any]]:
         """
         Return a dict of applications and versions and categories that can be detected on the web page.
-
         :param webpage: The Webpage to analyze
-
         >>> wappalyzer.analyze_with_versions_and_categories(webpage)
         {'Font Awesome': {'categories': ['Font scripts'], 'versions': ['5.4.2']},
         'Google Font API': {'categories': ['Font scripts'], 'versions': []},
@@ -427,7 +444,6 @@ class Wappalyzer:
         'PHP': {'categories': ['Programming languages'], 'versions': ['5.6.40']},
         'WordPress': {'categories': ['CMS', 'Blogs'], 'versions': ['5.4.2']},
         'Yoast SEO': {'categories': ['SEO'], 'versions': ['14.6.1']}}
-
         """
         versioned_apps = self.analyze_with_versions(webpage)
         versioned_and_categorised_apps = versioned_apps
@@ -478,9 +494,7 @@ def analyze(url:str,
             verify:bool=True) -> Dict[str, Dict[str, Any]]:
     """
     Quick utility method to analyze a website with minimal configurable options. 
-
     :See: `WebPage` and `Wappalyzer`. 
-
     :Parameters:
         - `url`: URL
         - `update`: Update the technologies file from the internet
