@@ -7,6 +7,7 @@ import re
 import os
 import pathlib
 import requests
+import soupsieve as sv
 
 from datetime import datetime, timedelta
 from typing import Optional
@@ -15,6 +16,14 @@ from Wappalyzer.fingerprint import Fingerprint, Pattern, Technology, Category
 from Wappalyzer.webpage import WebPage, IWebPage
 
 logger = logging.getLogger(name="python-Wappalyzer")
+
+def is_valid_selector(sel):
+	try:
+		sv.compile(sel)
+	except (sv.SelectorSyntaxError, NotImplementedError):
+		logger.debug("Broken Selector:",sel)
+		return False
+	return True
 
 class WappalyzerError(Exception):
     # unused for now
@@ -219,23 +228,24 @@ class Wappalyzer:
         #           - "text": "regex": check if the .innerText property of the element that matches the css selector matches the regex (with version extraction).
         #           - "attributes": {dict from attr name to regex}: check if the attribute value of the element that matches the css selector matches the regex (with version extraction).
         for selector in tech_fingerprint.dom:
-            for item in webpage.select(selector.selector):
-                if selector.exists:
-                    self._set_detected_app(webpage.url, tech_fingerprint, 'dom', Pattern(string=selector.selector), value='')
-                    has_tech = True
-                if selector.text:
-                    for pattern in selector.text:
-                        if pattern.regex.search(item.inner_html):
-                            self._set_detected_app(webpage.url, tech_fingerprint, 'dom', pattern, value=item.inner_html)
-                            has_tech = True
-                if selector.attributes:
-                    for attrname, patterns in list(selector.attributes.items()):
-                        _content = item.attributes.get(attrname)
-                        if _content:
-                            for pattern in patterns:
-                                if pattern.regex.search(_content):
-                                    self._set_detected_app(webpage.url, tech_fingerprint, 'dom', pattern, value=_content)
-                                    has_tech = True
+            if is_valid_selector(selector.selector):
+                for item in webpage.select(selector.selector):
+                    if selector.exists:
+                        self._set_detected_app(webpage.url, tech_fingerprint, 'dom', Pattern(string=selector.selector), value='')
+                        has_tech = True
+                    if selector.text:
+                        for pattern in selector.text:
+                            if pattern.regex.search(item.inner_html):
+                                self._set_detected_app(webpage.url, tech_fingerprint, 'dom', pattern, value=item.inner_html)
+                                has_tech = True
+                    if selector.attributes:
+                        for attrname, patterns in list(selector.attributes.items()):
+                            _content = item.attributes.get(attrname)
+                            if _content:
+                                for pattern in patterns:
+                                    if pattern.regex.search(_content):
+                                        self._set_detected_app(webpage.url, tech_fingerprint, 'dom', pattern, value=_content)
+                                        has_tech = True
         return has_tech
 
     def _set_detected_app(self, url:str,
